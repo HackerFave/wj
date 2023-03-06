@@ -1,0 +1,13 @@
+﻿namespace ver;
+
+//版本号定义(参照: 版本号使用说明.xlsx)
+// product_type:ubyte(id:0);
+// vehicle_type:ubyte(id:1);
+// module_type:ubyte(id:2);
+// func_vary_version:ubyte(id:3);
+// func_perf_version:ubyte(id:4);
+// bug_fix_version:ubyte(id:5);
+table MsgVersion{
+  version:string(id:0); //string 版本顺序参照 上面注释格式为 xx.xx.xx.xx.xx.xx 16进制表示
+  releasetime:string(id:1);
+}

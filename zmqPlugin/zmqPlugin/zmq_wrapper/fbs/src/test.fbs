@@ -1,0 +1,17 @@
+table Repeat{
+  id:int (id:0);
+}
+
+table MsgTest{
+  result:ubyte (id:0);
+  time:uint64(id:1);
+  array:[Repeat](id:2);
+}
+
+table MsgRequest{
+  request:string (id:0);
+}
+
+table MsgResponse{
+  response:string (id:0);
+}

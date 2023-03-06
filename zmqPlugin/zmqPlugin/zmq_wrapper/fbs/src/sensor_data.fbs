@@ -1,0 +1,272 @@
+namespace sensor_data;
+
+table MsgBackHeartBeats{
+	status:ubyte;
+}
+
+table FrameNum{  //wly
+	num:uint;
+}
+
+enum ObjectTypeS:ushort{
+   NONE, 
+   MINETRUCK ,          //矿车
+   CAR ,                //汽车
+   PEDESTRIAN ,         //行人
+   WIDEVEHICLE ,        //宽车辆
+   TRUCK ,              //卡车
+   SHOVEL ,             //电铲
+   EXCAVATOR ,          //挖掘机 
+   FORKTRUCK ,          //叉车
+   VEHICLE ,            //车辆
+   WALL ,               //挡阻墙
+   CLIFF ,              //悬崖
+   HOLE ,               //坑
+   STONE ,              //石头
+   UNKNOWN ,            //未知
+   UNKNOWN_UNMOVABLE ,  //未知静止
+   UNKNOWN_MOVABLE      //未知运动
+}
+
+enum SensorsTypeS:ushort{ 
+  LIDARFront,
+  LIDARBack,
+  RADARLeft ,
+  RADARMiddle ,
+  RADARRight ,
+  RADARBack ,
+  IMAGEFront , 
+  IMAGELIDAR ,
+  LIDAR ,
+  RADAR ,
+  FUSIONFront ,
+  FUSIONBack ,
+  FUSION
+}
+
+struct PointXYZS {
+  x:float;
+  y:float;
+  z:float;
+}
+
+struct PointXYZIS {
+  x:float;
+  y:float;
+  z:float;
+  intensity:float;
+}
+
+
+
+struct CurbPointS{
+  x:float;
+  y:float;
+  width:float;
+  valid_flag:ubyte; // unsigned char 后期可能有问题
+}
+
+
+struct RadarInfoS {
+  speed_direction:byte;    //车行驶方向,char后期可能有问题
+  speed:float;             //车速
+  yaw_rate:float;          //车偏角速率
+
+  rcs:float;               //目标的RCS
+  prob_of_exit:int ;       //目标的存在概率
+
+  dyn_prop:int;            //目标的动态属性
+  meas_state:int;          //目标的测量状态属性
+
+  dist_long_rms:int;       //目标质量信息中long方向坐标的标准差
+  dist_lat_rms:int;        //目标质量信息中lat方向坐标的标准差
+  vrel_long_rms:int;       //目标质量信息中 long方向速度的标准差
+  vrel_lat_rms:int;        //目标质量信息中lat方向速度的标准差
+  arel_lat_rms:int;        //目标质量信息中的lat方向加速度的标准差
+  arel_long_rms:int;       //目标质量信息中long方向加速度的标准差
+  orientation_rms:int;     //目标质量信息中角度的标准差
+
+  arel_long:float;         //目标扩展信息中long方向加速度
+  arel_lat:float;          //目标扩展信息中lat方向加速度
+  object_class:int;        //目标扩展信息中目标类型
+  orientation_angle:float; //目标扩展信息中目标的角度
+}
+
+struct GPSInfoS {
+   gps_msec:uint64;               //UTC时间
+   gps_rtk_status:uint32;         //查分状态
+   gps_lat:double;                //纬度
+   gps_lng:double;                //经度
+   gps_heading:float;             //航向角
+   gps_ve:float;                  //东向速度
+   gps_vn:float;                  //北向速度
+   gps_speed:float;               //合速度
+   height:float;                  //海拔
+   acc_y:float;                   //纵向加速度
+   acc_x:float;                   //横向加速度
+   imu_yaw_z:float;               //横摆角速度
+   gps_satellite_front:uint32;    //前天线卫星数
+   gps_satellite_rear:uint32;     //后天线卫星数
+   gps_yaw:float;                 //偏航
+   gps_roll:float;                //翻滚
+   gps_pitch:float;               //俯仰
+   gps_diff_flag:uint16;          //丢差分情况
+   gnss_horizontal_speed:float;   //bestvela输出的水平速度
+   gps_ntime:uint64;              //gps数据发布以来以系统时间基准的时间戳
+}
+
+table ObjectS {
+  sensors_type:SensorsTypeS;  //传感器类型
+  seq:int;                    //当前障碍物序号，依次递增
+  stamp:long;                 //时间戳
+  id:int;                     //追踪ID
+  object_type:ObjectTypeS;    //障碍物类型
+  center:PointXYZS;           //障碍物中心点坐标
+  length:float;               //障碍物长度
+  width:float;                //障碍物宽度
+  height:float;               //障碍物高度
+  direction:PointXYZIS;       //障碍物航向角
+  theta:float;                //障碍物航向角
+  min:PointXYZS;              //边界最小值,左下角
+  max:PointXYZS;              //边界最大值,右上角
+  vrel_y:float;               //前车与本车的纵向相对速度，单位m/s
+  vrel_x:float;               //前车与本车的横向相对速度，单位m/s
+  velocity:float;             //目标障碍物与本车的矢向相对速度，单位m/s
+}
+
+table LidarObjectS{
+  object_id:int ;             //目标的ID号
+  object:ObjectS;  
+  dyn_prop:int;               //目标动态属性，0:运动，1:静止
+  key_point:PointXYZS;        //关键点
+  contour_point:[PointXYZS];  //8个固定顺序的角点
+  cloud:[PointXYZS];          //固定顺序的靠近传感器面轮廓点
+  contour_cloud:[PointXYZS];  //固定顺序的整个轮廓点
+  original_cloud:[PointXYZS]; //原始点云
+}
+
+table RadarObjectS{
+  object:ObjectS;
+  radar_info:RadarInfoS;
+}
+
+table FrontLidarCurb{
+  left_curb:[CurbPointS];
+  right_curb:[CurbPointS];
+}
+
+
+table FrontRadarFusionInput {
+  left_objects:[RadarObjectS];  // 左雷达目标
+  mid_objects:[RadarObjectS];   // 中雷达目标
+  right_objects:[RadarObjectS]; // 右雷达目标
+
+  left_curb:[CurbPointS];       // 左边界
+  right_curb:[CurbPointS];      //右边界
+  left_radar_state:bool;        //左毫米波雷达连接状态
+  mid_radar_state:bool;         //中毫米波雷达连接状态
+  right_radar_state:bool;       //右毫米波雷达连接状态
+}
+
+table FrontRadarFusionOutput {
+  radar_state:bool;		//右毫米波雷达连接状态
+  radar_objects:[RadarObjectS];
+}
+
+
+table LidarCloud{
+  stamp:long;             // 点云时间戳
+  cloud:[PointXYZIS];     //点云
+}
+
+table Image{
+   rows:int;
+   cols:int;
+   image:[ubyte];   // 一维数组
+}
+
+
+table FrontLidarInput {
+  lidar_state:bool;       //激光雷达连接状态
+  cloud:LidarCloud;       //点云
+  gnss_imu_state:bool;    //gps_imu连接状态
+  gps_info:GPSInfoS ;     //GPS信息
+}
+
+table FrontImageLidarInput {
+  lidar_state:bool;       //激光雷达连接状态
+  cloud:LidarCloud;       //点云
+  long_focus_image:Image; //长焦图像<->cv:mat
+  fish_eye_image:Image;   //鱼眼图像<->cv:mat
+}
+
+table FrontLidarOutPut{
+  lidar_state:bool;             //激光雷达连接状态
+  lidar_objects:[LidarObjectS]; //激光雷达目标
+}
+
+
+//前向/侧向同步数据
+table MsgFrontSensorData{
+  timestamp:uint64;               //同步数据包时间戳
+  gps_info:GPSInfoS;              //GPS信息
+  cloud:LidarCloud;               //点云
+  front_point_cloud:LidarCloud;
+  mid_point_cloud:LidarCloud;
+  left_point_cloud:LidarCloud;
+  right_point_cloud:LidarCloud;
+  long_focus_image:Image;         //长焦图像一维数组<->cv:mat
+  fish_eye_image:Image;           //鱼眼图像一维数组<->cv:mat
+  left_objects:[RadarObjectS];    //左毫米波
+  mid_objects:[RadarObjectS];     //中毫米波
+  right_objects:[RadarObjectS];   //右毫米波
+
+  front_fish_camera_state:bool;   //长焦相机连接状态
+  front_lens_camera_state:bool;   //鱼眼相机连接状态
+  front_lidar_state:bool;         //激光雷达连接状态
+  mid_lidar_state:bool;           //激光雷达连接状态
+  left_lidar_state:bool;          //激光雷达连接状态
+  right_lidar_state:bool;         //激光雷达连接状态
+  front_left_radar_state:bool;    //左毫米波雷达连接状态
+  front_mid_radar_state:bool;     //中毫米波雷达连接状态
+  front_right_radar_state:bool;   //右毫米波雷达连接状态
+  gnss_imu_state:bool;            //gps_imu连接状态
+}
+
+//后向同步数据
+table MsgBackSensorData
+{
+  timestamp:uint64;             //同步数据包时间戳
+  cloud:LidarCloud;             //点云
+  image:Image;                  //后向图像一维数组<->cv:mat
+  back_objects:[RadarObjectS];  //后毫米波
+  gps_info:GPSInfoS;            //GPS信息
+
+  back_rtsp_camera_state:bool;  //后向网络相机连接状态
+  back_lidar_state:bool;        //后向激光雷达连接状态
+  back_radar_state:bool;        //后毫米波雷达连接状态
+  gnss_imu_state:bool;          //gps_imu连接状态
+}
+
+
+union DataType{
+   FrontRadarFusionInput,
+   FrontRadarFusionOutput,
+   FrontLidarInput,
+   FrontLidarCurb,
+   FrontLidarOutPut,
+   FrontImageLidarInput
+}
+
+table DataTypeEntry{
+   entry:DataType;
+}
+
+root_type DataTypeEntry; //序列化数据的根表
+
+
+file_identifier "DTEN";
+
+
+
+

@@ -1,0 +1,228 @@
+﻿namespace decision;
+
+table LatLonHead{
+  lat:double;     //纬度
+  lng:double;     //经度
+  head:double;    //航向
+}
+
+table Output {
+  drive_mode:ubyte(id:0);               //驾驶模式，人工 自动 遥控驾驶
+  drive_mode_last:ubyte(id:1);          //驾驶模式缓存，用于恢复
+  drive_state:ubyte(id:2);              //主状态机
+  drive_state_last:ubyte(id:3);         //主状态机缓存
+  drive_state_child:ushort(id:4);       //子状态机
+  drive_state_child_last:ushort(id:5);  //子状态机缓存
+
+  fault:ushort(id:6);                   //故障，bit0 举升 bit1 任务文件 bit2 路径文件 bit3 停靠失败
+
+  target_key_point:int64(id:7);           //当前周期的目标停车点
+  GpsPathList:uint(id:8);               //当前路径地址
+  point_key:int(id:9);                  //车辆当前GPS坐标在当前路径下对应的索引
+  unload_point:LatLonHead(id:10);       //卸载点坐标
+  load_point:LatLonHead(id:11);         //装载点坐标
+  park_error:LatLonHead(id:12);         //坐标轴是车体坐标系，误差单位是米和度
+  ti_task_speed:float(id:13);           //任务文件的速度，目前在决策层写的是一个定值
+  terminal:int(id:14);                  //行车许可的终点
+  emergency_stop:ubyte(id:15);          //紧急停车的标志，２表示紧急停车，０表示正常停车,1忽略
+  load_status:ubyte(id:16);             //当前空满载状态,1 空载　２　满载　３　半载
+  drive_state_desc:string(id:17);       //主状态机的文字描述
+  drive_state_child_desc:string(id:18); //子状态机的文件描述
+  single_mode:bool(id:19);              //true 表示单车模式
+  task_type:byte=-1(id:20);             //当前任务类型
+  road_condition:ubyte=1(id:21);            //行车模式，0x01:正常模式，0x02:雨雪模式
+  detour:bool(id:22);                   //绕行标志，true表示绕行
+  front_edge_to_back_axle:float(id:23); //前脸到后轴中心距离
+  vehicle_length:float(id:24);          //车长
+}
+
+table RoadTaskVehicleInfo{
+  road_id:ushort(id:0);                 //道路ID
+  remain_dis:float(id:1);               //当前道路剩余距离
+  point_key:uint(id:2);                 //车辆当前位置在路径文件中位置点序号
+  task_id:ushort(id:3);                 //0 无调度任务  -1为不触发调度任务计算  >0有任务
+  work_status:ubyte(id:4);              //0x00:无任务,0x01:道路行驶,0x02:道路预告,0x03:排队等待, 0x04:驶入停靠,
+                                        //0x05:停靠完成,0x06:装载中,0x07:装载完成,0x08:卸载中,0x09:卸载完成,
+  task_file_name:string(id:5);          //任务压缩文件名字
+  service_state:ubyte(id:6);            //终端营运状态0x00: 未知  0x01: 就绪运行状态  0x02: 延时停运状态   0x03: 故障停运状态   0x04: 备用状态
+  reason:ushort(id:7);                  //(延时/故障)原因
+  run:ubyte(id:8);                      //0x01: 停车  0x02: 运行
+  why_stop:ushort(id:9);                //停车原因
+  remoter_id:short=-1(id:10);              //遥控手柄id编号，-1表示无效,非-1表示正常id
+}
+
+
+
+
+
+//7.3 主控发送开机命令 P→G 1.HMI接收 2.CGU接收到之后发送1040
+table Msg1030{
+  id:ushort(id:0);                     //消息ID
+  vehicle_length:float(id:1);          //车长
+  vehicle_width:float(id:2);           //车宽
+  vehicle_height:float(id:3);          //车高
+  start_state:ubyte(id:4);             //上次关机状态，0是正常关机 1是异常关机
+}
+
+//7.5 主控发送停止运行应答命令 P→G 1.HMI接收
+table Msg1050{
+  id:ushort(id:0);    //消息ID
+  rsv:ushort(id:1);   //暂时保留
+}
+
+//2062，遥控驾驶模式的响应
+table Msg2062{
+  id:ushort=0x2062(id:0);         //消息ID 2062
+  cmd:ubyte(id:1);                // 1 遥控开始 2 遥控结束
+  ack:ubyte=1(id:2);              // 1 表示接收 2 表示拒绝
+}
+
+//7.23主控发送网关请求人工驾驶 //HMI订阅此消息
+table Msg0404{
+  id:ushort(id:0);             //消息ID
+  manual_driving:byte(id:1);   //0为自动驾驶 1为人工驾驶
+  task_type:byte(id:2);        //1装在任务，２为卸载任务
+  direction:byte(id:3);        //1驶入　２驶出
+}
+
+table Msg0500{  //HMI订阅
+  id:ushort=0x0500(id:0);         //消息ID 0x0500
+  state:ubyte(id:1);              //装卸载执行状态 和排队等待状态
+}
+
+//0501
+table Msg0501{  //HMI订阅
+  id:ushort=0x0501(id:0);         //消息ID 0501
+  dis:short(id:1);                //到当前许可的剩余距离，也有可能已经越过许可
+}
+
+table Msg8F1C{  //HMI订阅
+  id:ushort=0x8F1C(id:0);             //消息ID 0x8F1C
+  type:ubyte(id:1);                   //任务类型，１　动态任务　２静态任务制动 3静态任务举升
+  result:ubyte(id:2);                 //任务测试结果　1开始执行 2成功　3失败
+  why_fail:ubyte(id:3);               //失败原因，０表示未知
+  lift_angle_error:float=1.5(id:4);   //静态测试举升角度误差
+  steer_angle_error:float=1.2(id:5);  //静态测试转向角度误差
+}
+
+table V2HMIMsg0E02{
+  id:ushort=0x0E02 (id:0);              //消息ID
+  change_result:byte(id:1);
+  reason_of_manual_to_auto:byte (id:2); //正常切换:需要挂空挡，驻车制动有效 vcu通信正常，车辆静止
+  reason_of_auto_to_manual:byte (id:3); //正常切换:需要挂空挡，装载制动有效，车辆静止
+}
+
+//7.7主控发送作业现场调度请求命令P→G
+table V2NMsg0305{
+  id:ushort(id:0);          //消息ID
+  //data:WorkRequest(id:1); //向网关请求驶入或驶离
+  work_class:byte(id:1);    //0x01: 装载作业0x02: 卸载作业
+  cmd_flag:byte(id:2);      //0X00：无任务申请0X01：申请驶离任务0X02：申请驶入任务0X03：发送停靠完成任务
+}
+
+
+
+
+
+
+
+
+
+
+//输出给运动预测用，xyzl分别为车体坐标系下前方点的x y坐标 航向 到第一个点的距离
+struct xyzl{ 
+  point:[float:5];
+}
+struct PosInertia{
+  pos:[xyzl:50];
+}
+
+table RoadPlanPoint{
+  data:PosInertia;
+}
+table OutToPredict{
+  data:PosInertia;
+}
+
+struct GpsPoint{ 
+  point:[double:3];
+}
+
+struct GpsInertia{
+  pos:[GpsPoint:75];
+}
+
+table OutNearbyPoint{
+  data:GpsInertia;
+}
+
+
+enum kPlanWhen:ubyte{
+  InvalidArea=0,
+  DriveIn=1,
+  DriveOut=2,
+  Detour=3,
+  ComeBack=4,
+  BalanceRolling=5,
+  LocalPathPlan=6,
+  OnLaneComeBack=7
+}
+
+table OutToPlanAl{
+  point_key:uint(id:0);                 // 车辆当前位置对应的坐标系
+  stop_point:LatLonHead(id:1);          // 停靠点坐标
+  auxi_veh_point:LatLonHead(id:2);      // 辅助车辆（电铲/挖机）位置
+  r_veh:float(id:3);                    // 辅助车辆包络圆半径
+  r_ws:float(id:4);                     // 辅助车辆铲臂工作区圆半径
+  parkin_refer_line:uint(id:5);       // 泊车停靠参考路径
+  driveout_refer_line:uint(id:6);     // 驶出参考路径
+  edge_info_pts:uint(id:7);           // 工作区障碍物边界
+  forwardmin:float(id:8);               // 举斗前行最小距离
+  forwardmax:float(id:9);               // 举斗前行最大距离
+}
+
+//输出给规划用
+table OutToPlan{
+  start_parking_plan:bool(id:0);  //给规划层传输信号量,1:开始规划,0:停止规划
+  point_key:uint(id:1);           //车辆位置离主路径最近点的索引
+  stop_point:LatLonHead(id:2);    //停靠点纬度,经度 航向
+  GpsPathList:uint(id:3);         //主路径
+  edge_list:uint(id:4);           //边界集合
+  area:kPlanWhen(id:5);           //在哪个区域进行规划
+  forwardMin:ushort(id:6);        //举斗前行的最小距离
+  forwardMax:ushort(id:7);        //举斗前行的最大距离
+}
+
+
+
+
+struct SerialNum{
+  data:[ubyte:8];
+}
+
+struct SwitchStatus{
+  data:[ubyte:16];
+}
+
+table FaultStatus{
+  id:ushort=0x8F0E(id:0);         //消息ID 0x8F0E
+  //serial_num:SerialNum(id:1);   //序列号，如果是HMI发送，则全部为0
+  cmd:ubyte(id:1);                //命令：0时设置故障 1 清除故障 2 查询故障
+  switch:SwitchStatus(id:2);      //128个bit 用于存储故障开关状态
+}
+
+table CurPath{
+  path:string(id:0);              //单车模式下使用的路径文件，文件存放位置为 CCU的 /home/root/
+}
+
+
+
+root_type Output;
+root_type OutToPlan;
+root_type OutToPlanAl;
+root_type OutToPredict;
+root_type RoadTaskVehicleInfo;
+root_type V2NMsg0305;
+root_type FaultStatus;
+root_type CurPath;
+file_identifier "DECO";

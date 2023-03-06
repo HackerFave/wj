@@ -1,0 +1,13 @@
+// namespace datax;
+
+table Message {
+  timestamp:uint64 (id: 0);
+  node_name:string (id: 1);
+  size:uint32 (id: 2);
+  data:[ubyte] (id: 3);
+  seq:uint64 (id: 4);
+
+  version:string(id:5);
+}
+
+root_type Message;

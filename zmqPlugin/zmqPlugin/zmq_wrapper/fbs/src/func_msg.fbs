@@ -1,0 +1,25 @@
+table FuncCloudGetAllDevName{
+  local_name:string;
+  remote_target_name:string;
+}
+
+table FuncSendAtCmd{
+    result:bool;
+    outResult:[string];
+}
+
+table FuncTcpAuth{
+    isAuth:bool;
+    isRsuAuth:bool;
+    isRsu:bool;
+}
+
+table FuncSendAtCmdWithExpect{
+    cmd:string;
+    expectResp:string;
+}
+
+table FuncMsg{
+    func_name:string;
+    data:[ubyte];
+}

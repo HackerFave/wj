@@ -1,0 +1,173 @@
+﻿namespace control;
+
+table ControlOutputForImplement {
+  vehicle_velocity:float (id: 0);               //实际车速
+  front_wheel_angle:float (id: 1);              //前轮转角控制量
+  throttle_pedal:float (id: 2);                 //油门控制量
+  brake_pedal:float (id: 3);                    //电制动控制量
+  hydraulic_brake:float (id: 4);                //液压制动控制量
+  retarder_ctrl:float (id: 5);                  //缓速器控制量
+  park_ctrl:ubyte (id: 6);                      //装载制动控制量
+  exhuast_brake:ubyte (id: 7);                  //排气制动控制量
+  shift_ctrl:short (id: 8);                     //档位控制量
+  bucket_ctrl:short (id: 9);                    //货箱控制量
+  trumpet_ctrl:ubyte (id: 10);                  //喇叭控制量 0:不响 1:响1秒 2:响3秒
+  lamp_ctrl:ubyte (id: 11);                     //灯光控制量
+  shift_limit:ubyte (id: 12);                   //挡位最大限制
+  can_send_flag:bool (id: 13);                  //can数据发送标志位
+  const_speed_downhill_enable:bool (id: 14);    //恒速下坡开关量
+  const_speed_downhill_speed:float (id: 15);    //恒速下坡速度
+  trans_retarder_ctrl:bool (id: 16);            //变速箱缓行控制量
+  ctl_utc_time:uint64 (id: 17);                 //控制模块运行当前时间
+  flag_redundant_brake:bool (id: 18);           //冗余制动标志
+  green_light_ctrl:ubyte(id:19);                //绿灯信号
+  blue_light_ctrl:ubyte(id:20);                 //蓝灯信号
+  yellow_light_ctrl:ubyte(id:21);               //黄灯信号
+  red_light_ctrl:ubyte(id:22);                  //红灯信号
+  park_long_ctrl:ubyte (id: 23);                //长驻车制动控制量
+  wire_steer_rate_cmd:float(id:24);             //方向盘角速度
+  //Add engine_ctrl 
+  engine_ctrl:short(id:25);                     //发动机控制 
+  drive_mode_for_can:short(id:26); //宏威协议 发送驾驶模式
+  two_flash_lamp_ctrl:bool(id:27);        //双闪灯控制信号
+  slope_status:short(id:28); //宏威协议 发送坡度状态
+  xbr_acceletation_req:float(id:29);  //宏威 ebs请求的减速度
+  refuel_trq_req:float(id:30);        //宏威 再生电制动扭矩
+  record_err_head:float(id:31);        //车与路径关键点航向偏差
+}
+
+table ControlOutputForDecision {
+  vehicle_velocity:float (id: 0);		                //实际车速
+  slope_vehicle_filter:float (id: 1);		            //车辆坡度
+  lat_distance:float (id: 2);			                  //横向距离偏差
+  desired_speed:float (id: 3);			                //期望车速
+  status_switch_flag:bool (id: 4);		              //状态切换标志位
+  front_obstacle_timeout_flag:bool (id: 5);	        //前障碍物检测标志位
+  back_obstacle_timeout_flag:bool (id: 6);	        //后障碍物检测标志位
+  curve_prepoint:float (id: 7);                          //当前点、预瞄点、超前点最大曲率
+  full_load_status:ubyte (id: 8);                   //0x01:空载装载，0x02:满载卸载，0x03:半载卸载，0x04:空载卸载
+  ctrl_diag_code:ushort (id: 9);                    //控制做的诊断，16bit每一位代表一个故障，第一位轻微打滑，第二位画龙，第三位坡道受阻,第四位严重打滑,第五位爆胎告警
+  flag_vehicle_on_road:bool (id: 10);               //起自动驾驶后车辆是否收敛到路径上
+  slip_rate:float (id:11);                          //滑移率
+  flag_obst_will_dec:bool(id:12);                   //障碍物即将降速
+  flag_obst_will_stop:bool(id:13);                  //障碍物即将停车
+  flag_obstacle_stop:bool(id:14);                   //遇障停车标志
+}
+
+
+table ControlOutputForMonitor {
+ 
+
+  vehicle_velocity:float (id: 0);		      //实际车速
+  vehicle_speed_raw:float (id: 1);        //实际车速原始值
+  desired_speed:float (id: 2);            //期望车速
+  speed_preview:float (id: 3);            //道路期望车速
+  desired_radar_speed:float (id: 4);      //radar期望车速
+  desired_lidar_speed:float (id: 5);      //lidar期望车速
+  slope_preview:float (id: 6);            //预瞄坡度滤波
+  slope_vehicle:float (id: 7);            //车辆坡度滤波
+  slope_preview_raw_log:float (id: 8);    //预瞄坡度原始
+  slope_vehicle_raw_log:float (id: 9);    //车辆坡度原始
+  pitch_filter_record:float (id: 10);     //惯导俯仰角滤波
+  spd_e:float (id: 11);                   //速度偏差
+  spd_ec:float (id: 12);                  //速度偏差变化滤波
+  spd_ec_raw:float (id: 13);              //速度偏差变化原始
+  base_ctl_value:float (id: 14);          //速度控制基础量
+  delta_ctl_value:float (id: 15);         //速度控制调节量
+  total_ctl_value:float (id: 16);         //速度控制总控制量
+  total_ctl_value_raw_log:float (id: 17); //速度控制总控制原始
+  throttle_pedal:float (id: 18);			    //油门控制量
+  brake_pedal:float (id: 19);			        //电制动控制量
+  hydraulic_brake:float (id: 20);		      //液压制动控制量
+  retarder_ctrl:float (id: 21);			      //缓速器控制量
+  exhuast_brake:ubyte (id: 22);			      //排气制动控制量
+  front_wheel_angle:float (id: 23);		    //计算转角
+  angle_deviation_at_prepoint:float (id: 24);             //预瞄点方位角偏差
+  heading_angle_deviation_at_prepoint:float (id: 25);     //预瞄点航向角偏差
+  preview_dis:float (id: 26);             //预瞄距离
+  bia_distance:float (id: 27);            //横向偏差                  
+  curve_prepoint:float (id: 28);               //控制曲率
+  dev_angle_ctl:float (id: 29);           //角度转角
+  dev_heading_ctl:float (id: 30);         //航向转角
+  park_ctrl:ubyte (id: 31);			          //装载制动控制量
+  shift_ctrl:short (id: 32);			        //档位控制量
+  bucket_ctrl:short (id: 33);			        //货箱控制量
+  trumpet_ctrl:ubyte (id: 34);			      //喇叭控制量
+  lamp_ctrl:ubyte (id: 35);			          //转向灯控制量
+  status_switch_flag:bool (id:36);      
+  rest_dis:float (id:37);                 //路径停车距离误差  
+  FL_slip_rate:float (id:38);
+  FR_slip_rate:float (id:39);
+  RL_slip_rate:float (id:40);
+  RR_slip_rate:float (id:41); 
+  lat_draw_dragon:bool (id:42);           //横向画龙标志位
+  spd_integration:float (id:43);          //速度控制积分量
+  lat_const_err:float (id:44);            //横向静态偏差
+  steer_lat_const_err_ctl:float (id:45);        //静态偏差转向
+  parking_spd_change:float (id:46);             //停靠车速变化
+  parking_acc_dis_cor:float (id:47);             //制动距离修正
+  lat_draw_dragon_frequence:float(id:48);   //横向画龙频率
+  trans_retarder_ctrl:float (id: 49);			      //变速箱缓行控制量
+  record_m_angle_head:float (id:50);             //关键点航向偏差
+  ctl_utc_time:uint64 (id: 51);                //控制模块运行当前时间
+  flag_redundant_brake:bool(id:52);       //冗余制动标志
+  speed_ctl_state:ubyte(id:53);           //纵向控制状态
+  stop_dec_estimate:float(id:54);         //预估停靠减速度
+  stop_dis_calibration:float(id:55);      //预估停靠距离
+  stop_dec_actual:float(id:56);           //实际停靠减速度
+  stop_dis_actual:float(id:57);           //实际停靠距离
+  stop_dis_correction:float(id:58);       //停靠距离修正量
+  stop_dis_comput_state:short(id:59);       //停车距离计算标志
+  lng_veh_trans:double(id:60);            //车辆经度转换后
+  lat_veh_trans:double(id:61);            //车辆纬度转换后
+  lng_keypoint_trans:double(id:62);       //关键点经度转换后
+  lat_keypoint_trans:double(id:63);       //关键点纬度转换后
+  bia_distance_front:float(id:64);        //前轴横向偏差
+  kp_ctl_value:float(id:65);              //pid控制kp输出量
+  ki_ctl_value:float(id:66);              //pid控制ki输出量
+  slope_compensation_ctl_value:float(id:67);       //坡度补偿输出量
+  acc_prev_compensation_ctl_value:float(id:68);     //期望速度变化补偿输出量
+  acc_total_value:float(id:69);                     //总的速度跟随期望加速度
+  yaw_rate_smooth:float(id:70);           //惯导横摆角速度滤波
+  dmodel_yaw_rate_by_cmd:float(id:71);    //动力学模型横摆角速度
+  kmodel_yaw_rate_by_cmd:float(id:72);    //运动学模型横摆角速度
+  front_wheel_angle_unlim:float(id:73);   //前轮转角限制前
+  slip_rate:float(id:74);  //滑移率
+  flag_slip_occur_slight:bool(id:75);//轻微打滑
+  flag_slip_occur_severity:bool(id:76);//严重打滑
+  park_long_ctrl:ubyte (id: 77);			          //驻车制动控制量
+  path_wheel_angle_pre:float(id:78);            //前馈转向
+  wire_steer_rate_cmd:float(id:79);            //期望转向速度
+  curve_keypoint:float(id:80);            //关键点路径曲率
+  flag_steer_lim_anti_swing:bool(id:81);        //转向限制标志
+  preview_heading_angle_deviation:float(id:82); //预测航向角偏差
+  order2_kalman_speed:float(id:83);             //惯导车速二阶卡尔曼滤波
+  filter_average_speed:float(id:84);            //惯导车速二阶卡尔曼滑动滤波
+  dspeed_kalman:float(id:85);                   //惯导纵向加速度滤波
+  pre_lat_dis:float(id:86);                     //预测横向偏差
+  desired_speed_zero_reason:uint8(id:87);      //期望车速为零原因
+  engine_ctrl:ubyte (id:88);              //发动机熄火控制量
+  prepoint_highspeed:ubyte (id:89);
+  desired_speed_inhighspeed:float(id:90);
+  lat_bia_dis_pre:float(id:91);              //优化横向偏差预测
+  flag_vehicle_on_road:bool(id:92);           //横向决策是否在主路径上
+  rest_dis_perception:float(id:93);           //限停剩余距离
+  dis_path_output:float(id:94);               //障碍物距离修正
+  dis_path_output_update:float(id:95);       //障碍物距离推演
+  lat_bia_safe_new:float(id:96);             //横向安全新偏差
+  lat_bia_p:float(id:97);                     //横向安全偏差p
+  lat_bia_i:float(id:98);                     //横向安全偏差i
+  lat_bia_d:float(id:99);                     //横向安全偏差d
+  azimuth_pre:float(id:100);
+  keypoint_heading_diff:float(id:101);        //非平均关键点航向偏差
+  speed_raw_diff_lim:float(id:102);           //惯导车速限幅
+  refuel_trq_req:float(id:103);               //电制动目标扭矩
+  xbr_acceletation_req:float(id:104);         //机械制动目标减速度
+  refuel_trq_lookup_table:float(id:105);      //电制动目标扭矩查表
+}
+
+root_type ControlOutputForMonitor;
+
+root_type ControlOutputForImplement;
+root_type ControlOutputForDecision;
+file_identifier "CTIO"; //文件唯一标识，长度4字节

@@ -1,0 +1,57 @@
+﻿// diagnosis_output.fbs
+
+namespace diagnosis;
+
+struct Warning {
+  warn_data1:ulong (id: 0);  // 输出的故障码联合体1
+  warn_data2:ulong (id: 1);  // 输出的故障码联合体2
+  warn_data3:ulong (id: 2);  // 输出的故障码联合体2
+  warn_data4:ulong (id: 3);  // 输出的故障码联合体2
+}
+
+struct FaultArray {
+  fault_array:[ubyte:32];
+}
+
+table WarningOutput {
+  warn:Warning (id: 0);
+  fault_open:FaultArray(id:1);
+}
+
+table DiagnosisOutput {
+  act_drive_force:float = 0 (id: 0);         //实际驱动力
+  exp_drive_force:float = 0 (id: 1);         //期望驱动力
+  act_ele_brake_force:float = 0 (id: 2);     //实际电制动力
+  exp_ele_brake_force:float = 0 (id: 3);     //期望电制动力
+  x_drift40: float = 0 (id: 4);              //前轮转角计算的位置和gps位置偏差x方向分量
+  y_drift40: float = 0 (id: 5);              //前轮转角计算的位置和gps位置偏差y方向分量
+  Dis_Result_Fan0: float = 0 (id: 6);        //前轮转角计算的位置和gps位置在第40个周期时的误差     
+  Dis_Result_Fan5: float = 0 (id: 7);        //前轮转角计算的位置和gps位置在第35个周期时的误差
+  Dis_Result_Fan10: float = 0 (id: 8);       //前轮转角计算的位置和gps位置在第30个周期时的误差
+  angle_Result_Fan40: float = 0 (id: 9);     //前轮转角计算的航向和gps航向在第40个周期时的误差
+  deltaX_gps: float = 0 (id: 10);            //第30 35 40个周期gps到第0个周期的gps距离x分量
+  deltaY_gps: float = 0 (id: 11);            //第30 35 40个周期gps到第0个周期的gps距离y分量
+  delta_theta: float = 0 (id: 12);           //第30 35 40个周期gps到第0个周期的前轮累计转过的角度
+  warn_describe: string (id: 13);            //发送给监控界面的故障描述
+}
+
+//人工介入提示
+//"channel_name": "tcp/diagnosis/msg_0E01"
+//true 方向盘介入有效
+//true 油门介入无效
+//true 电制动介入有效
+//true 液压制动介入有效
+//true 装载制动介入有效
+//true 驻车制动介入无效
+//true 紧急制动介入有效
+//true 档位介入无效
+//true 货斗介入有效
+table V2HMIMsg0E01{
+  id:ushort=0x0E01 (id:0);    //消息ID
+  showmsg:[bool] (id:1);       //true 需要显示此字段对应的消息            
+}
+
+root_type DiagnosisOutput;
+root_type WarningOutput;
+
+file_identifier "FACO";

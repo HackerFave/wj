@@ -1,0 +1,19 @@
+{
+        "ScreenNum":[{"Left":"0", "Mid":"1","Right":"2"}],
+        "Url":[{"MapUrl":"http://192.168.30.170:9999/screenMap"}],
+        "Vehicle":[
+            {
+            "Imei":"864506032755796",
+            "Name":"TEXT",
+            "Forward":"rtsp://admin:itage123@192.168.10.220:554/0",
+            "Backward":"rtsp://admin:itage123@192.168.10.220:554/0",
+            "Left":"rtsp://admin:itage123@192.168.10.231:554/0",
+            "Right":"rtsp://admin:itage123@192.168.10.220:554/0",
+            "Drive":"rtsp://admin:itage123@192.168.10.220:554/0"
+            }
+        ]
+}
+
+
+
+

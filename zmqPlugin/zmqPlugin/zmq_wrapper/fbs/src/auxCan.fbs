@@ -1,0 +1,9 @@
+
+table MsgBucketAngle {
+  angleA_x:float (id: 0);
+  angleA_y:float (id: 1);
+  angleB_x:float (id: 2);
+  angleB_y:float (id: 3);
+}
+
+root_type MsgBucketAngle;

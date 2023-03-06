@@ -1,0 +1,44 @@
+// planning_output.fbs
+namespace planning;
+
+table GpsPos{
+  dLat:double;
+  dLng:double;
+  fHead:float;
+}
+enum PlanStatus : ubyte {Unknown = 0,Failed = 1, Success = 2, ParkInSuc = 3, ParkOutSuc = 4}
+enum PlanAlStatus : ubyte {
+  Unknown = 0, 
+  Success = 1,
+  ParkInFailed = 2, 
+  DriveOutFailed = 3, 
+  ParkInInputError = 4,
+  DriveOutInputError = 5
+}
+//动态规划结果
+table MsgPlanResult {
+  id:ushort(id:0);                       //消息id
+  plan_state:PlanStatus = Unknown (id: 1);           //规划结果
+  planner_forward_end_point:GpsPos(id: 2);//前向行驶终点
+  planner_lift_forward_end_point:GpsPos(id: 3); // 排土场举斗前行停靠终点
+  pointer_forward_path:uint (id: 4);//前向行驶路径规划指针
+  pointer_reverse_path:uint (id: 5);//倒车行驶路径规划指针
+  pointer_repair_forward_path:uint (id: 6);//二次泊车前向行驶路径规划指针
+  pointer_repair_reverse_path:uint (id: 7);//二次泊车倒车行驶路径规划指针
+  plan_out_mainpath_index:uint (id: 8);//前向驶出的主路经的索引号
+  pointer_lift_forward_path:uint  (id: 9); // 排土场举斗前行路径规划指针
+}
+
+table MsgPlanResultAl{
+  id:ushort(id: 0);                        // 消息id
+  plan_state:PlanAlStatus(id: 1);  // 规划结果 
+  pre_park_pos:GpsPos(id: 2);              // 预停靠位位姿
+  parkin_result:MsgPlanResult(id: 3);      // 驶入规划结果
+  driveout_result:MsgPlanResult(id: 4);     // 驶出规划结果
+}
+
+root_type GpsPos;
+root_type MsgPlanResult;
+root_type MsgPlanResultAl;
+
+file_identifier "PLNO";

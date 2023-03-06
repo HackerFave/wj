@@ -1,0 +1,51 @@
+﻿namespace gps;
+
+//gps Info--->orgin <struct_common.h>
+table GpsImuInfo{
+    gps_rtk_status:int(id: 0);    //差分状态
+    gps_lat:double(id: 1);        //纬度 原MsgGnssBroadcastData -> latitude
+    gps_lng:double(id: 2);        //经度 原MsgGnssBroadcastData -> longitude
+    gps_heading:float(id: 3);     //航向角 原MsgGnssBroadcastData -> heading
+    gps_ve:float = 500(id: 4);    //东向速度
+    gps_vn:float = 500(id: 5);    //北向速度
+    gps_speed:float(id: 6);       //合速度 km/h
+    gps_height:float(id: 7);      //海拔 原MsgGnssBroadcastData -> height
+    imu_acc_y:float(id: 8);       //纵向加速度 原MsgGnssBroadcastData -> accY
+    imu_acc_x:float(id: 9);       //侧向加速度 原MsgGnssBroadcastData -> accX
+    imu_yaw_z:float(id: 10);      //横摆角速度 原MsgGnssBroadcastData -> accZ
+    gps_satellite_front:int(id: 11);     //前天线卫星数
+    gps_satellite_rear:int(id: 12);      //后天线卫星
+    gps_yaw:float(id: 13);          //偏航
+    gps_roll:float(id: 14);         //横滚
+    gps_pitch:float(id: 15);        //俯仰
+    gps_diff_flag:int(id: 16);      //丢差分情况 1:超过30s没有差分数据 10:纬度的标准差大于0.15 100:经度的标准差大于0.15
+    gnss_horizontal_speed:float(id: 17);//BESTVELA输出的水平速度,单位m/s 原MsgGnssBroadcastData -> speed
+    gps_utc_time:ulong(id: 18);//gps数据发布出来以系统时间基准的时间戳
+
+    flag:ubyte = 3(id:19);       //原MsgGnssBroadcastData -> flag 移动到此 
+    speedEast:float(id:20);     //原MsgGnssBroadcastData -> speedEast 移动到此 取solution.velE
+    speedNorth:float(id:21);    //原MsgGnssBroadcastData -> speedNorth 移动到此取 solution.velN
+    maxSpeed:float(id:22);  //原MsgGnssBroadcastData -> maxSpeed 0
+    wheelAngle:float(id:23); //原MsgGnssBroadcastData -> wheelAngle 0
+
+    pva_warning:int(id: 24);    //状态,0正常，1异常。 bit0:差分数据状态异常； bit1:GPS信号质量差; bit2:惯导定位结果异常; bit3:定位状态异常;bit4:ccu未收到网关定位信息;
+    gpsm_satNum:int(id:25);      //主惯导GPS解算卫星数  
+    gpsm_diffage:int(id: 26);   //主惯导差分龄期  
+    imum_warning:int(id: 27);   //主惯导告警信息  bit0:无GPS， bit1: 无车辆消息  bit2: 陀螺错误  bit3:加表错误
+    gpsm_rlt_status:int(id: 28); //主惯导GPS解状态 bit0~3: 0:初始化，1：卫导，2：组合导航，3：纯惯导    bit4~7: 0:不定位，1：单点定位 2：伪距差分 ，3：组合推算，4：RTK定点定位定向，5：RTK浮点定位定向，6：单点定位不定向，7：伪距差分定位不定向，8：RTK定点定位不定向，9：RTK浮点定位不定向                  
+    gpss_satNum:int(id:29);       //子惯导GPS解算卫星数
+    gpss_diffage:int(id: 30);    //子惯导差分龄期
+    gpss_pstd:int(id: 31);       //子惯导定位方差异常（>0.15m) bit0:高程，bit1:经度，bit2:纬度
+    gpss_rlt_status:int(id: 32); //子惯导解算状态 bit0~15: 0:解算成功 1：数据不足，2：结果发散，3：协议差的迹>1km，   bit16~31: 详见《板卡指令手册》P150表0-44
+}
+
+//gps status output--->orgin xxx_counter
+table GpsStatus{
+    gps_rtk_fault_flag:bool(id: 0);     //rtk_counter > 10 ? gps_rtk_fault_flag = true : gps_rtk_fault_flag = false
+    gps_gps_fault_flag:bool(id: 1);     //gps_counter > 10 ? gps_gps_fault_flag = true : gps_gps_fault_flag = false
+    gps_imu_fault_flag:bool(id: 2);     //imu_counter > 10 ? gps_imu_fault_flag = true : gps_imu_fault_flag = false
+}
+
+root_type GpsImuInfo;
+
+file_identifier "GPSO";

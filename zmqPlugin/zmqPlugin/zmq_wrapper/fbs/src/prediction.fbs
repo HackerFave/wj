@@ -1,0 +1,475 @@
+namespace prediction;
+struct Point_xy{
+    xy:[float:2] (id:0);
+}
+struct Point_xyz{
+    xyz:[float:3] (id:0);
+}
+struct Points{
+    vertex:[Point_xyz:4] (id:0);//边角点
+}
+struct Pointcar{
+    vertex:[Point_xy:4] (id:0);//边角点
+}
+struct Pointobstacle{
+  vertex:[Point_xy:16] (id:0);//边角点
+}
+struct Pointwall{
+    wall:[Point_xy:25] (id:0);//边角点
+}
+struct Pointv2v{
+    vertex:[Point_xy:4] (id:0);//边角点
+}
+
+struct wall_sl{
+    s:float(id:0);
+    l:float(id:1);
+}
+table LidarSickInfo {
+  Time:ulong (id: 0);                 //时间戳
+  object_number:uint (id: 1);         //障碍物个数
+  object_type:uint (id: 2);           //目标障碍物类型
+  detection_type:uint (id: 3);        //檢測類型：0：激光累的；1：毫米波；2：融合
+  object_dist_long:float (id: 4);     //障礙物縱向距離：單位米
+  object_dist_lat:float (id: 5);      //障礙物橫向距離：單位米，左負右正
+  object_length:float (id: 6);        //障碍物长度：单位米
+  object_width:float (id: 7);         //障礙物寬度：單位米
+  object_height:float (id: 8);        //障礙物高度：單位米
+  object_head:float (id: 9);          //障碍物偏航角： 范围：-90度~90度，障碍物长边与雷达坐标系y轴方向夹角
+  object_vrel_long:float (id: 10);    //障礙物縱向速度：單位m/s
+  object_vrel_lat:float (id: 11);     //障礙物橫向速度：單位m/s
+  object_min_long:float (id: 12);     //该障碍物距离车的最近纵向距离
+  stop_flag:bool = false (id: 13);
+}
+//用于保存数据(未用)
+table DataRecord_fuse{
+   count:uint (id:0);  //障碍物个数
+   Time:uint64 (id:1);  //障碍物时间戳
+   record_time:uint64 (id:2); //数据发送时间戳
+   path_flag:uint (id:3); //是否在路径上
+   path_id:uint  (id:4);   //路径点id
+   key_obstacle:int  (id:5);  //障碍物列表中行驶区域内障碍物的下标
+   object_couter:uint (id:6); //遍历障碍物下标
+   is_impact:bool  (id:7);  //是否发生碰撞
+
+   object_type:uint  (id:8);           //目标障碍物类型,
+   detection_type:uint (id:9);        //檢測類型：0：激光累的；1：毫米波；2：融合
+   object_dist_long:float (id:10);     //障礙物縱向距離：單位米
+   object_dist_lat:float (id:11);      //障礙物橫向距離：單位米，左負右正
+   object_length:float (id:12);        //障碍物长度：单位米
+   object_width:float (id:13);         //障礙物寬度：單位米
+   object_height:float (id:14);        //障礙物高度：單位米
+   object_head:float (id:15);          //障碍物偏航角： 范围：-90度~90度，障碍物长边与雷达坐标系y轴方向夹角
+   object_vrel_long:float (id:16);     //障礙物縱向速度：單位m/s
+   object_vrel_lat:float (id:17);      //障礙物橫向速度：單位m/s
+   p_corner:Points (id:18);          //边角点(xyx)，从左下顺时针开始
+   object_min_long:float (id:19);      //该障碍物距离车的最近纵向距离
+   stop_flag:bool  (id:20);  //停车标志位
+
+   front_x:float (id:21);     //在行驶区域内的障碍物列表中的最小x坐标
+   front_y:float (id:22);     //在行驶区域内的障碍物列表中的最小y坐标
+   path_dis:float (id:23);  //路径距离
+   bia_dis:float (id:24);  //横向偏移距离
+   cur_max:float (id:25);  //控制曲率
+   point_car:Pointcar (id:26);  //车辆边角点，从左下角开始顺时针（x,y）单位/m
+   min_impact_point:float (id:27); //最近碰撞点y
+
+   //挡墙
+   wall_count:uint (id:28);  //挡墙点个数
+   point_wall:Pointwall (id:29);  //挡墙点个数25，坐标（x，y）单位/m
+   wall_y:float (id:30);  //发生碰撞挡墙点y坐标
+   wall_x:float (id:31);  //发生碰撞挡墙点x坐标
+   point_wall_left:Pointwall(id:32);  //挡墙点个数25，坐标（x，y）单位/m
+}
+
+table DataRecord_v2i {
+  count:uint (id:0);  //障碍物个数
+  path_id:uint(id:1);
+  key_obstacle:int(id:2);
+  record_time:uint64(id:3) ;
+  is_impact:bool(id:4) ;
+  is_expand_impact_result:bool(id:5) ;
+  y_V2Vcar:float(id:6) ; //不是中心点
+  x_V2Vcar:float(id:7) ; //不是中心点
+  x_center:float(id:8) ;
+  y_center:float(id:9) ;
+  width_V2Vcar:float(id:10) ;
+  height_V2Vcar:float(id:11) ;
+  p_coner:Pointcar(id:12); //目标车辆边角点坐标
+  huiche_flag:uint(id:13);
+  point_car:Pointcar(id:14); //预测车辆边角点
+  dis_path:float(id:15) ;       //障碍物路径距离
+  v2i_stop_x:float (id:16);
+  v2i_stop_y: float(id:17) ;
+  y_limit:float (id:18);
+  x_limit:float (id:19);
+  width_limit:float (id:20);
+  V2V_limit_flag:float (id:21);
+}
+
+table SteerPara {
+  X_center:float (id: 0);     //转向圆心横坐标（相对车辆质心）
+  Y_center:float (id: 1);     //转向圆心纵坐标
+  R_car_left:float (id: 2);   //左车身的转弯半径
+  R_car_right:float (id: 3);  //右车身的转弯半径
+  R_left_side:float (id: 4);  //左侧半径
+  R_right_side:float (id: 5); //右侧半径
+  R_left_lane:float (id: 6);  //左车道半径
+  R_right_lane:float (id: 7); //右车道半径
+}
+enum ObjectTypeS:ushort{
+   NONE, 
+   MINETRUCK , // 矿车
+   VEHICLE , // 汽车
+   PEDESTRIAN ,//行人
+   WIDEVEHICLE ,//宽车辆
+   ENGINEERVEHICLE, //工程车辆
+   WALL ,//挡阻墙
+   CLIFF ,//悬崖
+   HOLE ,//坑
+   STONE ,//石头
+   UNKNOWN_UNMOVABLE ,//未知静止
+   UNKNOWN_MOVABLE //未知运动
+}
+
+struct VertexPoint{
+	x:float;
+	y:float;
+  lat:double;
+  lng:double;
+}
+table ObstacleInfo{
+  id:ushort(id:0);                  //障碍物id
+  type:ObjectTypeS(id:1);           //障碍物类型
+  collisionrisk:ubyte(id:2);        //是否存在碰撞风险1-不影响行车；2-影响行车
+  theta:float(id: 3);               //偏航角
+  speed_x:float (id: 4);            //横向速度
+  speed_y:float (id: 5);            //前向速度
+  corner_num:ubyte (id:6);          //角点数量
+  height:float (id:7);             //障碍物高度
+  altitude:float(id:8);            //障碍物海波
+  vertex:[VertexPoint] (id:9);      //边角点
+}
+
+table ObstacleInfos {
+  time:uint64(id:0);                //时间戳
+  count:ubyte(id:1);                //障碍物个数
+  lat:double(id:2);                 //车辆纬度
+  lng:double(id:3);                 //车辆经度
+  theta:float(id:4);                //车辆航向角
+  Obstacles:[ObstacleInfo] (id:5);  //边角点
+}
+
+
+table Lidardis {
+  front:float (id: 0);          //车前方
+  back_y:float (id: 1);      //车后侧边界在停靠点航向方向0.5m范围内边界点纵向坐标
+  back_x:float (id: 2);     //车后侧边界在停靠点航向方向0.5m范围内边界点横向坐标
+  back_wall_heading_Projectionlength:float (id: 3);      //车后侧边界在停靠点航向方向0.5m范围内边界点在停靠点航向投影的距离
+  right_lane:float (id: 4);     //车右车道
+  //限速区域变量
+  y_limit:float (id: 5);          //限速区域内障碍物纵向距离
+  x_limit:float (id: 6);          //限速区域内障碍物横向距离
+  width_limit:float (id: 7);      //限速区域内障碍物宽度
+  x_stop:float (id: 8);         //行驶区域上的障碍物横向距离
+  dis_path:float = 100 (id: 9);       //障碍物路径距离
+  impact_point_x:float (id: 10);  //碰撞点x坐标
+  impact_point_y:float (id: 11);  //碰撞点y坐标
+  object_stop_flag:uint = 0 (id: 12);  //2，是挡墙数据；1,是v2v数据；0，是感知数据
+  V2V_limit_flag:uint = 0 (id: 13); //1,是有会车；0，是无会车
+  width_stop:float (id: 14);  //障碍物的宽度
+  isin_path:uint (id: 15);  //1,在路径上；0,通过前轮转角计算距离
+  impact_load_id:uint(id: 16);  //发生impact load id;
+  type:ushort(id:17);  //障碍物类型
+  left_wall:[wall_sl](id:18);//左挡墙最小l值和相对应的s值
+  right_wall:[wall_sl](id:19);//右挡墙最小l值和相对应的s值
+  left_obstacle:[wall_sl](id:20);//左障碍物最小l值和相对应的s值
+  right_obstacle:[wall_sl](id:21);//右障碍物最小l值和相对应的s值
+  v2v_type:ubyte(id:22); //v2v车辆类型
+}
+
+table SenseResultInfo {
+  back_data:Lidardis (id: 0);
+  lidar_front_data:Lidardis (id: 1);
+  steer_para:SteerPara (id: 2);
+  lidar_back_judge_result:bool = false (id: 3);
+}
+
+table recordPathInfo{
+  id:ubyte(id:0);                            //路径点id
+  heading:float(id:1);                       //路径点航向
+  dispath:float(id:2);                       //路径距离
+  kappa:float(id:3);                         //路径点曲率
+  roadLeftWidth:float(id:4);                 //车道左侧道宽
+  roadRightWidth:float(id:5);                //车道右侧道宽
+  expandVal:float(id:6);                     //膨胀系数
+  pathPointX:float(id:7);                    //路径点x
+  pathPointY:float(id:8);                    //路径点y
+  VehiclePoint:Pointcar(id:9);               //车辆边角点，从左下顺时针开始
+  TRVehicleLength:float(id:10);              //车辆长度
+  TRVehicleWidth:float(id:11);               //车辆宽度
+  key:int(id:12);                            //关键点
+}
+//obstacle info
+table recordObstacleInfo{
+  id:ubyte(id:0);                           //障碍物Id
+  disPath:float(id:1);                      //障碍物碰撞路径值
+  type:ubyte(id:2);                         //障碍物类型
+  TRObstacleX:float(id:3);                  //障碍物在预测车体坐标系下最小的x值
+  TRObstacleY:float(id:4);                  //障碍物在预测车体坐标系下最小的y值
+  length:float(id:5);                       //障碍物的长度
+  width:float(id:6);                        //障碍物的宽度
+  heigth:float(id:7);                       //障碍物的高度
+  yaw:float(id:8);                          //障碍物的航向角
+  speedx:float(id:9);                       //障碍物的横向速度
+  speedy:float(id:10);                      //障碍物的纵向速度
+  corner_num:ubyte(id:11);                  //障碍物的角点数量
+  vertices:Pointobstacle(id:12);            //障碍物的角点坐标
+}
+//wall info
+table recordWallInfo 
+{
+  leftOrRight:ubyte(id:0);                   //左侧/右侧挡墙
+  disPath:float(id:1);                       //挡墙碰撞距离值
+  id:ubyte(id:2);                            //挡墙Id
+  originX:float(id:3);                       //挡墙点X
+  originY:float(id:4);                       //挡墙点Y
+  TRHeadAndbiaX:float(id:5);                 //挡墙旋转航向角，平移横向偏差
+  TRHeadAndbiaY:float(id:6);                 //挡墙旋转航向角，平移横向偏差
+  TRWallX:float(id:7);                       //挡墙在预测车体坐标下的x
+  TRWallY:float(id:8);                       //挡墙在预测车体坐标下的y
+}
+//碰撞时信息数据
+table recordSenseFront{
+  recordTime:uint64(id:0);                          //日志记录时间戳
+  obstalceTime:uint64(id:1);                        //障碍物时间戳
+  wallTime:uint64(id:2);                            //挡墙时间戳
+  pathFlag:ubyte (id:3);                            //是否在路径上
+  count:uint32(id:4);                               //障碍物数量
+  leftWallCount:uint32(id:5);                       //左侧挡墙数量
+  rightWallCount:uint32(id:6);                      //右侧挡墙数量
+  obstacleType:ubyte(id:7);                         //发生碰撞的障碍物类型 默认值-1
+  is_impact:bool(id:8);                             //是否发生碰撞
+  dis_path:float(id:9);                             //碰撞风险距离值
+  LateralDeviation:float(id:10);                    //横向偏差
+  headDeviation:float(id:11);                       //航向偏差
+  collisionPathInfo:recordPathInfo(id:12);          //碰撞时的路径点信息
+  collisionObstacleInfo:recordObstacleInfo(id:13);  //碰撞时的障碍物信息
+  collisionWallInfo:recordWallInfo(id:14);          //碰撞时的挡墙信息
+}
+//v2v info
+table recordV2vInfo{
+  time:uint64(id:0);                                //UTC时间戳
+  id:string(id:1);                                  //设备IMEI
+  type:ubyte(id:2);                                 //目标车辆类型0X51：矿卡0X52：电铲0X53:推土机0X54：挖掘机0X55：道路采集车0X56：洒水车0X57：平地机0X5f:外来小车
+  target_name:string(id:3);                         //目标车辆设备名称
+  dev_length:float(id:4);                           //车长
+  dev_width:float(id:5);                            //车宽
+  dev_height:float(id:6);                           //车高
+  lat:double(id:7);                                 //当前纬度值
+  lng:double(id:8);                                 //当前经度值
+  speed:float(id:9);                                //以m/s为单位，车辆速度
+  heading:float(id:10);                             //当前航向值
+  rearAxleCenterX:float(id:11);                     //后轴中心在车体坐标系下X值
+  rearAxleCenterY:float(id:12);                     //后轴中心在车体坐标系下Y值
+  AABBWidth:float(id:13);                           //AABB 车宽度
+  AABBLength:float(id:14);                          //AABB 车长度
+  vehiclePoint:Pointv2v(id:15);                     //车辆边角点，从左下顺时针开始   
+  TRV2vX:float(id:16);                              //v2v在预测车体坐标下的x
+  TRV2vY:float(id:17);                              //v2v在预测车体坐标下的y
+  angle:float(id:18);                               //车辆角度差值
+  distance:float(id:19);                            //车辆距离差值
+}
+//碰撞时信息数据
+table recordSenseV2V{
+  recordTime:uint64(id:0);                          //日志记录时间戳
+  count:uint32(id:1);                               //v2v车辆数量
+  pathFlag:ubyte(id:2);                             //是否在路径上
+  is_impact:bool(id:3);                             //是否发生碰撞
+  dis_path:float(id:4);                             //路径距离值
+  LateralDeviation:float(id:5);                     //横向偏差
+  headDeviation:float(id:6)         ;               //航向偏差
+  collisionPathInfo:recordPathInfo(id:7);           //碰撞时的路径点信息
+  collisionv2vInfo:recordV2vInfo(id:8);             //碰撞时的v2v信息
+}
+struct longTrajectory{
+  x:float(id:0);
+  y:float(id:1);
+  theta:float(id:2);
+  velocity:float(id:3);
+}
+struct shortTrajectory{
+  x:double(id:0);
+  y:double(id:1);
+  theta:float(id:2);
+  velocity:float(id:3);
+  covarianceaMtrix:[float:4](id:4);
+}
+table predictionTrajectory{
+  shortLength:ushort(id:0);
+  longLength:ushort(id:1);
+  shortPrediction:[shortTrajectory](id:2);
+  longPrediction:[longTrajectory](id:3);
+}
+
+//每个障碍物的原始数据
+struct IcuObstacleInfoPre{
+  type:ubyte(id:0); //障碍物类型和检测类型
+  center_x:float(id: 1);//中心X坐标
+  center_y:float(id:2);//中心Y坐标
+  length:float(id:3);//长度
+  width:float(id: 4);//宽度
+  height:float (id: 5);//高度
+  angle:float (id: 6);//偏航角
+  speed_x:float (id: 7);//横向速度
+  speed_y:float (id: 8);//前向速度
+  vertex:[VertexPoint:4] (id:9);//边角点
+  distance_y:float (id:10);//最近y距离
+}
+
+//估计障碍物的意图
+//0x00: 不知道 0x01: 停止 0x02: 静止的 0x03: 运动中 0x04: 变道 0x05: 低加速运动
+//0x06: 高加速运动 0x07: 低减速运动 0x08: 高减速运动
+enum ObstacleIntent : ubyte {
+  kUnknown = 0,kStop = 1,kStationary = 2,
+  kMoving = 3,kChangeLane=4,kLowAcceleration=5,
+  kHighAcceleration=6,kLowDeceleration=7,
+  kHighDeceleretion=8
+}
+// 当前车辆的意图
+//0x00: 不知道 0x01: 停止 0x02: 车道保持 0x03: 变道
+enum Intent : ubyte {
+  kUnknown = 0,kStop = 1,kCruise = 2,
+  kChangeLane = 3
+}
+//运行场景
+//0x00: 不知道 0x01: 巡航 0x02: 路口 0x03: 有停车标志的路口
+enum Scenario : ubyte {
+kUnknown = 0,kCruise = 1,kJunction = 2,kJunctionStopSign = 3
+}
+//障碍物优先级
+//0x00: 注意 0x01: 一般 0x02: 忽略
+enum ObstaclePriority : ubyte {kCaution = 0,kNormal = 1,kIgnore = 2}
+//障碍物类型
+//0x00: 其他 0x01: ego车辆 0x02: V2i车辆 0x03: 感知行人 0x04: 感知车辆 0x05: 不知道
+enum ObstacleType : ubyte {kOther=0,kEgoVehicle = 1,kV2iVehicle = 2,kPedestrian = 3,kVehicle=4,kUnknown=5}
+
+struct Point3DXYZ {
+  x:float (id:0);
+  y:float (id:1);
+  z:float (id:2);
+}
+
+struct PredictionTrajectoryPoint {
+  x:float (id:0);
+  y:float (id:1);
+  velocity_heading:float (id:2);
+  timestamp:uint64 (id:3);
+}
+
+struct PathPointfbs {
+  // xyz位置
+  x:float (id:0);
+  y:float (id:1);
+  z:float (id:2);
+  // direction on the x-y plane
+  theta:float (id:3);
+  // curvature on the x-y planning
+  kappa:float (id:4);
+  s:float (id:5);
+  l:float (id:6);
+}
+
+table Pathfbs {
+  name:string (id:0);
+  path_points:[PathPointfbs] (id:1);
+}
+
+struct TrajectoryPointfbs {
+  // 路径点
+  path_point:PathPointfbs (id:0);
+  // 速度
+  v:float (id:1);  // in [m/s]
+  //加速度
+  a:float (id:2);
+  // 从开始的相对时间
+  relative_time:float (id:3);
+}
+struct LaneFeature {
+  lane_s:float  (id:0);
+  lane_l:float  (id:1);
+  angle_diff:float  (id:2);
+  dist_to_left_boundary:float (id:3);
+  dist_to_right_boundary:float (id:4);
+  lane_heading:float (id:5);
+  lane_x:float (id:6);
+  lane_y:float (id:7);
+}
+
+table Trajectoryfbs {
+  name:string (id:0);
+  trajectory_points:[TrajectoryPointfbs] (id:1);
+}
+//基于同一标签的障碍物历史数据得到预测的障碍物状态
+table Feature{
+  polygon_point:[Point3DXYZ] (id:0);//相对world
+  position:Point3DXYZ (id:1);//相对world
+  velocity:Point3DXYZ (id:2);//一般情况下等于raw_velocity
+  raw_velocity:Point3DXYZ (id:3);//原始速度也是基于world坐标
+  acceleration:Point3DXYZ(id:4);//处理后的加速度,如果没有历史数据,则使用当前数据
+  velocity_heading:float(id:5);//tan(vy/vx),与theta不一定相等
+  speed:float(id:6);
+  acc:float(id:7);
+  theta:float(id:8); //航向，以正东为0
+  length:float(id:9);
+  width:float(id:10);
+  height:float(id:11);
+  id:uint(id:12);
+  timestamp:uint64 (id:13);
+}
+
+table PredictionObstacle {
+  //障碍物原始数据
+  perception_obstacle:IcuObstacleInfoPre (id:0);
+  //当前帧障碍物时间戳
+  timestamp:uint64 (id:1);  // 时间戳
+  // 预测的时间周期 (eg. 8s)
+  predicted_period:float (id:2);
+  // 最终预测的障碍物轨迹
+  trajectory:Trajectoryfbs (id:3);
+  // 估计的障碍物意图
+  intent:ObstacleIntent (id:4);
+  //障碍物优先级
+  priority:ObstaclePriority (id:5);
+  //障碍物是否为静态
+  is_static:bool (id:6);
+  //障碍物和环境相关的一些特征信息
+  feature:Feature (id:7);
+  //障碍物的id
+  id:ubyte(id:8);
+  //障碍物类型
+  obstacle_type:ObstacleType(id:9);
+  //障碍物在车道上的特征,包括距离左右边界的距离等信息
+  lanefeature:LaneFeature(id:10);
+}
+
+table PredictionObstacles {
+  // 预测数据发布时间
+  timestamp_sec:uint64 (id:0);
+  // 障碍物预测结果集合
+  prediction_obstacle:[PredictionObstacle] (id:1);
+  // 预测开始时间
+  start_timestamp:uint64 (id:2);
+  // 预测结束时间
+  end_timestamp:uint64 (id:3);
+  // 当前车辆的意图
+  intent:Intent (id:4);
+  // 场景
+  scenario:Scenario (id:5);
+  count:ubyte(id:6); //障碍物个数
+}
+
+root_type SenseResultInfo;
+root_type PredictionObstacles;
+
+file_identifier "PERO";

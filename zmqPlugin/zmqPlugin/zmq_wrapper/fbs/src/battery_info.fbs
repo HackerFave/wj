@@ -1,0 +1,34 @@
+enum batType:ubyte{
+    USERDEFINE, //用户自定义
+    OPENMODE,   //开口
+    SEALMODE,   //密封
+    COLLOID,    //胶体
+    LITHIUM     //锂电池
+}
+
+enum chargeState:ubyte{
+    NOCHARGE,   //00H:未开启充电
+    START,      //01H:启动充电模式
+    MPPT,       //02H:mppt 充电模式
+    BALANCE,    //03H:均衡充电模式
+    PROMOTE,    //04H:提升充电模式
+    FLOAT,      //05H:浮充充电模式
+    LIMIT       //06H:限流(超功率)
+}
+
+
+table BAT_Info {
+    batteryType:batType (id:0); //蓄电池类型
+    temprature:short (id:1);
+    quanlity:short (id:2);
+    Voltage:short (id:3);
+    boardVoltage:short (id:4);
+    boardCurrent:short (id:5);
+    chargCapicity:short (id:6);
+    chargCurrent:short (id:7);
+    chargeStatus:chargeState (id:8);
+    loadCapicity:short (id:9);
+    fault:int (id:10); 
+}
+
+root_type BAT_Info;

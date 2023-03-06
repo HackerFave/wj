@@ -1,0 +1,20 @@
+namespace create_map;
+
+table HMISendMsg {
+  data:int (id: 0);
+}
+
+table MapcuSendMsg{
+  data:int (id: 0);
+}
+
+table BoundaryInfo{
+    type:int(id:0);              //边界类型 左1,右2
+    lat:double(id: 1);  				//纬度
+    lon:double(id: 2);  				//经度
+    alt:double(id: 3);  				//高度
+}
+
+table VersionInfo{
+    data:string(id:0);           
+}

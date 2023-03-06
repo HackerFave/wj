@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>baseForm</class>
+ <widget class="QWidget" name="baseForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>439</width>
+    <height>293</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget#baseForm
+{
+   background-color: rgb(131, 131, 131);
+}</string>
+  </property>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,0 +1,105 @@
+namespace ICU;
+
+table sendHeartBeats{
+	status:ushort;
+  fault:ushort;
+}
+
+struct BoundaryPoint{
+  flag:ubyte(id: 0);//检测点有效标志
+  x:float (id: 1);//检测点x坐标
+  y:float (id: 2);//检测点y坐标
+}
+
+table MsgIcuBoundary {
+  time:uint64(id:0);  //时间戳
+  left:[BoundaryPoint](id:1);//左挡墙
+  right:[BoundaryPoint](id:2);//右挡墙
+}
+
+struct BackwardBoundaryPoint{
+  x:float (id: 0);//检测点x坐标
+  y:float (id: 1);//检测点y坐标
+  z:float (id: 2);//检测点z坐标
+}
+
+table MsgIcuBackwardBoundary{
+  time:uint64(id:0); //时间戳
+  count:ubyte(id:1); //障碍物个数
+  data:[BackwardBoundaryPoint](id:2);
+}
+
+struct VertexPoint{
+	x:float;
+	y:float;
+	z:float;
+}
+struct VertexPointRcu{
+	lat:double;
+	lng:double;
+	alt:double;
+}
+
+enum ObjectClass:ushort{
+   NONE, 
+   MINETRUCK , //矿卡
+   VEHICLE , //汽车
+   PEDESTRIAN ,//行人
+   WIDEVEHICLE ,//宽体车
+   ENGINEERVEHICLE, //工程车
+   WALL ,//挡墙
+   CLIFF ,//悬崖
+   HOLE ,//凹坑
+   STONE ,//石块
+   UNKNOWN_UNMOVABLE ,//静止物体
+   UNKNOWN_MOVABLE ,//运动物体
+   DUST ,//灰尘
+   HEAVE //翻浆
+}
+
+table IcuObstacleInfo{
+  type:ObjectClass(id:0);//障碍物类型
+  center_x:float(id: 1);//中心X坐标
+  center_y:float(id:2);//中心Y坐标
+  length:float(id:3);//长度
+  width:float(id: 4);//宽度
+  height:float (id: 5);//高度
+  yaw:float (id: 6);//偏航角
+  speed_x:float (id: 7);//横向速度
+  speed_y:float (id: 8);//前向速度
+  vertex:[VertexPoint] (id:9);//边角点
+  distance_y:float (id:10);//最近y距离
+  corner_num:ubyte (id:11);//角点数量
+  id:ubyte (id:12);//障碍物ID号
+}
+
+table IcuObstacleInfoRcu{
+  type:ObjectClass(id:0);//障碍物类型
+  center_lat:double(id: 1);//中心经度
+  center_lng:double(id:2);//中心纬度
+  center_alt:double(id:3);//中心纬度
+  length:float(id:4);//长度
+  width:float(id: 5);//宽度
+  height:float (id: 6);//高度
+  yaw:float (id: 7);//偏航角
+  speed_x:float (id: 8);//横向速度
+  speed_y:float (id: 9);//前向速度
+  vertex:[VertexPointRcu] (id:10);//边角点
+  distance_y:float (id:11);//最近y距离
+  corner_num:ubyte (id:12);//角点数量
+  id:ubyte (id:13);//障碍物ID号
+}
+
+//障碍物信息
+table MsgIcuObstacle {
+  time:uint64(id:0);  //时间戳
+  count:ubyte(id:1); //障碍物个数
+  data:[IcuObstacleInfo](id:2);
+}
+
+//障碍物信息
+table MsgIcuObstacleRcu {
+  time:uint64(id:0);  //时间戳
+  count:ubyte(id:1); //障碍物个数
+  data:[IcuObstacleInfoRcu](id:2);
+}

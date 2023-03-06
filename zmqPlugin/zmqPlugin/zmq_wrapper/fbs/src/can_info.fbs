@@ -1,0 +1,281 @@
+﻿// can about device status output
+
+namespace can;
+
+//Vehicle Status--->车辆状态信息
+table CanAboutDevStatus{
+  wire_can_offline_flag:bool(id: 0);              //vcu掉线标志           0:正常  1:掉线
+  tx2_can_offline_flag:bool(id: 1);               //tx2掉线标志           0:正常  1:掉线
+  cgu_can_offline_flag:bool(id: 2);               //cgu掉线标志           0:正常  1:掉线
+  front_lidar_offline_flag:bool(id: 3);           //前激光雷达掉线标志     0:正常  1:掉线
+  front_left_radar_offline_flag:bool(id: 4);      //前左毫米波雷达掉线标志   0:正常  1:掉线
+  front_middle_radar_offline_flag:bool(id: 5);    //前中毫米波雷达掉线标志   0:正常  1:掉线
+  front_right_radar_offline_flag:bool(id: 6);     //右前毫米波雷达掉线标志   0:正常  1:掉线
+  rear_lidar_offline_flag:bool(id: 7);            //后激光雷达掉线标志     0:正常  1:掉线
+  rear_radar_offline_flag:bool(id: 8);            //后毫米波雷达掉线标志    0:正常  1:掉线
+  left_lidar_offline_flag:bool(id: 9);            //左激光雷达掉线标志     0:正常  1:掉线
+  right_lidar_offline_flag:bool(id: 10);          //右激光雷达掉线标志     0:正常  1:掉线
+  makeup_blind_lidar:bool(id: 11);                //补盲雷达掉线标志 0:正常  1:掉线
+  front_fisheye:bool(id: 12);                     //鱼眼相机掉线标志 0:正常  1:掉线
+  front_telephoto_camera:bool(id: 13);            //长焦相机掉线标志 0:正常  1:掉线
+  boundary_map_download_failed:bool(id: 14);      //感知边界地图下载失败标志 0:正常 1:失败
+  front_sense_processing_timeout:bool(id: 15);    //前感知处理超时标志 0:正常 1:超时
+  rear_sense_processing_timeout:bool(id: 16);     //后感知处理超时标志 0:正常 1:超时
+  front_sense_data_exception:bool(id: 17);        //前感知输入数据异常 0:正常 1:异常
+  rear_sense_data_exception:bool(id: 18);         //后感知输入数据异常 0:正常 1:异常
+  control_can_offline_flag:bool(id: 19);          //控制模块掉线标志 0：正常 1：掉线
+  ebr_can_offline_flag:bool(id: 20);              //冗余制动掉线标志 0：正常 1：掉线
+}
+
+
+//vcu version-->vcu版本相关的信息
+//定义参考:<版本号使用说明.xlsx>
+table WireControlVcuVersion{
+    wire_vcu_func_version:ubyte(id: 0);     //对应版本号使用说明   第四段   0x0C305521  byte5(需要新增)
+    wire_vcu_main_version:ubyte(id: 1);     //对应版本号使用说明   第五段   0x0C305521  byte3
+    wire_vcu_sub_version:ubyte(id: 2);      //对应版本号使用说明   第六段   0x0C305521  byte4
+}
+root_type WireControlVcuVersion;
+
+//Vehicle Fault-->车辆故障状态信息
+table WireControlVehicleFault{
+    wire_status_inclinator_status:ubyte(id: 0);                 //倾角仪故障状态
+    wire_status_ruler_status:ubyte(id: 1);                      //拉杆传感器故障状态
+    wire_status_robot_control_status:ubyte(id: 2);              //电控板故障状态
+    wire_status_throttle_fault_status:ubyte(id: 3);             //油门故障状态
+    wire_status_electric_brake_fault_status:ubyte(id: 4);       //电制动故障状态
+    wire_status_mechanicle_brake_motor_error_num:uint(id: 5);   //机械制动电机故障码
+    wire_status_steer_motor_error_num:uint(id: 6);              //转向电机故障码
+    wire_status_engine_falut:ubyte(id: 7);                      //发动机 0x00/0x01/0x02/0x03 无故障/一般故障/严重故障/致命故障
+    wire_status_transmission_falut:ubyte(id: 8);                //变速箱 0x00/0x01/0x02/0x03 无故障/一般故障/严重故障/致命故障
+    wire_status_ebs_falut:ubyte(id: 9);                         //EBS 0x00/0x01/0x02/0x03 无故障/一般故障/严重故障/致命故障
+    wire_status_eps_falut:ubyte(id: 10);                        //EPS 0x00/0x01/0x02/0x03 无故障/一般故障/严重故障/致命故障
+    wire_status_air_filter_alarm:ubyte(id: 11);                 //空滤堵塞报警 00/01 关/开
+    wire_status_steer_oil_filter_alarm:ubyte(id: 12);           //转向油滤堵塞报警 00/01 关/开
+    wire_status_left_light:ubyte(id: 13);                       //左转灯 0/1/3 正常关/短路/正常开
+    wire_status_right_light:ubyte(id: 14);                      //右转灯 0/1/3 正常关/短路/正常开
+    wire_status_low_beam:ubyte(id: 15);                         //近光灯 0/1/2/3 正常关/短路/开路/正常开
+    wire_status_high_beam:ubyte(id: 16);                        //远光灯 0/1/2/3 正常关/短路/开路/正常开
+    wire_status_rotate_alarm_light:ubyte(id: 17);               //旋转报警灯 0/1/3 正常关/短路/正常开
+    wire_status_air_horns:ubyte(id: 18);                        //气喇叭 0/1/3 正常关/短路/正常开
+    wire_status_front_fog_lamp:ubyte(id: 19);                   //前雾灯 0/1/3 正常关/短路/正常开
+    wire_status_front_work_lamp:ubyte(id: 20);                  //前工作灯 0/1/3 正常关/短路/正常开
+    wire_status_side_lamp:ubyte(id: 21);                        //侧照灯 0/1/3 正常关/短路/正常开
+    wire_status_positoin_lamp:ubyte(id: 22);                    //位置灯 0/1/3 正常关/短路/正常开
+    wire_status_wiper_motor_power:ubyte(id: 23);                //雨刮器电机供电 1/3 短路/正常开
+    wire_status_ebs_power:ubyte(id: 24);                        //ebs供电 1/3 短路/正常开
+    wire_status_pressure_sensor_power:ubyte(id: 25);            //气压传感器供电1、2  1/3 短路/正常开
+    wire_status_rise_solenoid_savle_up:ubyte(id: 26);           //举升电磁阀上 0/1/3 正常关/短路/正常开
+    wire_status_rise_solenoid_savle_down:ubyte(id: 27);         //举升电磁阀下 0/1/3 正常关/短路/正常开
+    wire_status_manual_solenoid_savle:ubyte(id: 28);            //手制动电磁阀 0/1/3 正常关/短路/正常开
+    wire_status_rear_left_light:ubyte(id: 29);                  //左后转向灯 0/1/3 正常关/短路/正常开
+    wire_status_rear_right_light:ubyte(id: 30);                 //右后转向灯 0/1/3 正常关/短路/正常开
+    wire_status_rear_pos_light:ubyte(id: 31);                   //后位置灯 0/1/3 正常关/短路/正常开
+    wire_status_brake_light:ubyte(id: 32);                      //制动灯 0/1/3 正常关/短路/正常开
+    wire_status_reverse_light_horns:ubyte(id: 33);              //倒车灯、倒车喇叭 0/1/3 正常关/短路/正常开
+    wire_status_rear_work:ubyte(id: 34);                        //后工作灯 0/1/3 正常关/短路/正常开
+    wire_status_heat_sink1:ubyte(id: 35);                       //辅助散热器1 0/1/3 正常关/短路/正常开
+    wire_status_heat_sink2:ubyte(id: 36);                       //辅助散热器2 0/1/3 正常关/短路/正常开
+    wire_status_diff_solenoid_savle:ubyte(id: 37);              //轴差电磁阀 0/1/3 正常关/短路/正常开
+    wire_status_dryer_power:ubyte(id: 38);                      //干燥器供电 1/3 短路/正常开
+    wire_status_inclinator_power:ubyte(id: 39);                 //倾角仪供电 1/3 短路/正常开
+    wire_status_cold_water_treasure_power:ubyte(id: 40);        //水寒宝供电 1/3 短路/正常开
+    wire_status_exhaust_brake:ubyte(id: 41);                    //排气制动输出 1/3 短路/正常开
+    wire_status_error_level:ubyte(id: 42);                      //执行层故障等级信号，1:绿色，2：黄色，3：红色；绿色表示正常，0不用
+    wire_status_urgent_brake:ubyte(id: 43);                     //紧急制动-实施/解除反馈信号, 0:解除，1：已实施
+    wire_status_engine_activation:ubyte(id: 44);                //发动机激活状态 0/1/3 未激活/激活/无效
+    wire_status_hand_brake_activation:ubyte(id: 45);            //手刹激活状态 0/1/3 未激活/激活/无效
+    wire_status_ebs_activation:ubyte(id: 46);                   //EBS激活状态 0/1/3 未激活/激活/无效
+    wire_status_retarder_activation:ubyte(id: 47);              //缓速器激活状态 0/1/3 未激活/激活/无效
+    wire_status_transmission_activation:ubyte(id: 48);          //变速器激活状态 0/1/3 未激活/激活/无效
+    wire_status_eps_activation:ubyte(id: 49);                   //EPS激活状态 0/1/3 未激活/激活/无效
+    wire_status_lift_activation:ubyte(id: 50);                  //举升激活状态 0/1/3 未激活/激活/无效
+    wire_status_pressure_sensor1:ubyte(id: 51);                 //气压传感器1
+    wire_status_pressure_sensor2:ubyte(id: 52);                 //气压传感器1
+    wire_status_oil_sensor:float(id: 53);                       //油量传感器
+    wire_status_zhongchuang_motor_speed:int32 (id: 54);         //中创电机转速
+    wire_status_steerwheelmotor_status:ubyte(id: 55);           //中创电机包数
+    wire_status_truck_horizontal_angle:float (id: 56);          //车辆对水平面横向角度
+    wire_status_truck_longitudinal_angle:float (id: 57);        //车辆对水平面纵向角度
+    wire_status_retarder_torque_percent:float (id: 58);         //缓速器扭矩百分比
+    wire_status_vehicle_ctrl_mode:ubyte(id: 59);                //一键控制开关(针对同力车) 0/1 手动/自动
+    Wirectl_nTime:ulong(id: 60);                                //线控数据发布出来以系统时间基准的时间戳
+    wire_status_steer_outrange_status:ubyte(id: 61);            //转向电机超量程状态
+    wire_status_steer_setzero_status:ubyte(id: 62);             //转向电机归零完成状态
+    wire_status_steer_sequence_number:ubyte(id: 63);            //前轮转角数据sequence number
+    wire_status_steering_valve:ubyte(id: 64);                   //转向阀控制状态
+    wire_status_gear_shift_lamp:ubyte(id: 65);                  //档位车灯状态
+    wire_status_hydraulic_oil_temp_high:ubyte(id:66);           //液压油温度高
+    wire_status_engine_coolant_level_low:ubyte(id:67);          //发动机冷却液液位低
+    wire_status_engine_coolant_temperature_high:ubyte(id:68);   //发动机冷却液温度高
+    wire_status_eng_stop_fault_lamp:ubyte(id:69);               //发动机红灯故障
+    wire_status_eng_warning_fault_lamp:ubyte(id:70);            //发动机黄灯故障
+    wire_status_drive_system_fault_lamp:ubyte(id:71);           //驱动系统严重故障
+    wire_status_brake_press_low:ubyte(id:72);                   //制动压力低
+    wire_status_streer_press_low:ubyte(id:73);                  //转向压力低
+    wire_status_eng_oil_pressure_low:ubyte(id:74);              //机油压力低
+    wire_status_steering_valve_fault:ubyte(id:75);              //转向阀当前故障反馈
+    wire_status_epb_falut:ubyte(id:76);                         //EPB故障反馈
+    wire_status_zhongchuang_motorcur:ubyte(id:77);              //中创电机电流
+    wire_status_thr_feedback_AD:ubyte(id:78);                   //油门AD值
+    wire_status_ebrk_feedback_AD:ubyte(id:79);                  //电制动AD值
+    wire_status_steer_motor_pwm:ubyte(id:80);                   //中创电机pwd值
+    wire_status_front_brake_press_low:ubyte(id:81);             //前制动压力低
+    wire_status_rear_brake_press_low:ubyte(id:82);              //后制动压力低
+    wire_status_streer_accumulator_press_low:ubyte(id:83);      //转向储能器氮气压力低
+    wire_status_hydraulic_oil_press_high:ubyte(id:84);          //液压油箱油压高
+    wire_status_wmsun_wheel_exit:ubyte(id:85);                  //轮马达太阳轮退出
+    wire_status_hydraulic_oil_level_low:ubyte(id:86);           //液压油箱油位低
+    wire_status_fuel_oil_level_low:ubyte(id:87);                //燃油油箱油位低
+    wire_status_battery_voltage_low:ubyte(id:88);               //电池电压低
+    wire_status_transmission_oil_temperature_high:ubyte(id:89); //变速箱油温高
+    wire_status_brake_coolant_temperature_high:ubyte(id:90);    //制动冷却液温度过高
+    wire_status_vehicle_fault:ubyte(id:91);                     //同力整车故障等级
+    wire_status_engine_fault_code:uint32(id:92);                //同力发动机故障编码
+    wire_status_transmission_fault_code:uint32(id:93);          //同力变速箱故障编码
+    wire_status_eps_fault_code:uint32(id:94);                   //同力EPS故障编码
+    wire_status_ebs_fault_code:uint32(id:95);                   //同力EBS故障编码
+    wire_status_epb_fault_code:uint16(id:96);                   //同力EPB故障编码
+    wire_status_electrical_system_fault_code:uint16(id:97);     //同力电气系统故障编码
+    wire_status_vcu_fault:ubyte(id:98);                         //vcu故障编码
+    wire_status_temperature_line_alarm:uint16(id:99);           //感温线温度报警
+}
+
+root_type WireControlVehicleFault;
+
+//Vehicle Movation--->车辆运动信息
+table WireControlVehicleMovation{
+    wire_status_acc_actuate_percent:float = 0 (id: 0);                                  //加速执行百分比   0-1
+    wire_status_acc_manual_pedal:float = 0 (id: 1);                                     //加速踏板行程百分比
+    wire_status_electric_brake_actuate_percent:float = 0 (id: 2);                       //电制动执行百分比
+    wire_status_electric_brake_manual_pedal:float = 0 (id: 3);                          //制动踏板行程百分比
+    wire_status_mechanical_brake_actuate_percent:float = 0 (id: 4);                     //液压制动执行百分比
+    wire_status_mechanical_brake_manual_pedal:float = 0 (id: 5);                        //液压制动百分比
+    wire_status_engine_torque_percent:float = 0 (id: 6);                                //发动机扭矩百分比
+    wire_status_engine_speed:float = 0 (id: 7);                                         //发动机转速
+    wire_status_steering_wheel_angle:float = 0 (id: 8);                                 //方向盘转角
+    wire_status_front_wheel_angle:float = 0 (id: 9);                                    //前轮转角
+    wire_status_vehicle_speed:float = 0 (id: 10);                                       //车速大小,车速范围0~251km/h
+    wire_status_max_gear_shift:int32 (id: 11);                                          //变速箱最高前进挡
+    wire_status_front_axle_aver_velocity_raw:float(id: 12);                             //前轴平均速度
+    wire_status_front_axle_left_wheel_relatively_velocity_raw:float(id: 13);            //前轴左侧轮相对速度
+    wire_status_front_axle_right_wheel_relatively_velocity_raw:float(id: 14);           //前轴右侧轮相对速度
+    wire_status_rear_axle_left_wheel_relatively_velocity_raw:float(id: 15);             //后轴左侧轮相对速度
+    wire_status_rear_axle_right_wheel_relatively_velocity_raw:float(id: 16);            //后轴右侧轮相对速度
+    wire_status_front_brake_percent:float(id: 17);                                      //前制动百分比反馈信号
+    wire_status_rear_brake_percent:float(id: 18);                                       //后制动百分比反馈信号
+    wire_status_transmission_retard_apply_feedback:int32 (id: 19);                      //变速箱缓行实施反馈
+    wire_status_abnormal_exit_automode:int8(id:20);                                     //异常退出自动驾驶模式
+    wire_status_motor_speed:float(id: 21);                                              //驱动电机转速
+}
+
+root_type WireControlVehicleMovation;
+
+//Vehicle Status--->车辆状态信息
+table WireControlVehicleStatus{
+    wire_status_parking_status:ubyte(id: 0);                                      //装载制动反馈
+    wire_status_drive_mode_status:ubyte(id: 1);                                   //驾驶模式状态 1自动驾驶 0人工驾驶
+    wire_status_lift_status:ubyte(id: 2);                                         //各车型统一货斗状态 0x00：底端，0x01：顶端，0x10：中间，0x11：异常
+    wire_status_vehicle_load:ubyte(id: 3);                                        //车辆载重信号，1 空载 2 满载 3 半载
+    wire_status_parking_long_status:ubyte(id: 4);                                 //驻车制动反馈
+    wire_status_gear_shift:int32 (id: 5);                                         //挡位>0：D挡，0：N挡，<0：R挡
+    wire_status_truck_lift_angle:float (id: 6);                                   //举升角度反馈
+    wire_status_battery_voltage:float (id: 7);                                    //电池电压
+    wire_status_fuel_level:float (id: 8);                                         //燃油油位
+    wire_status_emergency_brake:ubyte (id: 9);                                    //紧急制动信号
+    wire_status_steering_valve_current_operation_state:ubyte (id: 10);            //转向阀状态反馈
+    wire_status_engine_coolant_temperature:float (id: 11);                        //发动机冷却液温度
+    wire_status_engine_oil_pressure:float (id: 12);                               //发动机机油压力
+    wire_status_truck_type:ubyte (id: 13);                                        //卡车型号
+    wire_status_truck_id:ubyte (id: 14);                                          //车辆型号
+    wire_status_device_number:ubyte (id: 15);                                     //矿山设备编号
+    wire_status_real_pay_load:float (id: 16);					                  //车辆载重信号 0-500吨
+    wire_status_tire_pressure_front_left:float (id: 17);                          //胎压-左前轮 0~1200kPa
+    wire_status_tire_pressure_front_right:float (id: 18);                         //胎压-右前轮
+    wire_status_tire_pressure_mid_left_outer:float (id: 19);                      //胎压-中左外轮
+    wire_status_tire_pressure_mid_left_inner:float (id: 20);                      //胎压-中左内轮
+    wire_status_tire_pressure_mid_right_inner:float (id: 21);                     //胎压-中右内轮
+    wire_status_tire_pressure_mid_right_outer:float (id: 22);                     //胎压-中右外轮
+    wire_status_failure_tire_pressure_1:int8 (id: 23);                            //胎压检测设备故障状态
+    wire_status_EPB_low_pressure_limit_release_open_state:int32 (id: 24);         //EPB 低压限制释放开启状态
+    wire_status_EPB_working_mode:int32 (id:25);                                   //EPB工作模式
+    wire_status_message_verification:int32(id:26);                                //报文校验
+    wire_status_loop_count:int32(id:27);                                          //指令循环计数
+    wire_status_tire_temperature_rear_left_inner:float(id:28);                    //胎温-后左内轮
+    wire_status_tire_temperature_rear_left_outer:float(id:29);                    //胎温-后左外轮
+    wire_status_tire_temperature_rear_right_inner:float(id:30);                   //胎温-后右内轮
+    wire_status_tire_temperature_rear_right_outer:float(id:31);                   //胎温-后右外轮
+    wire_status_tire_temperature_mid_left_outer:float(id:32);                     //胎温-中左外轮
+    wire_status_tire_temperature_mid_left_inner:float(id:33);                     //胎温-中左内轮
+    wire_status_tire_temperature_mid_right_inner:float(id:34);                    //胎温-中右内轮
+    wire_status_tire_temperature_mid_right_outer:float(id:35);                    //胎温-中右外轮
+    wire_status_tire_temperature_front_left:float(id:36);                         //胎温-左前轮
+    wire_status_tire_temperature_front_right:float(id:37);                        //胎温-右前轮
+    wire_status_tire_temperature_failure_1:int8(id:38);                           //胎温检测设备故障状态
+    wire_status_tire_temperature_failure_2:int8(id:39);                           //胎温检测设备故障状态
+    wire_status_tire_pressure_rear_left_outer:float(id:40);                       //胎压-后左外轮
+    wire_status_tire_pressure_rear_left_inner:float(id:41);                       //胎压-后左内轮
+    wire_status_tire_pressure_rear_right_inner:float(id:42);                      //胎压-后右内轮
+    wire_status_tire_pressure_rear_right_outer:float(id:43);                      //胎压-后右外轮
+    wire_status_failure_tire_pressure_2:int8(id:44);                              //胎压检测设备故障状态
+    wire_status_trans_gear_shift:int32 (id: 45);                                  //变速箱当前档位反馈量(机械轮) -1：倒挡 0：空挡 1~6：前进挡 7：驻车挡
+
+    //艾尔冗余制动
+    wire_status_CheckSum_EBR_1:ubyte (id: 46); //冗余制动BCC校验
+    wire_status_EBR_SystemMode:ubyte (id: 47);//系统当前模式 0x0：上电 0x1：待机 0x2：标定 0x3：工作 0x4：异常工作 0x5：故障
+    wire_status_EBR_SensorTriggerSt:ubyte (id: 48);//指示传感器是否触发急停动作   0  ：未触发 1  ：已触发
+    wire_status_EBR_UpperComputerTriggerSt:ubyte (id: 49);//指示上位机（DI-A）是否触发急停动作 0  ：未触发 1  ：已触发
+    wire_status_EBR_CANMsgTriggerSt:ubyte (id: 50);//指示CAN是否触发急停动作 0  ：未触发 1  ：已触发
+    wire_status_EBR_SensorEnableSt:ubyte (id: 51);//传感器使能状态 00: 禁能（按照标定状态执行）01: 使能（按照标定状态执行）10: 禁能（按BD_CAN强制执行）11: 使能（按BD_CAN强制执行）
+    wire_status_EBR_UpperComputerEnableSt :ubyte (id: 52);//上位机（DI-A）使能状态00: 禁能（按照标定状态执行）01: 使能（按照标定状态执行）10: 禁能（按BD_CAN强制执行）11: 使能（按BD_CAN强制执行）
+    wire_status_EBR_CANMsgEnableSt :ubyte (id: 53);//CAN协议使能状态 00: 禁能（按照标定状态执行）01: 使能（按照标定状态执行）10: 禁能（按BD_CAN强制执行）11: 使能（按BD_CAN强制执行）
+    wire_status_EBR_Sensor1St :ubyte (id: 54);//传感器1状态 CS_LR  0  ：传感器接入且无障碍物  1  ：传感器未接入或检测到障碍物
+    wire_status_EBR_Sensor2St :ubyte (id: 55);//传感器2状态 CS_RF  0  ：传感器接入且无障碍物  1  ：传感器未接入或检测到障碍物
+    wire_status_EBR_Sensor3St :ubyte (id: 56);//传感器3状态 CS_LF  0  ：传感器接入且无障碍物  1  ：传感器未接入或检测到障碍物
+    wire_status_EBR_Sensor4St :ubyte (id: 57);//传感器4状态 CS_RR  0  ：传感器接入且无障碍物  1  ：传感器未接入或检测到障碍物
+    wire_status_EBR_ExtPowerStatus :ubyte (id: 58);//DO1状态  0 ： 无外部供电 1 ： 有外部供电
+    wire_status_EBR_SelfCheckStatus :ubyte (id: 59);//DO2状态 0 ： 自检异常 1 ： 自检正常
+    wire_status_EBR_RobotPosition :ubyte (id: 60);// 机器人踏板位置   00：中间  01：踩下   10：抬起  11：保留
+    wire_status_EBR_RobotWorkStatus :ubyte (id: 61);//DO5状态 0 ： 未激活  1 ： 激活
+    wire_status_EBR_BD_CANMsgConnectSt :ubyte (id: 62);//CAN使能时，上位机发送数据是否超时状态判定 0 ： 正常 1 ： 超时/断开
+    wire_status_LiveCounter_EBR_1 :ubyte (id: 63);//计数器
+
+    wire_status_blue_light:ubyte(id:64);                                //无人驾驶状态蓝灯反馈 11: 正常开 10:常闪 01: 短路 00: 正常关
+    wire_status_green_light:ubyte(id:65);                               //无人驾驶状态绿灯反馈 11: 正常开 10:常闪 01: 短路 00: 正常关
+    wire_status_red_light:ubyte(id:66);                                 //无人驾驶状态红灯反馈 11: 正常开 10:常闪 01: 短路 00: 正常关
+    wire_status_yellow_light:ubyte(id:67);                              //无人驾驶状态黄灯反馈 11: 正常开 10:常闪 01: 短路 00: 正常关
+    wire_status_trans_torque_outlet_oil_temperature:float(id:68);       //变速箱变矩器出口油温
+    wire_status_gear_DNR:int8(id:69);                                   //以DNR(1,0,-1)定义的挡位状态
+    vcu_steering_valve_curvature_command:float(id:70);                  //VCU转换阀曲率控制指令
+    wire_status_engine_oil_temperature:float(id:71);                    //发动机机油温度
+    wire_status_engine_oil_level:float(id:72);                          //发动机机油液位
+    wire_status_button_mantakeover:ubyte = 1 (id:73);                   //按钮人工介入反馈 0自动 1人工
+    wire_status_eps_mantakeover:ubyte(id:74);                           //转向人工介入反馈 0无效 1有效
+    wire_status_drive_mantakeover:ubyte(id:75);                         //驱动人工介入反馈 0无效 1有效
+    wire_status_brake_mantakeover:ubyte(id:76);                         //制动人工介入反馈 0无效 1有效
+    wire_status_vehicle_powerst:ubyte(id:77);                           //整车电源模式 1低压上电 2附件高压 3驱动高压 4 整车ready
+    wire_status_load_brake_switch:ubyte(id:78);                         //装载制动翘板开关实施信号
+    wire_status_refuel_trq_req_lim:ubyte(id:79);                        //整车所允许的电制动回馈扭矩上限
+    wire_status_bms_soc:uint8(id:80);                                   //电池SOC
+    wire_status_ebs_xbracceleration:ubyte(id:81);                       //VCU反馈EBS执行的减速度
+    wire_status_exbr_trq:int(id:82);                                    //后桥扭矩
+    wire_status_bms_discharge_energy_sum:int32(id:83);                  //整车累计放电电量
+    wire_status_bms_refuel_energy_sum:int32(id:84);                     //整车累计回馈电量
+    wire_status_bms_vehcharge_energy_sum:int32(id:85);                  //整车累计外接充电电量
+    wire_status_eps_mode:uint8(id:86);                                  //重汽反馈EPS控制模式 0x00 off 0x01 ready 0x04 steering angle mode
+    wire_status_powertakeoff:uint8(id:87);                              //ZQ power-takeoff mode feedback 0x00 release 0x01 engaged
+    wire_status_gear_shift_status:int8(id:88);                          //换挡状态 0无效 1换挡完成 2换挡中 3换挡失败
+}
+
+//vcu version-->vcu版本相关的信息
+//定义参考:<版本号使用说明.xlsx>
+table MsgVcuVersion{
+    wire_vcu_func_version:ubyte(id: 0);     //对应版本号使用说明   第四段   0x0C305521  byte5(需要新增)
+    wire_vcu_main_version:ubyte(id: 1);     //对应版本号使用说明   第五段   0x0C305521  byte3
+    wire_vcu_sub_version:ubyte(id: 2);      //对应版本号使用说明   第六段   0x0C305521  byte4
+}
+root_type MsgVcuVersion;
+
+root_type CanAboutDevStatus;
+
+file_identifier "CDSO";

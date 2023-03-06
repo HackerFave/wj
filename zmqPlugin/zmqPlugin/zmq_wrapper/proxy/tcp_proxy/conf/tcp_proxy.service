@@ -1,0 +1,13 @@
+[Unit]
+Description=TCP proxy Service
+After=network.target boot_config.service
+
+[Service]
+Type=simple
+ExecStart=/home/work/tcp_proxy
+
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

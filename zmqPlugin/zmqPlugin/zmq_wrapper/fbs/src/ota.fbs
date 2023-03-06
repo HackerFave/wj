@@ -1,0 +1,27 @@
+
+namespace OTA;
+
+table MsgHostVersion{
+    version:string (id:0);  //"01.02.03.04.05.06"
+}
+table MsgOtaState{
+    state:string (id:0);  //"none","no_upgrade","req_upgrade","upgrading","flash_done","rollback_done" ,"fail" ,"success" 
+}
+table MsgOtaInstallState{
+    state:string (id:0);  //"installing","complete","fail","error","wait"
+	err_num:uint (id:1); //default 0,active if state=fail or error
+	err_str:string (id:2); //active if err_num!=0
+}
+table MsgOtaStateRes{
+    result:uint (id:0); //参考OTA错误码范围设置，允许升级返回0
+    reason:string (id:1);  //result!=0有效，自定义字符串 
+}
+
+table MsgReqVehicleCondition{
+  request:ubyte (id:0);
+}
+
+table MsgResVehicleCondition{
+  response:ubyte (id:0);
+  status:bool(id:1);
+}

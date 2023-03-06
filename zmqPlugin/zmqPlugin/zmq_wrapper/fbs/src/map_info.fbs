@@ -1,0 +1,142 @@
+
+table MapApply{
+	type:int(id: 0);  					//申请地图信息,0: lane, 1: road, 2:boundary
+}
+
+table MapLaneTrailInfo{
+	heading:double(id: 0);  			//航向角
+    lat:double(id: 1);  				//纬度
+    lon:double(id: 2);  				//经度
+    alt:double(id: 3);  				//高度
+	speed:double(id: 4);  				//速度
+}
+
+table MapLaneInfo{
+	lane_id:int(id: 0);  				//车道id
+	element_type:int(id: 1); 			//所属区域类型
+	element_id:int(id: 2);   			//所属区域id
+	lane_name:string(id: 3);			//车道名称
+	length:float(id: 4);				//车道长度
+	trail_list:[MapLaneTrailInfo](id: 5); 	//车道线坐标信息
+	pre_node:int(id: 6);   				//前驱节点id 
+	suc_node:int(id: 7);   				//后继节点id
+}
+
+table MapGpsInfo{
+    lat:double(id: 0);  				//纬度
+    lon:double(id: 1);  				//经度
+    alt:double(id: 2);  				//高度
+}
+
+table MapRoadInfo{
+	road_id:int(id: 0);  				//道路id
+	road_name:string(id: 1);			//道路名称
+	left_list:[MapGpsInfo](id: 2); 		//道路左边界
+	right_list:[MapGpsInfo](id: 3); 		//道路右边界
+}
+
+table MapBoundaryInfo{
+	boundary_id:int(id: 0);  			//区域id
+	boundary_type:int(id: 1);  			//区域类型
+	boundary_name:string(id: 2);		//区域名称
+	list:[MapGpsInfo](id: 3); 				//区域边界
+}
+
+table MapLaneListInfo{
+	lane_list:[MapLaneInfo](id: 0); 	//车道线组
+}
+
+table MapRoadListInfo{
+	road_list:[MapRoadInfo](id: 0); 	//道路边界组
+}
+
+table MapBoundaryListInfo{
+	boud_list:[MapBoundaryInfo](id: 0); //区域边界组
+}
+
+table MapTaskPointInfo{
+	index:int(id: 0);  					//控制点索引
+	speed:float(id: 1);					//速度
+	laneid:int(id: 2);					//所在车道id
+	type:int(id: 3);					//控制点类型
+    lat:double(id: 4);  				//纬度
+    lon:double(id: 5);  				//经度
+    alt:double(id: 6);  				//高度
+}
+
+table MapTaskTrailInfo{
+	index:int(id: 0);  					//点索引
+	laneid:int(id: 1);					//所在车道id
+	heading:double(id: 2);  			//航向角
+	speed:double(id: 3);				//速度
+    lat:double(id: 4);  				//纬度
+    lon:double(id: 5);  				//经度
+	alt:int(id: 6);						//高度
+	attr:string(id: 7);				    //点的属性字符串
+}
+
+table MapTaskInfo{
+	trail_list:[MapTaskTrailInfo](id: 0); //任务gps点数据
+	point_list:[MapTaskPointInfo](id: 1); //任务控制点数据
+}
+
+table MapRoadCenterInfo{
+	rc_id:int(id: 0);  					//车道中线id
+	element_type:int(id: 1); 			//所属区域类型
+	element_id:int(id: 2);   			//所属区域id
+	lane1_id:int(id: 3);				//关联车道线1id
+	lane2_id:int(id: 4);				//关联车道线2id
+	rci_list:[MapGpsInfo](id: 5); 		//轨迹线
+}
+
+table MapRoadCenterListInfo{
+	rc_list:[MapRoadCenterInfo](id: 0); //区域边界组
+}
+
+table DockGroupInfo{
+	dock_group_index:int(id: 0);		//停靠组索引
+	name:string(id: 1);					//组名称
+	list:[MapGpsInfo](id: 2); 			//停靠组边界
+}
+
+table DockPointInfo{
+	point_index:int(id: 0);				//停靠点索引
+	lat:double(id: 1);  				//纬度
+    lon:double(id: 2);  				//经度
+	direction:double(id: 3);  			//航向
+	dock_group_index:int(id: 4);		//停靠组索引
+	list:[MapGpsInfo](id: 5); 			//停靠点边界
+	point_type:int(id:6);					//停靠点类型预停靠位和停靠位通过它判度
+    alt:double(id: 7);  				//高度
+}
+
+table BoundaryMapInfo{
+	boud_list:[MapBoundaryInfo](id: 0); 	//区域边界组
+	group_list:[DockGroupInfo](id: 1);  	//停靠组
+	dock_point_list:[DockPointInfo](id: 2); //停靠点
+}
+
+table ObstacleTrailInfo{
+    lat:double(id: 0);  				//纬度
+    lon:double(id: 1);  				//经度
+    alt:double(id: 2);  				//高度
+}
+
+table ObstacleMapInfo{
+	list:[ObstacleTrailInfo](id: 0); 	//障碍物路径点
+}
+
+table IsolationTrailInfo{
+    lat:double(id: 0);  				//纬度
+    lon:double(id: 1);  				//经度
+    alt:double(id: 2);  				//高度
+}
+
+table MapRoadIsolationInfo{
+	object_id:string(id: 0);  				//道路障碍物id
+	list:[IsolationTrailInfo](id: 1); 	//道路障碍物点
+}
+
+table MapRoadIsolationListInfo{
+	list:[MapRoadIsolationInfo](id: 0); 	//障碍物
+}

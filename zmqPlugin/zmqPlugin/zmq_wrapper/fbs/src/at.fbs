@@ -1,0 +1,7 @@
+table ATMsg {
+  rssi:int (id: 0);
+  ber:int (id: 1);
+  netMode:int (id: 2);
+}
+
+root_type ATMsg;

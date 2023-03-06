@@ -1,0 +1,26 @@
+table barStatus{
+    barsn:[ubyte](id:0);
+    barstatus : ubyte(id:1);
+}
+
+table barStatusList{
+    time : ulong (id:0);
+    barnum : ubyte (id:1);
+    barsnlist:[barStatus] (id:2);
+}
+
+table barRequest{
+    time : ulong (id:0);
+    devicesn : [ubyte] (id:1);
+    reqType : ubyte (id:2);
+    carno :[ubyte] (id:3); 
+}
+
+table barRespond{
+    time : ulong (id:0);
+    devicesn : [ubyte] (id:1);
+    value : ubyte (id:2);
+    reason: ubyte (id:3);
+    distance : short (id:4);
+}
+

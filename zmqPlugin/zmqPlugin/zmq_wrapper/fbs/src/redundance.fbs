@@ -1,0 +1,3 @@
+table HeartBeatToCCU{
+  heart_beat_to_ccu:ubyte(id:0);                // RBox向MBox发送心跳
+}
