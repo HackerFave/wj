@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
     ////        db.close();
     //    }
 
-    SqlMethod::sqlmethod_instance()->getsqloperationinstance("test");
+//    SqlMethod::sqlmethod_instance()->getsqloperationinstance("test");
 
     //    sqlOperation *sql = new sqlOperation("0");
     //    QString str = "test";

@@ -34,7 +34,8 @@ enum ModuleType
 
     MD_CloudWeb,              //web界面
     MD_CloudWebSmall,         //web小界面
-    MD_TestForm               //测试界面
+    MD_TestForm,              //测试界面
+    MD_backendDataForm        //数据库展示界面
 
 };
 // 监控主界面命令
@@ -71,6 +72,12 @@ enum TestFormCmdType
 
     CW_Other
 };
+enum backendDataFormType
+{
+    CW_UpdateNew=0,
+    CW_Find
+};
+
 #define IMEI_LENGTH 15
 
 class QSharedMemory;
@@ -94,7 +101,7 @@ public:
     bool             messageFilter(ModuleType module);
     bool             messageFilter(ModuleType module,QString &imei);
     void             setCurrentVehicle(QString &imei);
-//    std::atomic<LayoutType> showLayoutMode;
+    //    std::atomic<LayoutType> showLayoutMode;
 
     unsigned short   getCurrentTaskId();
     void             setCurrentTaskId(unsigned short &taskId);

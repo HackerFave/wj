@@ -11,6 +11,7 @@ cameraDisplayForm::cameraDisplayForm(QWidget *parent) :
         _mapDisplay.insert(i,new baseCameraForm);
         connect(_mapDisplay.value(i),SIGNAL(signalCameraFormId(const QString&)),
                 this,SLOT(slotCameraFormId(const QString&)));
+        connect(_mapDisplay.value(i),SIGNAL(signalCameraMin()),this,SLOT(slotCameraMin()));
     }
     initUi();
 }
@@ -61,4 +62,5 @@ void cameraDisplayForm::slotCameraMin()
     _mapDisplay.value(1)->setCameraShowStatus(false);
     _mapDisplay.value(2)->setCameraShowStatus(false);
     _mapDisplay.value(3)->setCameraShowStatus(false);
+    P_cameraFullDialog->close();
 }

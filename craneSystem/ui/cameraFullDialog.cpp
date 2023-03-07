@@ -24,8 +24,9 @@ void cameraFullDialog::addWin(QWidget * w)
     }
     ui->gridLayout_camera->addWidget(w);
 }
-void cameraFullDialog::closeEvent(QCloseEvent *)
+void cameraFullDialog::closeEvent(QCloseEvent *event)
 {
+
     emit signalCameraMin();
 }
 

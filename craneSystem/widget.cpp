@@ -12,7 +12,7 @@
 #include "DecodeCardSdk.h"
 #include "DataType.h"
 #include "plaympeg4.h"
-
+#include <QDateTime>
 outputForm * Widget::_outputForm = nullptr ;
 
 static QMutex mutex_q ;
@@ -104,7 +104,7 @@ void Widget::initUi()
     _actionOutputLog = new QAction("output");
     _outputForm = new outputForm;
     ui->gridLayout__output->addWidget(_outputForm);
-    ui->gridLayout_4->addWidget(WgtFactory::getFunWidget(MD_TestForm));
+    ui->gridLayout_4->addWidget(WgtFactory::getFunWidget(MD_backendDataForm));
     //    _menuTest1->addAction(_actionOutputLog);
     //    connect(_actionOutputLog,SIGNAL(triggered(bool)),this,SLOT(slotActionOutput(bool)));
 
@@ -116,6 +116,8 @@ void Widget::initChildForm()
     connect(this,SIGNAL(signalKeyEvent(ModuleDir,int ,QVariant)),this,SLOT(slotGetFromAny(ModuleDir,int,QVariant)));
 
     connect(WgtFactory::getFunWidget(MD_TestForm)->getCL(), SIGNAL(sendToMain(ModuleDir,int,QVariant)),
+            this, SLOT(slotGetFromAny(ModuleDir,int,QVariant)));
+    connect(WgtFactory::getFunWidget(MD_backendDataForm)->getCL(), SIGNAL(sendToMain(ModuleDir,int,QVariant)),
             this, SLOT(slotGetFromAny(ModuleDir,int,QVariant)));
 
 
@@ -134,28 +136,6 @@ void Widget::slotSubTopicData(const void*pyload,int id,const uint32_t &data)
 
 void Widget::logOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
-
-
-    //    def update_log(self, text):
-    //    """将日志输出到 text widget"""
-    //    if not self.isVisible():
-    //        return
-    //    if "ERROR" in text: # 错误日志加粗
-    //        text = f"<font color='red'><b>{text}</font><br>"
-    //    elif "INFO" in text:
-    //        text = f"<font color='green'>{text}</font><br>"
-    //    elif "WARNING" in text:
-    //        text = f"<font color='cyan'>{text}</font><br>"
-    //    elif "DEBUG" in text:
-    //        text = f"<font color='blue'>{text}</font><br>"
-    //    else:
-    //        text = f"{text}<br>"
-    //    self.log_browser.setWordWrapMode(QTextOption.WordWrap)
-    //    self.log_browser.moveCursor(QTextCursor.End)
-    //    self.log_browser.insertHtml(text)
-    //    self.log_browser.ensureCursorVisible()
-
-
     QString text;
     mutex_q.lock();
 
@@ -226,15 +206,27 @@ void Widget::CallbackFunc(const char* topic1, const void*payload, uint32_t len)/
 {
     int id = enumFromString(std::string(topic1));
 
-    qInfo()<<":"<<id<<":"<<topic1;
+//    qInfo()<<":"<<id<<":"<<topic1;
     if(id == TOPIC_TCP_MESSAGE_TEST_TOPIC_ENUM){
         auto msg = flatbuffers::GetRoot<Message>(payload);
         if(msg->data()&&msg->data()->Data()){
             //            uint8_t *data  = new uint8_t[1024];
             //            memcpy(data, msg->data()->Data(), len);
             //            P_dataSub->emitSignal(data,id,len);
-            static int s = 0;
-            qInfo()<<id<<"****************************"<<msg->data()->size()<<":"<<len<<":"<<s++;
+            //            Add(QString table_name, std::map<QString, QString> data, QSqlQuery ** ret);
+            QString table_name = "testtable";
+            std::map<QString, QString> data ;
+//            data["id"] = 1;
+            data["data1"] = "1";
+            data["data2"] = "2";
+            data["data3"] = "3";
+            data["data4"] = "4";
+            data["data5"] = "5";
+            data["date"] = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+            QSqlQuery * ret ;
+            SqlMethod::sqlmethod_instance()->getsqloperationinstance("1")->Add(table_name,data,&ret);
+                    static int s = 0;
+//            qInfo()<<id<<"****************************"<<msg->data()->size()<<":"<<len<<":"<<s++;
         }
 
     }

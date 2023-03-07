@@ -15,6 +15,7 @@
 #include "../dataInterFace/zmqmodule/product/dataSub.h"
 #include "../ui/Interface/WgtFactory.h"
 #include "../ui/widget/TestForm/testWgt.h"
+#include "../sql/SqlMethod.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
 QT_END_NAMESPACE

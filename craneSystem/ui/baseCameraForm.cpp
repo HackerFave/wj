@@ -32,6 +32,8 @@ void baseCameraForm::mouseDoubleClickEvent(QMouseEvent *event)
         qDebug()<<"objectName::"<<str;
         emit signalCameraFormId(str);
         this->setFocus();
+    }else{
+        emit signalCameraMin();
     }
 }
 

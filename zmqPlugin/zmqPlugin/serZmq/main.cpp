@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
     {
 
         sender.PostWithMessage("tcp/message/test_topic", fbb.GetBufferPointer(), fbb.GetSize());
-        Sleep(1);
+        Sleep(1000);
     }
 
 

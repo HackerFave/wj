@@ -34,7 +34,7 @@ protected slots:
     void slotSender();
 signals:
     void signalCameraFormId(const QString &id);
-
+    void signalCameraMin();
 private:
     Ui::baseCameraForm *ui;
     bool _cameraShowStatus = false;

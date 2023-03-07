@@ -102,7 +102,7 @@ public:
     bool findData_Date(QString table_name, const QStringList &keyList, QList<QVariantList> &row, int days, const QString &data_time_key, QSqlQuery ** ret);
     bool findData(QString table_name, QMap<QString, QString> &where, const QStringList &keyList, QList<QMap<QString, QString>>&row, QSqlQuery ** ret);
     bool findDataRecord(QString table_name, QMap<QString, QString> &where, const QStringList &keyList, std::vector<std::map<QString,QString>> &row, QSqlQuery ** ret);
-
+    bool findData(QString table_name, const QStringList &keyList,QString where, QString startTime,QString endTime, QList<QMap<QString, QString>>&row, QSqlQuery ** ret);
     bool createTable();
 
     /******************************************sqlite数据库***************************/

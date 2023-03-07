@@ -5,7 +5,7 @@ using namespace std;
 #pragma execution_character_set("utf-8")
 //QSqlDatabase	*sqlOperation::m_db = nullptr;
 sqlOperation::sqlOperation(std::string type)
-:type_(type)
+    :type_(type)
 {
     
 }
@@ -97,12 +97,12 @@ bool sqlOperation::Add(std::string table_name, std::vector<std::map<std::string,
     }
     for (std::vector<std::map<std::string, std::string>>::const_iterator iter = data.cbegin(); iter != data.cend(); iter++)
     {
-       // cout << (*iter) << endl;
+        // cout << (*iter) << endl;
         QString value;
         value += "(";
         for (std::map<std::string, std::string>::const_iterator i = (*iter).cbegin(); i != (*iter).cend(); i++)
         {
-           // sql += i->first + ", ";
+            // sql += i->first + ", ";
             value += "'" + QString::fromLocal8Bit((i->second).data()) + "', ";
 
         }
@@ -125,7 +125,7 @@ bool sqlOperation::Add(std::string table_name, std::vector<std::map<std::string,
 bool sqlOperation::Add(std::string table_name, std::map<std::string, std::string> data, QSqlQuery ** ret)
 {
 
-   /* if (data.count("record_ID")) {
+    /* if (data.count("record_ID")) {
         if (!_recordID.isEmpty()) {
             data["record_ID"] = _recordID;
         }
@@ -175,9 +175,9 @@ bool sqlOperation::Del(std::string table_name, std::map<std::string, std::string
 bool sqlOperation::delRecord(std::string table_name, const std::string &key, const std::string &value, QSqlQuery ** ret)
 {
     QString sql = QString("delete from %1 where %2 = '%3'")
-        .arg(QString::fromLocal8Bit(table_name.data()))
-        .arg(QString::fromLocal8Bit(key.data()))
-        .arg(QString::fromLocal8Bit(value.data()));
+            .arg(QString::fromLocal8Bit(table_name.data()))
+            .arg(QString::fromLocal8Bit(key.data()))
+            .arg(QString::fromLocal8Bit(value.data()));
     m_query->prepare(sql);
     return Query(string((const char *)sql.toLocal8Bit()), ret);
 }
@@ -309,9 +309,9 @@ bool sqlOperation::Find(std::string table_name, std::list<std::string> key, std:
 int sqlOperation::isExists(std::string table_name, std::string key, std::string value, QSqlQuery ** ret)
 {
     QString sql = QString("select * from %1 where %2 = '%3'")
-        .arg(QString::fromLocal8Bit(table_name.data()))
-        .arg(QString::fromLocal8Bit(key.data()))
-        .arg(QString::fromLocal8Bit(value.data()));
+            .arg(QString::fromLocal8Bit(table_name.data()))
+            .arg(QString::fromLocal8Bit(key.data()))
+            .arg(QString::fromLocal8Bit(value.data()));
     m_query->prepare(sql);
     if (Query(string((const char *)sql.toLocal8Bit()), ret))
     {
@@ -330,10 +330,10 @@ bool sqlOperation::findData(std::string table_name, std::map<std::string,std::st
 {
     // QMap<QString, QString> map = where;
     //if (where.count("record_ID") && where.value("record_ID").simplified().isEmpty()) {
-      //  where["record_ID"] = _recordID;
+    //  where["record_ID"] = _recordID;
     //}
     QString sql = QString("select * from %1 where ")
-        .arg(QString::fromLocal8Bit(table_name.data()));
+            .arg(QString::fromLocal8Bit(table_name.data()));
     int keySize = where.size();
     int num = 0;
     int keyNum = keyList.size();
@@ -381,11 +381,11 @@ bool sqlOperation::findData(std::string table_name,std::map<std::string,std::str
 {
     // QMap<QString, QString> map = where;
     //if (where.count("record_ID") && where.value("record_ID").simplified().isEmpty()) {
-      //  where["record_ID"] = _recordID;
+    //  where["record_ID"] = _recordID;
     //}
     std::list<std::string> key_list = keyList;
     QString sql = QString("select * from %1 where ")
-        .arg(QString::fromLocal8Bit(table_name.data()));
+            .arg(QString::fromLocal8Bit(table_name.data()));
     int keySize = where.size();
     int num = 0;
     int keyNum = keyList.size();
@@ -422,12 +422,12 @@ bool sqlOperation::findData(std::string table_name,std::map<std::string,std::str
         return true;
     }
     else
-       return false;
+        return false;
 }
 bool sqlOperation::findDataRecord(std::string table_name, std::map<std::string, std::string> &where, const std::list<std::string> &keyList, std::vector<std::map<std::string, std::string>> &row, QSqlQuery ** ret)
 {
     QString sql = QString("select * from %1 where ")
-        .arg(QString::fromLocal8Bit(table_name.data()));
+            .arg(QString::fromLocal8Bit(table_name.data()));
     int keySize = where.size();
     int num = 0;
     int keyNum = keyList.size();
@@ -460,7 +460,7 @@ bool sqlOperation::findDataRecord(std::string table_name, std::map<std::string, 
             std::list<std::string>::const_iterator it_list;
             for (it_list = keyList.cbegin(); it_list!= keyList.cend(); it_list++) {
                 QString value = m_query->value(rec.indexOf(QString::fromStdString((*it_list)))).toString();
-               // mapChild.insert(keyList.at(i), value);
+                // mapChild.insert(keyList.at(i), value);
                 mapChild[*it_list] = string((const char*)value.toLocal8Bit());
             }
             row.push_back(mapChild);
@@ -506,9 +506,9 @@ bool sqlOperation::Find(std::string table_name, const std::list<std::string> &li
 bool sqlOperation::findData_Date(std::string table_name, const std::list<std::string> &keyList, std::list<std::list<std::string>> &row, int days, const std::string &data_time_key, QSqlQuery ** ret)
 {
     QString sql = QString("select * from %1 where DATE_SUB(CURDATE(), INTERVAL %2 DAY) <= date(%3)")
-        .arg(QString::fromLocal8Bit(table_name.data()))
-        .arg(days)
-        .arg(QString::fromLocal8Bit(data_time_key.data()));
+            .arg(QString::fromLocal8Bit(table_name.data()))
+            .arg(days)
+            .arg(QString::fromLocal8Bit(data_time_key.data()));
     m_query->prepare(sql);
     QSqlRecord rec = m_query->record();
     int keySize = keyList.size();
@@ -549,8 +549,8 @@ bool sqlOperation::findData_Date(std::string table_name, const std::list<std::st
 }
 void sqlOperation::CreateTable()
 {
-    QString dataBase = "CREATE DATABASE zhongji;";
-    QString sql = "CREATE TABLE t1(id VARCHAR(100) not null primary key,name VARCHAR(100)); ";
+    //    QString dataBase = "CREATE DATABASE zhongji;";
+    //    QString sql = "CREATE TABLE t1(id VARCHAR(100) not null primary key,name VARCHAR(100)); ";
 }
 /*void sqlOperation::setTestRecord(std::map<QString, QString> data)
 {
@@ -565,7 +565,7 @@ bool sqlOperation::clearTable(std::list<std::string> listTableName, QSqlQuery **
     std::list<std::string>::iterator it;
     for (it = listTableName.begin(); it!= listTableName.end(); it++) {
         QString sql = QString("truncate table %1")
-            .arg(QString::fromLocal8Bit((*it).data()));
+                .arg(QString::fromLocal8Bit((*it).data()));
         m_query->prepare(sql);
         if (!Query(string((const char *)sql.toLocal8Bit()), ret)) {
             return false;
@@ -578,12 +578,12 @@ bool sqlOperation::findtableidname(std::string table_name, std::string proname, 
 {
     //select CONCAT(COLUMN_NAME, ',') from information_schema.COLUMNS where table_name = 'heating_zone_table' and table_schema = 'zhongji';
     QString sql = QString("select CONCAT(COLUMN_NAME,',') from information_schema.COLUMNS where table_name = '%1'and table_schema = '%2'; ")
-        .arg(QString::fromLocal8Bit(table_name.data()))
-        .arg(QString::fromLocal8Bit(proname.data()));
+            .arg(QString::fromLocal8Bit(table_name.data()))
+            .arg(QString::fromLocal8Bit(proname.data()));
     m_query->prepare(sql);
 
     QSqlRecord rec = m_query->record();
-   
+
     if (Query(string((const char *)sql.toLocal8Bit()), ret))
     {
         int size = 0;
@@ -594,7 +594,7 @@ bool sqlOperation::findtableidname(std::string table_name, std::string proname, 
             */
         while (m_query->next())
         {
-            QString name = m_query->value(0).toString(); //做你想要的数据处理    
+            QString name = m_query->value(0).toString(); //做你想要的数据处理
             name.chop(1);
             listrow.push_back(string((const char*)name.toLocal8Bit()));
         }
@@ -606,7 +606,7 @@ bool sqlOperation::findtableidname(std::string table_name, std::string proname, 
 bool sqlOperation::findfieldoperator(std::string table_name, std::string proname, std::list<std::string> &listrow, QSqlQuery ** ret)
 {
     QString sql = QString("select column_comment from information_schema.columns where table_schema = 'mrun'and table_name = '%1';")
-        .arg(QString::fromLocal8Bit(table_name.data()));
+            .arg(QString::fromLocal8Bit(table_name.data()));
     m_query->prepare(sql);
     QSqlRecord rec = m_query->record();
     if (Query(string((const char *)sql.toLocal8Bit()), ret))
@@ -619,7 +619,7 @@ bool sqlOperation::findfieldoperator(std::string table_name, std::string proname
             */
         while (m_query->next())
         {
-            QString name = m_query->value(0).toString(); //做你想要的数据处理    
+            QString name = m_query->value(0).toString(); //做你想要的数据处理
             //name.chop(1);
             listrow.push_back(string((const char*)name.toLocal8Bit()));
         }
@@ -631,10 +631,10 @@ bool sqlOperation::findfieldoperator(std::string table_name, std::string proname
 bool sqlOperation::Find(std::string table_name, std::string id, int start_num, int end_num, const std::list<std::string> &keyList, std::list<std::map<std::string, std::string>> &row, QSqlQuery**ret)
 {
     QString sql = QString("select * from %1 where %2 between %3 and %4 ")
-        .arg(QString::fromLocal8Bit(table_name.data()))
-        .arg(QString::fromLocal8Bit(id.data()))
-        .arg(start_num)
-        .arg(end_num);
+            .arg(QString::fromLocal8Bit(table_name.data()))
+            .arg(QString::fromLocal8Bit(id.data()))
+            .arg(start_num)
+            .arg(end_num);
     int num = 0;
     int keyNum = keyList.size();
     m_query->prepare(sql);
@@ -664,15 +664,15 @@ bool sqlOperation::Find(std::string table_name, std::string id, int start_num, i
 {
     //select * from test_record where dataID between 100 and 10000 and record_Id = '20201023143531685'
     QString sql = QString("select * from %1 where %2 between %3 and %4 ")
-        .arg(QString::fromLocal8Bit(table_name.data()))
-        .arg(QString::fromLocal8Bit(id.data()))
-        .arg(start_num)
-        .arg(end_num);
+            .arg(QString::fromLocal8Bit(table_name.data()))
+            .arg(QString::fromLocal8Bit(id.data()))
+            .arg(start_num)
+            .arg(end_num);
     //and record_Id = '20201023143531685'
     std::list<std::string>::iterator it_list_value;
     for (it_list_value = listvalue.begin(); it_list_value != listvalue.end(); it_list_value++){
         sql += QString(" and %1='%2'").arg( QString::fromLocal8Bit((*it_list_value).data()).split("|").at(0))
-            .arg(QString::fromLocal8Bit((*it_list_value).data()).split("|").at(1));
+                .arg(QString::fromLocal8Bit((*it_list_value).data()).split("|").at(1));
     }
     int num = 0;
     int keyNum = keyList.size();
@@ -705,15 +705,15 @@ bool sqlOperation::Find(std::string table_name,int start_num, int page_num, cons
     
     QString sqlwhere1 = "where ";
     QString sqlwhere2;
-	std::map<std::string, std::string>::iterator it_map_value;
+    std::map<std::string, std::string>::iterator it_map_value;
     for (it_map_value = mapwhere.begin(); it_map_value != mapwhere.end(); it_map_value++)
     {
-		if ((it_map_value->first).empty()||it_map_value->second.empty()) {
-			mapwhere .clear();
-			break;
-		}
+        if ((it_map_value->first).empty()||it_map_value->second.empty()) {
+            mapwhere .clear();
+            break;
+        }
         sqlwhere2 += QString(" and %1='%2'").arg(QString::fromLocal8Bit((it_map_value->first).data()))
-            .arg(QString::fromLocal8Bit((it_map_value->second).data()));
+                .arg(QString::fromLocal8Bit((it_map_value->second).data()));
     }
     if (mapwhere.empty()) {
         sqlwhere1 = "";
@@ -724,10 +724,10 @@ bool sqlOperation::Find(std::string table_name,int start_num, int page_num, cons
         sqlwhere1 = sqlwhere1 + sqlwhere2;
     }
     QString sql = QString("select * from %1 %2 limit %3, %4 ")
-        .arg(QString::fromLocal8Bit(table_name.data()))
-        .arg(sqlwhere1)
-        .arg(start_num)
-        .arg(page_num);
+            .arg(QString::fromLocal8Bit(table_name.data()))
+            .arg(sqlwhere1)
+            .arg(start_num)
+            .arg(page_num);
     //and record_Id = '20201023143531685'
     /*std::list<std::string>::iterator it_listvalue;
     for (it_listvalue = listwhere.begin(); it_listvalue != listwhere.end(); it_listvalue++)
@@ -761,16 +761,16 @@ bool sqlOperation::Find(std::string table_name,int start_num, int page_num, cons
 int sqlOperation::getcountsize(std::string table_name, std::map<std::string, std::string> where, QSqlQuery ** ret)
 {
     QString sql = QString("select count(*) from %1 where ")// where 字段 = 'value';")
-        .arg(QString::fromLocal8Bit(table_name.data()));
+            .arg(QString::fromLocal8Bit(table_name.data()));
     std::map<std::string, std::string>::iterator it;
     QString sqlwhere;
     for (it = where.begin(); it != where.end(); it++) {
-		if (it->first.empty() || it->second.empty()) {
-			where.clear();
-			break;
-		}
+        if (it->first.empty() || it->second.empty()) {
+            where.clear();
+            break;
+        }
         sqlwhere += QString(" and %1 = '%2'").arg(QString::fromLocal8Bit((it->first).data()))
-            .arg(QString::fromLocal8Bit((it->second).data()));
+                .arg(QString::fromLocal8Bit((it->second).data()));
     }
     if (where.empty()) {
         sql.chop(6);
@@ -781,17 +781,17 @@ int sqlOperation::getcountsize(std::string table_name, std::map<std::string, std
         sql += sqlwhere;
     }
     m_query->prepare(sql);
-    QSqlRecord rec = m_query->record(); 
+    QSqlRecord rec = m_query->record();
     if (Query(string((const char *)sql.toLocal8Bit()), ret))
     {
         if (m_query->next())
         {
-           return m_query->value(0).toInt();
+            return m_query->value(0).toInt();
         }
     }
     return 0;
 }
- 
+
 
 
 bool sqlOperation::createTable()
@@ -862,11 +862,19 @@ bool sqlOperation::Query(const QString & sql, QSqlQuery ** ret)
     if (m_query == NULL)
         return false;
     bool isok = m_query->exec(sql);
-    m_sql_q = sql;
-    QString a = m_query->value(1).toString();
-    *ret = m_query;
-    if (isok == false) {
-        return false;
+    //    QString namestr=query.value(1).toString(); //如果这句放在这里的话出现上述错误 QSqlQuery::value: not positioned on a valid record
+    /***********************************************************
+     * QSqlQuery返回的数据集，record是停在第一条记录之前的。所以，
+     * 你获得数据集后，必须执行next()或first()到第一条记录，
+     * 这时候record才是有效的。否则，exec完直接value肯定报这个错
+     * *********************************************************/
+    if(m_query->first()){
+        m_sql_q = sql;
+        QString a = m_query->value(1).toString();
+        *ret = m_query;
+        if (isok == false) {
+            return false;
+        }
     }
     return true;
 }
@@ -910,13 +918,16 @@ bool sqlOperation::Add(QString table_name, std::vector<std::map<QString, QString
     sql += values;
     m_query->prepare(sql);
     bool is = Query(sql, ret);
-
+    qInfo()<<"sql:"<<sql;
     return is;
 }
 bool sqlOperation::Add(QString table_name, std::map<QString, QString> data, QSqlQuery ** ret)
 {
-    if (m_query == NULL)
+
+    if (m_query == NULL){
+
         return false;
+    }
     QString sql = "insert into " + table_name + "(";
     QString values = " values(";
     for (std::map<QString, QString>::const_iterator i = data.cbegin(); i != data.cend(); i++)
@@ -932,7 +943,6 @@ bool sqlOperation::Add(QString table_name, std::map<QString, QString> data, QSql
     sql += values;
     m_query->prepare(sql);
     bool is = Query(sql, ret);
-
     return is;
 }
 
@@ -1281,6 +1291,33 @@ bool sqlOperation::findData_Date(QString table_name, const QStringList &keyList,
              qDebug() << "sno:" << value1 << "\t" << "sname:" << value2 << "\t" << "sclass:" << value3;
              listChild<<value1<<value2<<value3;*/
             row.append(listChild);
+        }
+        return true;
+    }
+    else
+        return false;
+}
+bool sqlOperation::findData(QString table_name,const QStringList &keyList, QString where, QString startTime,QString endTime, QList<QMap<QString, QString>> &row, QSqlQuery ** ret)
+{
+    QString sql = QString("SELECT * FROM %1 WHERE (%2) between  '%3' and '%4';")
+            .arg(table_name)
+            .arg(where)
+            .arg(startTime)
+            .arg(endTime);
+    m_query->prepare(sql);
+    QSqlRecord rec = m_query->record();
+    int keySize = keyList.size();
+    if (Query(sql, ret))
+    {
+        while (m_query->next())
+        {
+            QMap<QString,QString> mapChild;
+            rec = m_query->record();
+            for (int i = 0; i < keySize; i++) {
+                QString value = m_query->value(rec.indexOf(keyList.at(i).simplified())).toString();
+                mapChild[keyList.at(i).simplified()] = value;
+            }
+            row.append(mapChild);
         }
         return true;
     }

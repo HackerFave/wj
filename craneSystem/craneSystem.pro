@@ -43,6 +43,10 @@ SOURCES += \
     ui/baseForm.cpp \
     ui/cameraDisplayForm.cpp \
     ui/cameraFullDialog.cpp \
+    ui/widget/DataShow/backendDataControl.cpp \
+    ui/widget/DataShow/backendDataForm.cpp \
+    ui/widget/DataShow/backendDataModel.cpp \
+    ui/widget/DataShow/tableView.cpp \
     ui/widget/TestForm/testCl.cpp \
     ui/widget/TestForm/testModel.cpp \
     ui/widget/TestForm/testWgt.cpp \
@@ -69,6 +73,10 @@ HEADERS += \
     ui/baseForm.h \
     ui/cameraDisplayForm.h \
     ui/cameraFullDialog.h \
+    ui/widget/DataShow/backendDataControl.h \
+    ui/widget/DataShow/backendDataForm.h \
+    ui/widget/DataShow/backendDataModel.h \
+    ui/widget/DataShow/tableView.h \
     ui/widget/TestForm/testCl.h \
     ui/widget/TestForm/testModel.h \
     ui/widget/TestForm/testWgt.h \
@@ -81,6 +89,7 @@ FORMS += \
     ui/baseForm.ui \
     ui/cameraDisplayForm.ui \
     ui/cameraFullDialog.ui \
+    ui/widget/DataShow/backendDataForm.ui \
     ui/widget/TestForm/testWgt.ui \
     widget.ui
 
