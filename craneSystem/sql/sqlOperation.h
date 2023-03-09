@@ -75,7 +75,7 @@ public:
     bool findfieldoperator(std::string table_name, std::string proname,std::list<std::string> &listrow, QSqlQuery ** ret);
     //select count(*) from 表名 where 字段 = 'value';
     //查询总的记录数 包含筛选条件
-    int getcountsize(std::string table_name, std::map<std::string, std::string> where, QSqlQuery ** ret);
+    int getcountsize(std::string table_name,  std::map<std::string, std::string> where , QSqlQuery ** ret);
 
     /*********************新增加方法****************************/
     void CreateTable(QString base);
@@ -89,6 +89,8 @@ public:
     //删除一条记录
     bool Del(QString table_name, std::map<QString, QString> where, QSqlQuery ** ret);
     bool delRecord(QString table_name, const QString &key, const QString &value, QSqlQuery ** ret);
+    //保留n天内数据
+    bool delRecord(QString table_name, const QString &dateKey, long long seconds, QSqlQuery ** ret);
     //更新数据
     bool Updata(QString table_name, std::map<QString, QString> where, std::map<QString, QString> data, QSqlQuery ** ret);
     //查找

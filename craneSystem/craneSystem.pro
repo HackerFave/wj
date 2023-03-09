@@ -39,6 +39,7 @@ SOURCES += \
     ui/Interface/IModel.cpp \
     ui/Interface/System.cpp \
     ui/Interface/WgtFactory.cpp \
+    ui/TGFrame.cpp \
     ui/baseCameraForm.cpp \
     ui/baseForm.cpp \
     ui/cameraDisplayForm.cpp \
@@ -69,6 +70,7 @@ HEADERS += \
     ui/Interface/IModel.h \
     ui/Interface/System.h \
     ui/Interface/WgtFactory.h \
+    ui/TGFrame.h \
     ui/baseCameraForm.h \
     ui/baseForm.h \
     ui/cameraDisplayForm.h \
@@ -150,3 +152,6 @@ win32{
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    resource.qrc

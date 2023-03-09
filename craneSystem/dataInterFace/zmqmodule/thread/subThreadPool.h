@@ -10,6 +10,7 @@ public:
     virtual Q_INVOKABLE void startWork(){};
     virtual Q_INVOKABLE void stopWork(){};
 public slots:
+    virtual Q_INVOKABLE void slotWork() override {};
     virtual Q_INVOKABLE void slotPostWork(){};
     virtual Q_INVOKABLE void slotPostAppendData(const void *,size_t,int){};
     virtual Q_INVOKABLE void slotSubAckAppendData(const void*,int,const uint32_t &){};

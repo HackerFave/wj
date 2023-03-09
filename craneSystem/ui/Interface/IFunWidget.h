@@ -35,8 +35,8 @@ protected:
     virtual void keyReleaseEvent(QKeyEvent *event) ;
 public slots:
 
-    virtual void onClDataCome(int cmd, QVariant data = INT_INVALID);
-    virtual void onModelUpdate(int cmd);
+    virtual void slotOnClDataCome(int cmd, QVariant data = INT_INVALID);
+    virtual void slotOnModelUpdate(int cmd);
 
 protected:
     IController  *m_pICL=nullptr;

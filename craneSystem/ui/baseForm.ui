@@ -14,10 +14,10 @@
    <string>Form</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QWidget#baseForm
+   <string notr="true">/*QWidget#baseForm
 {
    background-color: rgb(131, 131, 131);
-}</string>
+}*/</string>
   </property>
  </widget>
  <resources/>

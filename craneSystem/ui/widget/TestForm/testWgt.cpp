@@ -73,7 +73,7 @@ void testWgt::updateWidget()
 //    }
 //}
 
-void testWgt::onClDataCome(int cmd, QVariant data)
+void testWgt::slotOnClDataCome(int cmd, QVariant data)
 {
     data.isValid();
     switch (cmd) {
@@ -99,7 +99,7 @@ void testWgt::onClDataCome(int cmd, QVariant data)
     }
 }
 
-void testWgt::onModelUpdate(int cmd)
+void testWgt::slotOnModelUpdate(int cmd)
 {
     testModel::ModelCmdType tCmd = static_cast<testModel::ModelCmdType>(cmd);
     switch (tCmd) {
@@ -110,16 +110,6 @@ void testWgt::onModelUpdate(int cmd)
     }
     case testModel::MC_LoadUrl:
     {
-
-
-//        ui->lineEdit->setText("我在测试");
-//        ui->lineEdit->setStyleSheet("background:red;border-width:0;border-style:outset"); //不
-
-//        qDebug()<< ui->lineEdit<<"我在测试*************"<<m_pModel->m_url;
-//        QWebEngineView *view = new QWebEngineView(this);
-//        QUrl url = QUrl::fromUserInput("http://baidu.com");
-//        view->load(url);
-//        ui->gridLayout->addWidget(view);
         break;
     }
     case testModel::MC_SwitchMap:

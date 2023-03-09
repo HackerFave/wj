@@ -1,17 +1,33 @@
     .QWidget{
     border:0px solid #1B89CA;
     border-radius:0px;
+    background-color:#00194b;
     }
-
+    .QWidget#cameraFullDialog{
+    border:0px solid #1B89CA;
+    border-radius:2px;
+    background-color:#00194b;
+    }
     .QFrame{
     border:0px solid #1B89CA;
     border-radius:0px;
+    background-color:#2b5681;
     }
-
+    .QTabWidget{
+    /*color: #F0F0F0;*/
+    border:0px solid #1B89CA;
+    }
+    .QTabWidget::pane {
+    border-top: 3px solid black;
+    border-left: 3px solid black;
+    background-color: green;
+    left:0px;
+    right:0px;
+    bottom:0px;
+    }
     .QLabel{
     color: #F0F0F0;
     }
-
     QWidget#title{
     border-image:url(:/resource/frame/title.png);
     }
@@ -32,7 +48,6 @@
     QWidget#logoWgt{
     border-image:url(:/resource/logo/logo.png);
     }
-
     /*QFrame#rightVideoFrame1,QFrame#rightVideoFrame2,QFrame#rightVideoFrame3{
     border-image:url(:/resource/frame/right_video_frame.png);
     }
@@ -50,7 +65,17 @@
     {
     border-image:url(:/resource/frame/mid_video_frame.png);
     }*/
-
+    QMenuBar{
+    background-color:#c5c5c5;
+    }
+    QMenuBar::selected{
+    background-color:transparent;
+    }
+    QMenuBar::item{
+    font-size:12px;
+    font-family:Microsoft YaHei;
+    color:rgba(255,255,255,1);
+    }
     QLineEdit {
     border: 1px solid #5CACEE;
     border-radius: 0px;
@@ -74,12 +99,36 @@
 
     .QGroupBox{
     border: 1px solid #5CACEE;
-    border-radius: 5px;
+    border-radius: 3px;
     }
+    QGroupBox#camera_groupBox_title
+    {
+    /*border: 1px solid black;*/
+    margin-top: 2.3ex;
+    color:#ffffff;
+    }
+    QGroupBox#camera_groupBox_title::title
+    {
+    subcontrol-origin:margin;
+    left: 10px;
+    }
+    QGroupBox#camera_groupBox_title *{}
+    QGroupBox#groupBox
+    {
+    /*border: 1px solid black;*/
+    color:#ffffff;
+    margin-top: 2.3ex;
+    }
+    QGroupBox#groupBox::title
+    {
+    subcontrol-origin:margin;
+    left: 10px;
+    }
+    QGroupBox#groupBox *{}
 
     .QPushButton{
     border-style: none;
-    border:0px solid #00BAFF;
+    border:1px solid #00BAFF;
     color: #EFF4F3;/*rgb(186, 189, 182);*/
     padding: 5px;
     min-height: 20px;
@@ -94,7 +143,6 @@
 
 
     }
-
     .QPushButton:!enabled{
     border:1px solid #1B89CA;
     padding: 6px;
@@ -103,8 +151,21 @@
     background-color: rgba(148, 148, 148, 100);
     color:rgb(186, 189, 182);/* #EFF4F3;*/
     }
+    QPushButton:pressed {
+    /*设置点击按钮时按钮的样式*/
+    }
+    QPushButton:checked:disabled {
+    /*设置选中并且禁用时按钮的样式*/
+    }
+    QPushButton:checked {
+    /*设置选中时按钮的样式*/
+    }
+    QPushButton:!checked {
+    /*设置未选中时按钮的样式*/
+    }
+    QPushButton:hover {
 
-
+    }
     QCheckBox {
     spacing: 2px;
     }
@@ -334,6 +395,7 @@
     border: 1px solid #5CACEE;
     selection-background-color: #1B89CA;
     selection-color: #F0F0F0;
+    /*background-color:transparent;*/
     }
 
     QTableView::item:selected, QListView::item:selected, QTreeView::item:selected {

@@ -54,13 +54,13 @@ QString IFunWidget::getName()
     return this->name;
 }
 
-void IFunWidget::onClDataCome(int cmd, QVariant data)
+void IFunWidget::slotOnClDataCome(int cmd, QVariant data)
 {
     Q_UNUSED(cmd)
     Q_UNUSED(data)
 }
 
-void IFunWidget::onModelUpdate(int cmd)
+void IFunWidget::slotOnModelUpdate(int cmd)
 {
     Q_UNUSED(cmd)
 }
@@ -68,7 +68,7 @@ void IFunWidget::onModelUpdate(int cmd)
 void IFunWidget::setCL(IController *cl)
 {
     this->m_pICL = cl;
-    connect(this->m_pICL,SIGNAL(pushDataToView(int,QVariant)),this,SLOT(onClDataCome(int,QVariant)));
+    connect(this->m_pICL,SIGNAL(signalPushDataToView(int,QVariant)),this,SLOT(slotOnClDataCome(int,QVariant)));
 }
 
 IController *IFunWidget::getCL()
@@ -79,7 +79,7 @@ IController *IFunWidget::getCL()
 void IFunWidget::setModel(IModel *md)
 {
     this->m_pIModel = md;
-    connect(this->m_pIModel,SIGNAL(sendModelUpdate(int)),this,SLOT(onModelUpdate(int)));
+    connect(this->m_pIModel,SIGNAL(signalSendModelUpdate(int)),this,SLOT(slotOnModelUpdate(int)));
 }
 
 void IFunWidget::paintEvent(QPaintEvent *event)

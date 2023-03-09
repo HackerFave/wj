@@ -14,7 +14,7 @@ public:
 
 signals:
 
-    void sendModelUpdate(int cmd);
+    void signalSendModelUpdate(int cmd);
 
 };
 

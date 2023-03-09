@@ -516,15 +516,6 @@ bool sqlOperation::findData_Date(std::string table_name, const std::list<std::st
     {
         while (m_query->next())
         {
-            /*
-            std::list <QString> j;
-            for (int i = 0; i < 3; i++)
-            {
-                j.push_back(m_query->value(i).toString());
-
-            }
-            row->push_back(j);
-            */
             std::list<std::string> listChild;
             rec = m_query->record();
             std::list<std::string>::const_iterator it_list;
@@ -532,14 +523,6 @@ bool sqlOperation::findData_Date(std::string table_name, const std::list<std::st
                 QString value = m_query->value(rec.indexOf(QString::fromStdString((*it_list)).simplified())).toString();
                 listChild.push_back(string((const char*)value.toLocal8Bit()));
             }
-            /* int snocol = rec.indexOf("id");
-             int snamecol = rec.indexOf("data_time");
-             int sclasscol = rec.indexOf("num");
-             QString value1 = m_query->value(snocol).toString();
-             QString value2 = m_query->value(snamecol).toString();
-             QString value3 = m_query->value(sclasscol).toString();
-             qDebug() << "sno:" << value1 << "\t" << "sname:" << value2 << "\t" << "sclass:" << value3;
-             listChild<<value1<<value2<<value3;*/
             row.push_back(listChild);
         }
         return true;
@@ -972,6 +955,17 @@ bool sqlOperation::delRecord(QString table_name, const QString &key, const QStri
     m_query->prepare(sql);
     return Query(sql, ret);
 }
+//删除7天以上数据
+bool sqlOperation::delRecord(QString table_name, const QString &dateKey, long long seconds, QSqlQuery ** ret)
+{
+    QString sql = QString("DELETE from %1 WHERE TIMESTAMPDIFF(SECOND ,%2,now()) > %3")
+            .arg(table_name)
+            .arg(dateKey)
+            .arg(seconds);//7*24*60*60 一天
+    m_query->prepare(sql);
+    return Query(sql, ret);
+}
+
 
 bool sqlOperation::Updata(QString table_name, std::map<QString, QString> where, std::map<QString, QString> data, QSqlQuery ** ret)
 {

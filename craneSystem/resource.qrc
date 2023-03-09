@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resource/frame/tgframe_2121.png</file>
+        <file>resource/button/true.png</file>
+        <file>resource/frame/tgframe_3221.png</file>
+        <file>resource/test.png</file>
+    </qresource>
+    <qresource prefix="/style">
+        <file>qss/black.css</file>
+        <file>qss/blue.css</file>
+        <file>qss/gray.css</file>
+        <file>qss/navy.css</file>
+    </qresource>
+</RCC>

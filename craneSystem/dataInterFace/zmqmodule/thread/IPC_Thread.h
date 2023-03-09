@@ -11,6 +11,7 @@ public:
     virtual Q_INVOKABLE void stopWork() override;
     Q_INVOKABLE void run(){}
 public slots:
+    virtual Q_INVOKABLE void slotWork() override {};
     virtual Q_INVOKABLE void slotPostWork() override;
     virtual Q_INVOKABLE void slotPostAppendData(const void *,size_t,int){};
     virtual Q_INVOKABLE void slotSubAckAppendData(const void*,int,const uint32_t &){};

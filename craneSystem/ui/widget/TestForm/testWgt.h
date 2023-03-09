@@ -31,8 +31,8 @@ protected:
 
 public slots:
 
-    virtual void onClDataCome(int cmd, QVariant data = INT_INVALID) override;
-    virtual void onModelUpdate(int cmd) override;
+    virtual void slotOnClDataCome(int cmd, QVariant data = INT_INVALID) override;
+    virtual void slotOnModelUpdate(int cmd) override;
 
 private slots:
 

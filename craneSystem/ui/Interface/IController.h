@@ -29,11 +29,11 @@ public:
 
 signals:
 
-    void pushDataToView(int cmd, QVariant data = INT_INVALID);
+    void signalPushDataToView(int cmd, QVariant data = INT_INVALID);
 
-    void sendToMain(ModuleDir moduleDir,int cmd, QVariant data = INT_INVALID); // 控制命令 ControlCmd
+    void signalSendToMain(ModuleDir moduleDir,int cmd, QVariant data = INT_INVALID); // 控制命令 ControlCmd
     //moduleDir是要通知到的区域,nameList是要通知到的窗口，两个都要发
-    void sendToMain(ModuleDir moduleDir,QStringList nameList,int cmd,int subcmd,QVariant data); // 控制命令 ControlCmd，发给modele层
+    void signalSendToMain(ModuleDir moduleDir,QStringList nameList,int cmd,int subcmd,QVariant data); // 控制命令 ControlCmd，发给modele层
 
 public:
 

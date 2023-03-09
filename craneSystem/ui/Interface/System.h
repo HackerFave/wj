@@ -75,7 +75,12 @@ enum TestFormCmdType
 enum backendDataFormType
 {
     CW_UpdateNew=0,
-    CW_Find
+    CW_Find,
+    CW_CurrentTime,
+    CW_FindCount,
+    CW_UpPage,//上一页
+    CW_DownPage,//下一页
+    CW_TurnOnPage//跳转指定页
 };
 
 #define IMEI_LENGTH 15

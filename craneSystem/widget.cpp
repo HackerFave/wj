@@ -1,4 +1,4 @@
-#include "widget.h"
+﻿#include "widget.h"
 #include "ui_widget.h"
 #include "base/webEngie.h"
 #include <QtDebug>
@@ -24,7 +24,7 @@ Widget::Widget(QWidget *parent)
     ui->setupUi(this);
 
     qInstallMessageHandler(logOutput);
-    this->setWindowTitle("起重系统");
+    this->setWindowTitle(QStringLiteral("起重系统"));
 
     initUi();
     _topicRecver.Subscribe(enumToOtherString(Topic_ID::TOPIC_TCP_MESSAGE_TEST_TOPIC_ENUM),
@@ -48,6 +48,8 @@ Widget::Widget(QWidget *parent)
     }
 
     initChildForm();
+    initStyle();//初始化样式表
+
 }
 
 Widget::~Widget()
@@ -73,23 +75,23 @@ void Widget::initUi()
     P_cameraDisplayForm = new cameraDisplayForm;
     ui->gridLayout_camera->addWidget(P_cameraDisplayForm);
     _menuBar = new QMenuBar;
-
+//_menuBar->setVisible(false);
     ui->horizontalLayout_menu->addWidget(_menuBar);
-    _menuBar->setFixedHeight(30);
-    _menuBar->setStyleSheet("QMenuBar{background-color:#c5c5c5;}"
-                            "QMenuBar::selected{background-color:transparent;}"
-                            "QMenuBar::item{font-size:12px;font-family:Microsoft YaHei;color:rgba(255,255,255,1);}");
+//    _menuBar->setFixedHeight(30);
+//    _menuBar->setStyleSheet("QMenuBar{background-color:#c5c5c5;}"
+//                            "QMenuBar::selected{background-color:transparent;}"
+//                            "QMenuBar::item{font-size:12px;font-family:Microsoft YaHei;color:rgba(255,255,255,1);}");
 
-    _menuTest1= new QMenu("测试1");
+    _menuTest1= new QMenu(QStringLiteral("测试1"));
 
     _menuTest1->addAction(new QAction("1",this));
     _menuTest1->addSeparator();
     _menuTest1->addAction(new QAction("2",this));
     _menuTest1->addAction(new QAction("3",this));
-    _menuTest2= new QMenu("测试2");
-    _menuTest3= new QMenu("测试3");
+    _menuTest2= new QMenu(QStringLiteral("测试2"));
+    _menuTest3= new QMenu(QStringLiteral("测试3"));
 
-
+//ui->tabWidget->hide();
 
     _menuBar->addMenu(_menuTest1);
     //    _menuBar->addSeparator();
@@ -110,14 +112,25 @@ void Widget::initUi()
 
 
 }
-
+//初始化样式表
+void Widget::initStyle()
+{
+    // 载入QSS样式
+    QFile file(QString(":style/qss/%1.css").arg("blue"));
+    if(file.open(QFile::ReadOnly)){
+        qInfo()<<QStringLiteral("【样式表加载成功】");
+    }
+    QString qss(QLatin1String(file.readAll()));
+    qApp->setStyleSheet(qss);
+    qApp->setPalette(QPalette(QColor("#F0F0F0")));
+    file.close();
+}
 void Widget::initChildForm()
 {
     connect(this,SIGNAL(signalKeyEvent(ModuleDir,int ,QVariant)),this,SLOT(slotGetFromAny(ModuleDir,int,QVariant)));
-
-    connect(WgtFactory::getFunWidget(MD_TestForm)->getCL(), SIGNAL(sendToMain(ModuleDir,int,QVariant)),
+    connect(WgtFactory::getFunWidget(MD_TestForm)->getCL(), SIGNAL(signalSendToMain(ModuleDir,int,QVariant)),
             this, SLOT(slotGetFromAny(ModuleDir,int,QVariant)));
-    connect(WgtFactory::getFunWidget(MD_backendDataForm)->getCL(), SIGNAL(sendToMain(ModuleDir,int,QVariant)),
+    connect(WgtFactory::getFunWidget(MD_backendDataForm)->getCL(), SIGNAL(signalSendToMain(ModuleDir,int,QVariant)),
             this, SLOT(slotGetFromAny(ModuleDir,int,QVariant)));
 
 
@@ -144,11 +157,9 @@ void Widget::logOutput(QtMsgType type, const QMessageLogContext &context, const 
     case QtDebugMsg:
         text = QString("Debug:");//
         break;
-
     case QtWarningMsg:
         text = QString("Warning:");//警告
         break;
-
     case QtCriticalMsg:
         text = QString("Critical:"); //严重错误
         break;
@@ -206,27 +217,24 @@ void Widget::CallbackFunc(const char* topic1, const void*payload, uint32_t len)/
 {
     int id = enumFromString(std::string(topic1));
 
-//    qInfo()<<":"<<id<<":"<<topic1;
+    //    qInfo()<<":"<<id<<":"<<topic1;
     if(id == TOPIC_TCP_MESSAGE_TEST_TOPIC_ENUM){
         auto msg = flatbuffers::GetRoot<Message>(payload);
         if(msg->data()&&msg->data()->Data()){
-            //            uint8_t *data  = new uint8_t[1024];
-            //            memcpy(data, msg->data()->Data(), len);
-            //            P_dataSub->emitSignal(data,id,len);
-            //            Add(QString table_name, std::map<QString, QString> data, QSqlQuery ** ret);
+
             QString table_name = "testtable";
             std::map<QString, QString> data ;
-//            data["id"] = 1;
-            data["data1"] = "1";
-            data["data2"] = "2";
-            data["data3"] = "3";
-            data["data4"] = "4";
-            data["data5"] = "5";
+
+            data["data1"] = msg->node_name()->c_str();
+            data["data2"] = QString::number(msg->timestamp());
+            data["data3"] = QString::number(msg->seq());
+            data["data4"] = QString::number(msg->size());
+            data["data5"] = QString(topic1);
             data["date"] = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
             QSqlQuery * ret ;
-            SqlMethod::sqlmethod_instance()->getsqloperationinstance("1")->Add(table_name,data,&ret);
-                    static int s = 0;
-//            qInfo()<<id<<"****************************"<<msg->data()->size()<<":"<<len<<":"<<s++;
+            if(!SqlMethod::sqlmethod_instance()->getsqloperationinstance("1")->Add(table_name,data,&ret)){
+                qWarning()<<QStringLiteral("【数据写入数据库失败】");
+            }
         }
 
     }

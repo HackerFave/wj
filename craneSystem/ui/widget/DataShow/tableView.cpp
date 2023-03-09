@@ -1,4 +1,4 @@
-#include "tableView.h"
+﻿#include "tableView.h"
 #include <QDebug>
 #include <QScrollBar>
 #include <QApplication>
@@ -11,24 +11,6 @@ tableView::tableView(QWidget *parent):QTableView(parent)
     //QScrollBar *barV = new QScrollBar; //this->verticalScrollBar();
     QScrollBar *barH = this->horizontalScrollBar();
 
-    /*barV->setStyleSheet("QScrollBar:vertical{"        //垂直滑块整体
-        "background:#FFFFFF;"  //背景色
-        "padding-top:20px;"    //上预留位置（放置向上箭头）
-        "padding-bottom:20px;" //下预留位置（放置向下箭头）
-        "padding-left:3px;"    //左预留位置（美观）
-        "padding-right:3px;"   //右预留位置（美观）
-        "border-left:1px solid #d7d7d7;}"//左分割线
-        "QScrollBar::handle:vertical{"//滑块样式
-        "background:#dbdbdb;"  //滑块颜色
-        "border-radius:6px;"   //边角圆润
-        "min-height:80px;}"    //滑块最小高度
-        "QScrollBar::handle:vertical:hover{"//鼠标触及滑块样式
-        "background:#d0d0d0;}" //滑块颜色
-        "QScrollBar::add-line:vertical{"//向下箭头样式
-        "background:url(:/images/resource/images/checkout/down.png) center no-repeat;}"
-        "QScrollBar::sub-line:vertical{"//向上箭头样式
-        "background:url(:/images/resource/images/checkout/up.png) center no-repeat;}");
-        */
     barH->setStyleSheet(
 
                 "QScrollBar::horizontal{\n"
@@ -51,8 +33,8 @@ tableView::tableView(QWidget *parent):QTableView(parent)
                 "}\n"
                 );
     QStringList list;
-    list<<"id"<<"data1"<<"data2"<<"data3"<<"data4"<<"data5";
-    initTableView(list,"test");
+    list<<"id"<<"data1"<<"data2"<<"data3"<<"data4"<<"data5"<<"date";
+    initTableView(list,QStringLiteral("数据库历史数据"));
 }
 
 tableView::~tableView()
@@ -91,7 +73,8 @@ void tableView::initTableView(const QStringList &list,QString head)
      item_model->setHorizontalHeaderLabels(column);                // 设置水平表头标签
      item_model->setVerticalHeaderLabels(row);                     // 设置垂直表头标签
      */
-
+//    this->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+//     this->resizeColumnsToContents();
     // 添加item到model
     for (int i = 0; i < this->model()->rowCount(); ++i) {
         for (int j = 0; j < this->model()->columnCount(); ++j) {
@@ -157,6 +140,7 @@ void tableView::initTableView(const QStringList &list,QString head)
     this->setFocusPolicy(Qt::StrongFocus);                      // 去除当前Cell周边虚线框
 
     this->setAlternatingRowColors(true);                    // 开启隔行异色
+//    this->setStyleSheet("alternate-background-color:rgb(131,131,131);background-color:rgb(161,161,161)");
     this->setRowHeight(0, 0);
     this->setFocusPolicy(Qt::NoFocus);
     this->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -207,7 +191,7 @@ void tableView::addRowItem(const QMap<QString, QString> &data,const QStringList 
     model->appendRow(listItem);
 
     for (int i = 0; i < model->rowCount(); i++) {
-        this->setRowHeight(i, 38);
+        this->setRowHeight(i, 37);
     }
     this->setRowHeight(0, 0);
 }

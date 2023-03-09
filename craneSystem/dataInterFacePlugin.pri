@@ -13,6 +13,7 @@ HEADERS += \
     $$PWD/dataInterFace/zmqmodule/product/dataSub.h \
     $$PWD/dataInterFace/zmqmodule/thread/IPC_Thread.h \
     $$PWD/dataInterFace/zmqmodule/thread/baseThread.h \
+    $$PWD/dataInterFace/zmqmodule/thread/sqlTruncateThread.h \
     $$PWD/dataInterFace/zmqmodule/thread/subThreadPool.h \
     $$PWD/dataInterFace/zmqmodule/thread/workThread.h \
     $$PWD/dataInterFace/zmqmodule/topicCommon.h
@@ -24,6 +25,7 @@ SOURCES += \
     $$PWD/dataInterFace/zmqmodule/product/dataSub.cpp \
     $$PWD/dataInterFace/zmqmodule/thread/IPC_Thread.cpp \
     $$PWD/dataInterFace/zmqmodule/thread/baseThread.cpp \
+    $$PWD/dataInterFace/zmqmodule/thread/sqlTruncateThread.cpp \
     $$PWD/dataInterFace/zmqmodule/thread/subThreadPool.cpp \
     $$PWD/dataInterFace/zmqmodule/thread/workThread.cpp
 

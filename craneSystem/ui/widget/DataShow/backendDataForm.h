@@ -23,19 +23,38 @@ public:
     virtual bool isQuit() override;
     virtual void initWidget() override;
     virtual void updateWidget() override;
-    //    void setFrameType(int small);
 
 protected:
-    //    virtual void keyPressEvent(QKeyEvent *event) ;
     virtual void resizeEvent(QResizeEvent *event) override;
-
+    inline int getPage(int count)
+    {
+        if(count%20 == 0){
+            return count/20;
+        }
+        else if (count<=20) {
+            return 1;
+        }
+        else {
+            return  count/20 +1 ;
+        }
+    }
+    inline int getRemainder(int count)
+    {
+        return  count%20  ;
+    }
 public slots:
 
-    virtual void onClDataCome(int cmd, QVariant data = INT_INVALID) override;
-    virtual void onModelUpdate(int cmd) override;
+    virtual void slotOnClDataCome(int cmd, QVariant data = INT_INVALID) override;
+    virtual void slotOnModelUpdate(int cmd) override;
 
 private slots:
     void slotPushButton_find();
+    void on_pushButton_up_page_clicked();
+
+    void on_pushButton_down_page_clicked();
+
+    void on_pushButton_on_page_clicked();
+
 private:
     Ui::backendDataForm *ui;
     static backendDataForm  *s_pInstance;

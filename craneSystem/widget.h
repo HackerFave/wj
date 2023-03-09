@@ -34,7 +34,7 @@ private:
     static void writeOutPut(const QString &str,QtMsgType type);
     // 设置回调函数的函数
     static void CallbackFunc(const char* topic, const void*payload, uint32_t len);//数据接受函数、、
-
+    void initStyle();//样式表
 private slots:
     //    void slotActionOutput(bool);
     void slotSubTopicData(const void*,int ,const uint32_t &);
