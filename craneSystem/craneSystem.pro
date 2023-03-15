@@ -30,6 +30,7 @@ SOURCES += \
     base/TGFrame.cpp \
     base/webEngie.cpp \
 #    driver/burglarAlarm485.cpp \
+    driver/Net485.cpp \
     driver/burglarAlarm485.cpp \
     main.cpp \
     message/outputForm.cpp \
@@ -61,6 +62,7 @@ HEADERS += \
     base/jt808.hpp \
     base/webEngie.h \
 #    driver/burglarAlarm485.h \
+    driver/Net485.h \
     driver/burglarAlarm485.h \
     message/outputForm.h \
     public/fbsstructure.h \
