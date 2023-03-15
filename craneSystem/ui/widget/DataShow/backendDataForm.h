@@ -28,19 +28,22 @@ protected:
     virtual void resizeEvent(QResizeEvent *event) override;
     inline int getPage(int count)
     {
-        if(count%20 == 0){
-            return count/20;
+        if(count%PAGE_ONE == 0){
+            return count/PAGE_ONE;
         }
-        else if (count<=20) {
+        else if (count<=PAGE_ONE) {
             return 1;
         }
         else {
-            return  count/20 +1 ;
+            return  count/PAGE_ONE +1 ;
         }
     }
     inline int getRemainder(int count)
     {
-        return  count%20  ;
+        if(count == PAGE_ONE){
+            return PAGE_ONE;
+        }
+        return  count%PAGE_ONE  ;
     }
 public slots:
 

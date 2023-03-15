@@ -125,7 +125,6 @@
     left: 10px;
     }
     QGroupBox#groupBox *{}
-
     .QPushButton{
     border-style: none;
     border:1px solid #00BAFF;
@@ -135,13 +134,10 @@
     border-radius:0px;
     background:rgba(148, 148, 148, 180);
     }
-
     .QPushButton:focus{
     color: rgb(255, 255, 255);
     background: #00BAFF;
     border:1px solid rgb(0, 0, 0);
-
-
     }
     .QPushButton:!enabled{
     border:1px solid #1B89CA;
@@ -153,9 +149,26 @@
     }
     QPushButton:pressed {
     /*设置点击按钮时按钮的样式*/
+	color:#ffffff; /*文字颜色*/
+    background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop:0 #ff55ff, stop: 1 #aa00ff);/*背景色*/
+    border-style:outset; /*边框风格*/
+    border-width:2px;/*边框宽度*/
+    border-color:#0055ff; /*边框颜色*/
+    border-radius:10px; /*边框倒角*/
+    font:bold 14px; /*字体*/
+    font-family: Segoe UI;
+    min-width:100px;/*控件最小宽度*/
+    min-height:20px;/*控件最小高度*/
+    padding:4px;/*内边距*/
     }
     QPushButton:checked:disabled {
     /*设置选中并且禁用时按钮的样式*/
+	color: blue;
+	border-color: brown;
+    background-color: aqua;
+    }
+	QPushButton:checked:pressed { /* QPushButton处于可选中且鼠标按压在QPushButton上时的状态 */
+	background-color: #F2F2F2;
     }
     QPushButton:checked {
     /*设置选中时按钮的样式*/
@@ -164,7 +177,17 @@
     /*设置未选中时按钮的样式*/
     }
     QPushButton:hover {
-
+	color:#ffffff; /*文字颜色*/
+    background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop:0 #ff55ff, stop: 1 #1296db);/*背景色*/
+    border-style:outset; /*边框风格*/
+    border-width:2px;/*边框宽度*/
+    border-color:#0055ff; /*边框颜色*/
+    border-radius:10px; /*边框倒角*/
+    font:bold 14px; /*字体*/
+    font-family: Segoe UI;
+    min-width:100px;/*控件最小宽度*/
+    min-height:20px;/*控件最小高度*/
+    padding:4px;/*内边距*/
     }
     QCheckBox {
     spacing: 2px;
@@ -281,11 +304,13 @@
     margin-top: -3px;
     margin-bottom: -3px;
     border-radius: 6px;
-    background: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5,stop:0.6 #F0F0F0, stop:0.778409 #5CACEE);
+    background: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5,stop:0.6 #F0F0F0, stop:0.778409 
+#5CACEE);
     }
 
     QSlider::handle:horizontal:hover {
-    background: qradialgradient(spread: pad, cx: 0.5, cy: 0.5, radius: 0.5, fx: 0.5, fy: 0.5, stop: 0.6 #F0F0F0,stop:0.778409 #1B89CA);
+    background: qradialgradient(spread: pad, cx: 0.5, cy: 0.5, radius: 0.5, fx: 0.5, fy: 0.5, stop: 0.6 
+#F0F0F0,stop:0.778409 #1B89CA);
     }
 
     QSlider::groove:vertical,QSlider::sub-page:vertical {
@@ -305,11 +330,13 @@
     margin-left: -3px;
     margin-right: -3px;
     border-radius: 6px;
-    background: qradialgradient(spread: pad, cx: 0.5, cy: 0.5, radius: 0.5, fx: 0.5, fy: 0.5, stop: 0.6 #F0F0F0, stop:0.778409 #5CACEE);
+    background: qradialgradient(spread: pad, cx: 0.5, cy: 0.5, radius: 0.5, fx: 0.5, fy: 0.5, stop: 0.6 #F0F0F0, 
+stop:0.778409 #5CACEE);
     }
 
     QSlider::handle:vertical:hover {
-    background: qradialgradient(spread: pad, cx: 0.5, cy: 0.5, radius: 0.5, fx: 0.5, fy: 0.5, stop: 0.6 #F0F0F0,stop:0.778409 #1B89CA);
+    background: qradialgradient(spread: pad, cx: 0.5, cy: 0.5, radius: 0.5, fx: 0.5, fy: 0.5, stop: 0.6 
+#F0F0F0,stop:0.778409 #1B89CA);
     }
 
     QScrollBar:vertical {

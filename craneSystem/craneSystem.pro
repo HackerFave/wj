@@ -1,9 +1,8 @@
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets sql  opengl gui network webenginewidgets concurrent
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets sql  opengl gui network webenginewidgets concurrent charts serialport serialbus
 
 CONFIG += c++11
-
 include($$PWD/dataInterFacePlugin.pri)
 
 # The following define makes your compiler emit warnings if you use
@@ -30,6 +29,8 @@ SOURCES += \
     base/OpenGLWidget.cpp \
     base/TGFrame.cpp \
     base/webEngie.cpp \
+#    driver/burglarAlarm485.cpp \
+    driver/burglarAlarm485.cpp \
     main.cpp \
     message/outputForm.cpp \
     sql/SqlMethod.cpp \
@@ -39,7 +40,6 @@ SOURCES += \
     ui/Interface/IModel.cpp \
     ui/Interface/System.cpp \
     ui/Interface/WgtFactory.cpp \
-    ui/TGFrame.cpp \
     ui/baseCameraForm.cpp \
     ui/baseForm.cpp \
     ui/cameraDisplayForm.cpp \
@@ -60,6 +60,8 @@ HEADERS += \
     base/TGFrame.h \
     base/jt808.hpp \
     base/webEngie.h \
+#    driver/burglarAlarm485.h \
+    driver/burglarAlarm485.h \
     message/outputForm.h \
     public/fbsstructure.h \
     public/publicclass.h \
@@ -70,7 +72,6 @@ HEADERS += \
     ui/Interface/IModel.h \
     ui/Interface/System.h \
     ui/Interface/WgtFactory.h \
-    ui/TGFrame.h \
     ui/baseCameraForm.h \
     ui/baseForm.h \
     ui/cameraDisplayForm.h \

@@ -200,7 +200,6 @@ void backendDataForm::on_pushButton_down_page_clicked()
         data["last"] = getRemainder(m_pModel->_findRowData.size());
     }
     data["page"] = _currentPage;
-    qWarning()<<_currentPage<<"KKKKKKKKKKKKKKKKKKKKKKKK";
     emit m_pCL->signalSendToMain(dir,CW_DownPage,data);
 }
 

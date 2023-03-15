@@ -29,30 +29,10 @@ enum ModuleType
 {
     MD_None=-1,//隐藏窗口
     MD_MainProcessor=0,       //主处理模块
-
-    MD_MainMonitor,           //主监控界面
-
     MD_CloudWeb,              //web界面
     MD_CloudWebSmall,         //web小界面
     MD_TestForm,              //测试界面
     MD_backendDataForm        //数据库展示界面
-
-};
-// 监控主界面命令
-enum MainMonitorWgtCmdType
-{
-    MM_UpdateAll=0,         //更新界面
-    MM_VehicleData,         //当前接入车辆设备信息
-    MM_ThrottleBrakeWheel,  //当前接入车辆设备信息
-    MM_Speed,               //当前接入车辆设备速度
-    MM_Gear,                //当前接入车辆设备档位
-    MM_VehicleStatus,       //当前接入车辆设备状态
-    MM_UpdateLoginStatus,   //更新登陆状态
-    MM_UpdateUI,       //更新ui
-    MM_CloseTip,       //关闭提示
-    MM_ShowEmergency,       //show emergency tip
-    MM_TSET,
-    MM_UpdateOnlineState      //更新车辆在线状态
 
 };
 

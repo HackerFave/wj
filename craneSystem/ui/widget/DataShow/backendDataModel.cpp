@@ -15,14 +15,14 @@ void backendDataModel::setPage(QVariant page)
 {
     if(page.toMap().size()>1){
         _currentShowData.clear();
-        for(int i =(page.toMap()["page"].toUInt()-1)*20;i<(page.toMap()["page"].toUInt()-1)*20+page.toMap()["last"].toUInt();i++){
+        for(int i =(page.toMap()["page"].toUInt()-1)*PAGE_ONE;i<(page.toMap()["page"].toUInt()-1)*PAGE_ONE+page.toMap()["last"].toUInt();i++){
             _currentShowData.push_back(_findRowData.at(i));
         }
         emit signalSendModelUpdate(MC_ShowPage);
     }
     else {
         _currentShowData.clear();
-        for(int i =(page.toMap()["page"].toUInt()-1)*20;i<(page.toMap()["page"].toUInt()-1)*20+20;i++){
+        for(int i =(page.toMap()["page"].toUInt()-1)*PAGE_ONE;i<(page.toMap()["page"].toUInt()-1)*PAGE_ONE+PAGE_ONE;i++){
             _currentShowData.push_back(_findRowData.at(i));
         }
         emit signalSendModelUpdate(MC_ShowPage);

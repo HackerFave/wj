@@ -6,7 +6,7 @@
 #include <QMap>
 #include <QVariant>
 #include "../../Interface/IModel.h"
-
+#define PAGE_ONE 20
 class backendDataModel : public IModel
 {
     Q_OBJECT
