@@ -6,7 +6,7 @@
 
 FfmpegRegister::FfmpegRegister()
 {
-    //av_register_all();          //注册全部功能
+//    av_register_all();          //注册全部功能
     avformat_network_init();    //初始化FFmpeg网络模块
 }
 

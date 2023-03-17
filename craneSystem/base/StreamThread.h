@@ -52,7 +52,7 @@ public slots:
     void outputResize(int w,int h);
 
 private:
-
+    QString myUrl = QString("D:/work/1/1.mp4");  // 视频地址
     std::unique_ptr<AVPacket,void(*)(void*)>            m_pPacket;
     AVPacket                                           *m_audio_Packet;
     std::unique_ptr<SwsContext,void(*)(SwsContext*)>    m_pImgConvertCtx;

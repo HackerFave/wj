@@ -34,6 +34,7 @@ SOURCES += \
     driver/burglarAlarm485.cpp \
     main.cpp \
     message/outputForm.cpp \
+    public/httpMethord.cpp \
     sql/SqlMethod.cpp \
     sql/sqlOperation.cpp \
     ui/Interface/IController.cpp \
@@ -66,6 +67,7 @@ HEADERS += \
     driver/burglarAlarm485.h \
     message/outputForm.h \
     public/fbsstructure.h \
+    public/httpMethord.h \
     public/publicclass.h \
     sql/SqlMethod.h \
     sql/sqlOperation.h \
@@ -118,7 +120,7 @@ win32{
         INCLUDEPATH += $$PWD/ffmpeg/include
         LIBS += -L$$PWD/ffmpeg/lib -lavcodec -lavformat -lavutil -lavdevice -lavfilter -lpostproc -lswresample -lswscale
         INCLUDEPATH += $$PWD/include
-
+        LIBS += -L$$PWD/lib/curl -llibcurl
     CONFIG(debug, debug|release){
             DESTDIR =$$PWD/build/debug
         LIBS += -L$$PWD/lib/debug  -lqBreakpad -lflatbuffers
@@ -127,7 +129,7 @@ win32{
             DESTDIR =$$PWD/build/release
         LIBS += -L$$PWD/lib/release -lqBreakpad -lflatbuffers
         LIBS += -L$$PWD/lib/zmq/release -lzmq_wrapper
-    }
+       }
 
         LIBS += -L$$PWD/ZeroMQ -lzmq -llibzmq -llibzmq-v141-mt-4_3_2
         LIBS += -L$$PWD/lib -lPlayCtrl -lHCNetSDK -lHCCore -lGdiPlus -lHCAlarm -lHCGeneralCfgMgr -lHCPreview

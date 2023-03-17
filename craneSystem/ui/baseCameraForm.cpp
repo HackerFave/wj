@@ -6,7 +6,8 @@ baseCameraForm::baseCameraForm(QWidget *parent) :
     ui(new Ui::baseCameraForm)
 {
     ui->setupUi(this);
-
+    QString url = "D:/work/1/2.mp4";
+    ui->widget->startPlay(url);
 }
 
 baseCameraForm::~baseCameraForm()
