@@ -83,6 +83,8 @@ bool StreamThread::openStream()
     av_dict_set(&options, "max_delay", "50", 0);
     m_pFormatCtx = avformat_alloc_context();
     ret = avformat_open_input(&m_pFormatCtx, m_url.toUtf8().data(), NULL, &options);
+
+
     av_dict_free(&options);
 
     if (ret != 0) {
@@ -171,8 +173,8 @@ bool StreamThread::openStream()
 #if USEOPENGL
     m_pImgConvertCtx = std::unique_ptr<SwsContext,void(*)(SwsContext*)>{
         sws_getContext(m_pCodecCtx->width, m_pCodecCtx->height,
-                    m_pCodecCtx->pix_fmt, m_pCodecCtx->width, m_pCodecCtx->height,
-                    AV_PIX_FMT_YUVJ420P, SWS_BICUBIC, NULL, NULL, NULL),
+                    /*ConvertDeprecatedFormat(m_pCodecCtx->pix_fmt)*/m_pCodecCtx->pix_fmt, m_pCodecCtx->width, m_pCodecCtx->height,
+                    /*ConvertDeprecatedFormat(AV_PIX_FMT_YUVJ420P)*/AV_PIX_FMT_YUV420P, SWS_BICUBIC, NULL, NULL, NULL),
                 sws_freeContext
     };
 #else
@@ -245,4 +247,25 @@ void StreamThread::doWork()
         avformat_close_input(&m_pFormatCtx);
     }
     emit sglFinished();
+}
+AVPixelFormat StreamThread::ConvertDeprecatedFormat(enum AVPixelFormat format)
+{
+    switch (format)
+    {
+    case AV_PIX_FMT_YUVJ420P:
+        return AV_PIX_FMT_YUV420P;
+        break;
+    case AV_PIX_FMT_YUVJ422P:
+        return AV_PIX_FMT_YUV422P;
+        break;
+    case AV_PIX_FMT_YUVJ444P:
+        return AV_PIX_FMT_YUV444P;
+        break;
+    case AV_PIX_FMT_YUVJ440P:
+        return AV_PIX_FMT_YUV440P;
+        break;
+    default:
+        return format;
+        break;
+    }
 }

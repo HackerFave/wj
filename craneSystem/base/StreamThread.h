@@ -37,7 +37,7 @@ public:
     bool openStream();
     void setParameter(QString &url,QMetaObject::Connection &connection,int w = 0,int h = 0);
     void startThread();  //执行后线程结束会自动释放内存
-
+    AVPixelFormat ConvertDeprecatedFormat(enum AVPixelFormat format);
 signals:
     void sglFinished();
     void sglAsyncUpdateUi(QPixmap img);
