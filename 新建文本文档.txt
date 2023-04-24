@@ -1,0 +1,15 @@
+windeployqt xxx.exe -release (打包时注意)
+
+ LIBS +=  -lmsvcrtd //造成qbreakpad 模块崩溃的问题
+ipconfig/flushdns //刷新dns
+qt播放视频需要安装解码器 K-Lite
+qt windeployqt 打包 debug会报确实动态库，所以发布需要release 打包
+
+使用vs打包 cmd C:\Program Files (x86)\Microsoft Visual Studio\2017\Community> ..windeployqt.exe xxx.exe
+
+编译libcurl ：
+1. 打开vsx64 工具命令行  cmd  D:\work\qtwork\wj\curl-7.88.1\winbuild
+2. nmake /f Makefile.vc mode=dll VC=15 MACHINE=x64 ENABLE_IDN=no DEBUG=no 
+
+qt windows打包遇到缺失库问题：
+ 注掉 pro文件中 -lmsvcrtd
