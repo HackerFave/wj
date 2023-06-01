@@ -3,6 +3,7 @@
 #include <QLibrary>
 #include <QDebug>
 
+//C:\Qt\Qt5.14.2\5.14.2\msvc2017_64\bin\windeployqt.exe
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -29,6 +30,7 @@ void MainWindow::CallBackFun(const char* topic, const void*payload, uint32_t len
 
     auto content = flatbuffers::GetRoot<MsgTest>(msg->data()->Data());
     printf("content result: %d\n", content->result());
+
 
     //     for(int i=0; i<content->array()->size(); i++)
     //     {

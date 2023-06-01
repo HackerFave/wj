@@ -5,9 +5,13 @@
 #include <QDateTime>
 #include <synchapi.h>  //QSleep
 #include <QDebug>
+#include <usbscan.h>
 #define TIMEOUT 3000
 #define TESTNUM 50
 #define NOT_TT 1
+//A2 COM6
+//A3 COM5
+//A4 COM7
 canDataShowForm::canDataShowForm(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::canDataShowForm)
@@ -21,114 +25,174 @@ canDataShowForm::canDataShowForm(QWidget *parent) :
 
     AutoSendTimer=new QTimer(this);
     connect(AutoSendTimer,&QTimer::timeout,this,&canDataShowForm::on_pushButton_send_clicked);
-    _timer = new QTimer(this);
-    connect(_timer,&QTimer::timeout,this,&canDataShowForm::slotTimerTest);
-
-    _timer1 = new QTimer(this);
-    connect(_timer1,&QTimer::timeout,this,&canDataShowForm::slotTimerTest1);
-
-    _timer2 = new QTimer(this);
-    connect(_timer2,&QTimer::timeout,this,&canDataShowForm::slotTimerTest2);
-    //    _timer2->start(1000);
     StartInit();
+    initThreadPool();
+    initThreadRS();
 #if NOT_TT
-    ui->groupBox_3->setEnabled(false);
-    ui->groupBox_4->setEnabled(false);
-    ui->groupBox_5->setEnabled(false);
-    ui->groupBox_6->setEnabled(false);
+    //    ui->groupBox_3->setEnabled(false);
+    //    ui->groupBox_4->setEnabled(false);
+    //    ui->groupBox_5->setEnabled(false);
+    //    ui->groupBox_6->setEnabled(false);
 #endif
 }
 //初始化线程
-void canDataShowForm::initThread()
+void canDataShowForm::initThreadPool()
 {
     //线程池
-    _threadMap.clear();
+    //    _threadMap.clear();
     _pool.setMaxThreadCount(5);
-    _threadMap[0] = new serialWorkThreadPool(0);
-    _threadMap[0]->startWork();
-    _threadMap[0]->setAutoDelete(true);
+    //    _serialWorkThreadPool_XT_01 = new serialWorkThreadPool_XT_01(0,1);
 
-    _threadMap[1] = new serialWorkThreadPool_1(1);
-    _threadMap[1]->startWork();
-    _threadMap[1]->setAutoDelete(true);
+    //    _serialWorkThreadPool_XT_01->setAutoDelete(true);
 
-    _threadMap[2] = new serialWorkThreadPool_2(2);
-    _threadMap[2]->startWork();
-    _threadMap[2]->setAutoDelete(true);
+    //    _serialWorkThreadPool_XT_02 = new serialWorkThreadPool_XT_02(1,1);
 
-    _threadMap[3] = new serialWorkThreadPool_3(3);
-    _threadMap[3]->startWork();
-    _threadMap[3]->setAutoDelete(true);
+    //    _serialWorkThreadPool_XT_02->setAutoDelete(true);
 
-    _threadMap[4] = new serialWorkThreadPool_4(4);
-    _threadMap[4]->startWork();
-    _threadMap[4]->setAutoDelete(true);
+    _serialWorkThreadPool_LX_603 = new serialWorkThreadPool_LX_603(2,0);
 
-    _pool.start(_threadMap[0]);
-    _pool.start(_threadMap[1]);
-    _pool.start(_threadMap[2]);
-    _pool.start(_threadMap[3]);
-    _pool.start(_threadMap[4]);
+    _serialWorkThreadPool_LX_603->setAutoDelete(true);
 
+    _serialWorkThreadPool_TT_601 = new serialWorkThreadPool_TT_601(3,0);
+
+    _serialWorkThreadPool_TT_601->setAutoDelete(true);
+
+    _serialWorkThreadPool_MT_141 = new serialWorkThreadPool_MT_141(4,0);
+
+    _serialWorkThreadPool_MT_141->setAutoDelete(true);
+
+    //    _serialWorkThreadPool_MT_142 = new serialWorkThreadPool_MT_142(5,1);
+
+    //    _serialWorkThreadPool_MT_142->setAutoDelete(true);
+
+    //    _serialWorkThreadPool_MT_143 = new serialWorkThreadPool_MT_143(6,1);
+
+    //    _serialWorkThreadPool_MT_143->setAutoDelete(true);
+
+    _serialWorkThreadPool_MT_145 = new serialWorkThreadPool_MT_145(7,0);
+
+    _serialWorkThreadPool_MT_145->setAutoDelete(true);
+
+    _serialWorkThreadPool_YK_602 = new serialWorkThreadPool_YK_602(8,1);
+
+    _serialWorkThreadPool_YK_602->setAutoDelete(true);
+
+
+
+}
+void canDataShowForm::initThreadRS()
+{
     /*
  * @brief   :初始化recv线程
  * @author  :tanchuang
  * @date    :2023.04.10
  */
-    P_testDataThread = new testDataThread(m_DevType,m_DevIndex,m_CanIndex);
-    P_ThreadRecv = new QThread;
-    P_testDataThread->moveToThread(P_ThreadRecv);
-    connect(P_ThreadRecv,SIGNAL(finished()),P_testDataThread,SLOT(deleteLater()));
-    connect(P_ThreadRecv,SIGNAL(started()),P_testDataThread,SLOT(slotWork()));
-    P_ThreadRecv->start();
-    P_testDataThread->startWork();
-    connect(P_testDataThread,&testDataThread::signalSendRecvData,this,&canDataShowForm::slotRealTimeUpdateMsg);
+    /*****************************************CAN1***********************************/
+    P_canDataRecvThread_CAN1 = new canDataRecvThread(m_DevType,m_DevIndex,0);
+    P_ThreadRecv_CAN1 = new QThread;
+    P_canDataRecvThread_CAN1->moveToThread(P_ThreadRecv_CAN1);
 
-    P_canDataSendThread = new canDataSendThread(m_DevType,m_DevIndex,m_CanIndex);
+    connect(P_ThreadRecv_CAN1,SIGNAL(finished()),P_canDataRecvThread_CAN1,SLOT(deleteLater()));
+    connect(P_ThreadRecv_CAN1,SIGNAL(started()),P_canDataRecvThread_CAN1,SLOT(slotWork()));
+    P_ThreadRecv_CAN1->start();
+    P_canDataRecvThread_CAN1->startWork();
+    connect(P_canDataRecvThread_CAN1,&canDataRecvThread::signalSendRecvData,this,&canDataShowForm::slotRealTimeUpdateMsg);
+
+    /*****************************************CAN2***********************************/
+    P_canDataRecvThread_CAN2 = new canDataRecvThread(m_DevType,m_DevIndex,1);
+    P_ThreadRecv_CAN2 = new QThread;
+    P_canDataRecvThread_CAN2->moveToThread(P_ThreadRecv_CAN2);
+    connect(P_ThreadRecv_CAN2,SIGNAL(finished()),P_canDataRecvThread_CAN2,SLOT(deleteLater()));
+    connect(P_ThreadRecv_CAN2,SIGNAL(started()),P_canDataRecvThread_CAN2,SLOT(slotWork()));
+    P_ThreadRecv_CAN2->start();
+    P_canDataRecvThread_CAN2->startWork();
+
+    connect(P_canDataRecvThread_CAN2,&canDataRecvThread::signalSendRecvData,this,&canDataShowForm::slotRealTimeUpdateMsg);
+
+    connect(P_canDataRecvThread_CAN2,&canDataRecvThread::signalSendError,this,&canDataShowForm::slotOpenCan);
+
+
+    /*****************************************CAN send***********************************/
+    P_canDataSendThread = new canDataSendThread();
     P_ThreadSend = new QThread;
+
     P_canDataSendThread->moveToThread(P_ThreadSend);
     connect(P_ThreadSend,SIGNAL(finished()),P_canDataSendThread,SLOT(deleteLater()));
     connect(P_ThreadSend,SIGNAL(started()),P_canDataSendThread,SLOT(slotWork()));
 
     //can报文写入线程
-        connect(this,SIGNAL(signalSendCanBuf(void *,int)),P_canDataSendThread,SLOT(slotSendCanBuf(void *,int)),Qt::DirectConnection);
-    //    connect(this,SIGNAL(signalRecvId(QString)),P_canDataSendThread,SLOT(slotRecvId(QString)),Qt::DirectConnection);
+    connect(P_canDataRecvThread_CAN1,SIGNAL(signalRecvStatus(bool)),P_canDataSendThread,SLOT(slotRecvStatus(bool)),Qt::DirectConnection);
+    connect(P_canDataRecvThread_CAN2,SIGNAL(signalRecvStatus(bool)),P_canDataSendThread,SLOT(slotRecvStatus(bool)),Qt::DirectConnection);
 
     P_ThreadSend->start();
     P_canDataSendThread->startWork();
+
 
 }
 //释放线程池
 void canDataShowForm::releaseThread()
 {
-    if(!_threadMap.isEmpty()){
-        if( _threadMap[0]&&_threadMap[0]->isStart()){
-            _threadMap[0]->stopWork();
-        }
-        if( _threadMap[1]&&_threadMap[1]->isStart()){
-
-            _threadMap[1]->stopWork();
-        }
-        if( _threadMap[2]&&_threadMap[2]->isStart()){
-            _threadMap[2]->stopWork();
-        }
-        if( _threadMap[3]&&_threadMap[3]->isStart()){
-            _threadMap[3]->stopWork();
-        }
-        if( _threadMap[4]&&_threadMap[4]->isStart()){
-            _threadMap[4]->stopWork();
-        }
-        _threadMap.clear();
+    if(P_ThreadRecv_CAN1){
+        qDebug()<<P_canDataRecvThread_CAN1<<P_ThreadRecv_CAN1<<"ID";
+        P_canDataRecvThread_CAN1->stopWork();
+        P_ThreadRecv_CAN1->quit();
+        P_ThreadRecv_CAN1->deleteLater();
+        P_ThreadRecv_CAN1 = nullptr;
+        P_canDataRecvThread_CAN1 = nullptr;
     }
-    if(P_ThreadRecv){
-        P_testDataThread->stopWork();
-        P_ThreadRecv->quit();
+    if(P_ThreadRecv_CAN2){
+        qDebug()<<P_canDataRecvThread_CAN2<<P_ThreadRecv_CAN2<<"ID";
+        P_canDataRecvThread_CAN2->stopWork();
+        P_ThreadRecv_CAN2->quit();
+        P_ThreadRecv_CAN2->deleteLater();
+        P_ThreadRecv_CAN2 = nullptr;
+        P_canDataRecvThread_CAN2 = nullptr;
     }
     if(P_ThreadSend){
         P_canDataSendThread->stopWork();
         P_ThreadSend->quit();
+        P_ThreadSend->deleteLater();
+        P_ThreadSend = nullptr;
+        P_canDataSendThread = nullptr;
     }
     _pool.releaseThread();
+    qDebug()<<"release pool";
+}
+void canDataShowForm::startThreadPoll()
+{
+
+    initThreadPool();
+    //        _serialWorkThreadPool_XT_01->startWork();
+    //        _serialWorkThreadPool_XT_02->startWork();
+    _serialWorkThreadPool_LX_603->startWork();
+//    _serialWorkThreadPool_YK_602->startWork();
+    _serialWorkThreadPool_TT_601->startWork();
+    _serialWorkThreadPool_MT_141->startWork();
+    //        _serialWorkThreadPool_MT_142->startWork();
+    //        _serialWorkThreadPool_MT_143->startWork();
+    _serialWorkThreadPool_MT_145->startWork();
+    //        _pool.start(_serialWorkThreadPool_XT_01);
+    //        _pool.start(_serialWorkThreadPool_XT_02);
+    _pool.start(_serialWorkThreadPool_LX_603);
+//    _pool.start(_serialWorkThreadPool_YK_602);
+    _pool.start(_serialWorkThreadPool_TT_601);
+    _pool.start(_serialWorkThreadPool_MT_141);
+    //        _pool.start(_serialWorkThreadPool_MT_142);
+    //        _pool.start(_serialWorkThreadPool_MT_143);
+    _pool.start(_serialWorkThreadPool_MT_145);
+
+}
+void canDataShowForm::stopThreadPoll()
+{
+    //    _serialWorkThreadPool_XT_01->stopWork();
+    //    _serialWorkThreadPool_XT_02->stopWork();
+    _serialWorkThreadPool_LX_603->stopWork();
+//    _serialWorkThreadPool_YK_602->stopWork();
+    _serialWorkThreadPool_TT_601->stopWork();
+    _serialWorkThreadPool_MT_141->stopWork();
+    //    _serialWorkThreadPool_MT_142->stopWork();
+    //    _serialWorkThreadPool_MT_143->stopWork();
+    _serialWorkThreadPool_MT_145->stopWork();
 }
 /*
  * @brief   : 析构
@@ -137,6 +201,9 @@ void canDataShowForm::releaseThread()
  */
 canDataShowForm::~canDataShowForm()
 {
+    if(!_isRelease){
+        stopThreadPoll();
+    }
     releaseThread();
     delete ui;
 }
@@ -148,12 +215,15 @@ canDataShowForm::~canDataShowForm()
   */
 void canDataShowForm::on_pushButton_open_clicked()
 {
+
     DWORD Reserved=0;
     uchar BaudIndex=static_cast<uchar>(ui->comboBox_baudrate->currentIndex());  //获取波特率选取序号
     //打开设备
     if(VCI_OpenDevice(m_DevType,m_DevIndex,Reserved)!=1)
     {
+        qDebug()<<m_DevType<<m_DevIndex;
         QMessageBox::warning(this,tr(""),"open failed");
+
         return;
     }
     VCI_INIT_CONFIG InitInfo[1];
@@ -162,28 +232,36 @@ void canDataShowForm::on_pushButton_open_clicked()
     InitInfo->Filter=static_cast<UCHAR>(ui->comboBox_recvDataType->currentIndex()+1); //接收数据类型
     InitInfo->AccCode=0x80000008; //验收码
     //InitInfo->AccCode=0x80000000;
-    InitInfo->AccMask=0xFFFFFFFF; //屏蔽码,表示全部接接收
+    InitInfo->AccMask=0xFFFFFFFF; //屏蔽码,表示全部接接收l
     InitInfo->Mode=static_cast<UCHAR>(ui->comboBox_work_mode->currentIndex());  //正常模式 工作模式
     //初始化通道can1
     m_CanIndex=static_cast<DWORD>(ui->comboBox_Channel->currentIndex());  //Can1或者Can2
-    if(VCI_InitCAN(m_DevType,m_DevIndex,m_CanIndex,InitInfo)!=1)	//
+    if(VCI_InitCAN(m_DevType,m_DevIndex,0,InitInfo)!=1)	//
     {
         VCI_CloseDevice(m_DevType, m_DevIndex);
-
         QMessageBox::warning(this,tr(""),"Init-CAN failed!");
         return;
     }
-    Sleep(100);
-    if(VCI_StartCAN(m_DevType,m_DevIndex,m_CanIndex)!=1)	//
+    if(VCI_InitCAN(m_DevType,m_DevIndex,1,InitInfo)!=1)	//
+    {
+        VCI_CloseDevice(m_DevType, m_DevIndex);
+        QMessageBox::warning(this,tr(""),"Init-CAN failed!");
+        return;
+    }
+    if(VCI_StartCAN(m_DevType,m_DevIndex,0)!=1)	//
+    {
+        QMessageBox::warning(this,tr(""),"Start-CAN1 failed!");
+        return;
+    }
+    if(VCI_StartCAN(m_DevType,m_DevIndex,1)!=1)	//
     {
         QMessageBox::warning(this,tr(""),"Start-CAN1 failed!");
         return;
     }
     QMessageBox::warning(this,tr(""),"Open successfule!\n Start CAN OK!");
-    publicClass::getInstance()->setValueIni("index/DevIndex",QString::number(m_DevIndex));
-    publicClass::getInstance()->setValueIni("index/CanIndex",QString::number(m_CanIndex));
 
-    initThread();
+    startThreadPoll();
+    _isRelease = false;
 
 }
 /**
@@ -221,10 +299,9 @@ void canDataShowForm::on_pushButton_send_clicked()
     publicClass::getInstance()->Str2CharSplitBlank(sendMsg,sendbuf->Data,&sendbuf->DataLen);
     ULONG flag;
     SendCnt++;
-    //    qDebug()<<"m_DevType:"<<m_DevType<<"m_DevIndex:"<<m_DevIndex<<"m_CanIndex:"<<m_CanIndex
-    //           <<"sendMsg"<<sendMsg;
+    //初始化通道can1
+    m_CanIndex=static_cast<DWORD>(ui->comboBox_Channel->currentIndex());  //Can1或者Can2
     flag=VCI_Transmit(m_DevType,m_DevIndex,m_CanIndex,sendbuf,1); //调用动态链接库发送函数
-    //    emit  signalSendCanBuf(sendbuf,/*sendbuf->DataLen*/sizeof (VCI_CAN_OBJ));
     _sleep(10);
     if(flag<1)  //发送不正常
     {
@@ -253,8 +330,8 @@ void canDataShowForm::on_pushButton_cleanData_clicked()
 {
     QStringList lstr;
     lstr<</*QStringLiteral("序号")<<*/QStringLiteral("系统时间")/*<<QStringLiteral("时间标识")*/
-          /*<<QStringLiteral("CAN chanel")*/<<QStringLiteral("传输方向")<<QStringLiteral("ID号")
-       <<QStringLiteral("帧类型")<<QStringLiteral("帧格式")<<QStringLiteral("长度")<<QStringLiteral("数据");
+       <<QStringLiteral("CAN chanel")<<QStringLiteral("传输方向")<<QStringLiteral("ID号")
+      <<QStringLiteral("帧类型")<<QStringLiteral("帧格式")<<QStringLiteral("长度")<<QStringLiteral("数据");
 
     theModel->clear();
     theModel->setHorizontalHeaderLabels(lstr);
@@ -283,7 +360,8 @@ void canDataShowForm::on_pushButton_close_clicked()
         return;
     }
     QMessageBox::warning(this,tr(""),"Close successful!");
-    releaseThread();
+    stopThreadPoll();
+    _isRelease = true;
 }
 
 
@@ -299,8 +377,8 @@ void canDataShowForm::StartInit()
 
     QStringList lstr;
     lstr<</*QStringLiteral("序号")<<*/QStringLiteral("系统时间")/*<<QStringLiteral("时间标识")*/
-          /*<<QStringLiteral("CAN chanel")*/<<QStringLiteral("传输方向")<<QStringLiteral("ID号")
-       <<QStringLiteral("帧类型")<<QStringLiteral("帧格式")<<QStringLiteral("长度")<<QStringLiteral("数据");
+       <<QStringLiteral("CAN chanel")<<QStringLiteral("传输方向")<<QStringLiteral("ID号")
+      <<QStringLiteral("帧类型")<<QStringLiteral("帧格式")<<QStringLiteral("长度")<<QStringLiteral("数据");
     theModel->setHorizontalHeaderLabels(lstr);
     ui->tableView_data->setModel(theModel);
     ui->tableView_data->horizontalHeader()->setStyleSheet("QHeaderView::section {"
@@ -319,16 +397,8 @@ void canDataShowForm::StartInit()
     ui->comboBox_baudrate->setCurrentIndex(13);
     ui->checkBox_canrecv->setChecked(true);
     m_CanIndex=static_cast<DWORD>(ui->comboBox_Channel->currentIndex());  //Can1或者Can2
-    m_DevType=/*VCI_USBCAN2*/publicClass::getInstance()->readValueIni("index/devtype").toUInt();
+
     m_DevIndex=0;  // 第一个设备
-
-    ui->label_limit->setText(QStringLiteral("角度限制:")+ publicClass::getInstance()->readValueIni("index/limit"));
-
-    ui->lineEdit_0->setText( publicClass::getInstance()->readValueIni("index/limit0"));
-
-    ui->lineEdit_1->setText( publicClass::getInstance()->readValueIni("index/limit1"));
-
-    ui->lineEdit_fu->setText( publicClass::getInstance()->readValueIni("index/limitfu"));
 
 }
 
@@ -361,14 +431,14 @@ double canDataShowForm::GetX()
   *@param:
   *@date:
   */
-QList<QStandardItem*> canDataShowForm::AddRowRecv(PVCI_CAN_OBJ Recv,QString *rowstr)
+QList<QStandardItem*> canDataShowForm::AddRowRecv(PVCI_CAN_OBJ Recv,QString *rowstr,short can)
 {
     QList<QStandardItem *> Rowtext;
     QString index=QString::number(RecvCnt);
 
     QString systime=QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss"); //系统时间
     QString timeStamp=QString::number(QDateTime::currentMSecsSinceEpoch());  //当前毫秒级时间戳
-    QString channel=ui->comboBox_Channel->currentText(); //当前can通道（can1或者can2）
+    QString channel=QString("CAN%1").arg(QString::number(can)); //当前can通道（can1或者can2）
     QString direct="Recv"; //接收
     QString id=QString::number(Recv->ID,16).toUpper();  //CanID
     QString type=ui->comboBox_frame_type->currentText();  //帧类型 数据帧 远程帧
@@ -378,9 +448,9 @@ QList<QStandardItem*> canDataShowForm::AddRowRecv(PVCI_CAN_OBJ Recv,QString *row
     *rowstr=index+":    "+systime+"   "+timeStamp+"   "+channel+"   "+direct+"   "+id+"   "+type+"   "+format+"   "+datalen+"   "+data+"\n";
     QStandardItem *itemmodel = new QStandardItem(direct);
     itemmodel->setForeground(QBrush(QColor(0, 255, 0)));
-    Rowtext<</*new QStandardItem(index)<<*/new QStandardItem(systime)<</*new QStandardItem(timeStamp)<<*//*new QStandardItem(channel)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <<*/itemmodel<<new QStandardItem(id)<<new QStandardItem(type)<<new QStandardItem(format)
-          <<new QStandardItem(datalen)<<new QStandardItem(data);
+    Rowtext<</*new QStandardItem(index)<<*/new QStandardItem(systime)<</*new QStandardItem(timeStamp)*/new QStandardItem(channel)
+          <<itemmodel<<new QStandardItem(id)<<new QStandardItem(type)<<new QStandardItem(format)
+         <<new QStandardItem(datalen)<<new QStandardItem(data);
     return Rowtext;
 }
 /**
@@ -404,9 +474,9 @@ QList<QStandardItem *> canDataShowForm::AddRowSend(QString sendstr,uchar len,QSt
     *rowstr=index+":   "+systime+"   "+timeStamp+"   "+channel+"   "+direct+"   "+id+"   "+type+"   "+format+"   "+datalen+"   "+data+"\n";
     QStandardItem *itemmodel = new QStandardItem(direct);
     itemmodel->setForeground(QBrush(QColor(255, 0, 0)));
-    Rowtext<</*new QStandardItem(index)<<*/new QStandardItem(systime)<</*new QStandardItem(timeStamp)<<*//*new QStandardItem(channel)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <<*/itemmodel<<new QStandardItem(id)<<new QStandardItem(type)<<new QStandardItem(format)
-          <<new QStandardItem(datalen)<<new QStandardItem(data);
+    Rowtext<</*new QStandardItem(index)<<*/new QStandardItem(systime)<</*new QStandardItem(timeStamp)<<*/new QStandardItem(channel)
+          <<itemmodel<<new QStandardItem(id)<<new QStandardItem(type)<<new QStandardItem(format)
+         <<new QStandardItem(datalen)<<new QStandardItem(data);
     return Rowtext;
 }
 /*
@@ -414,11 +484,12 @@ QList<QStandardItem *> canDataShowForm::AddRowSend(QString sendstr,uchar len,QSt
  * @author  :tanchuang
  * @date    :2023.04.10
  */
-void  canDataShowForm::slotRealTimeUpdateMsg(/*UINT id, BYTE *data*/VCI_CAN_OBJ *Recv,  DWORD Recv_Len)
+void  canDataShowForm::slotRealTimeUpdateMsg(/*UINT id, BYTE *data*/VCI_CAN_OBJ *Recv,  DWORD Recv_Len,short can)
 {
     if(ui->tableView_data->model()->rowCount()>1000){
         on_pushButton_cleanData_clicked();
     }
+
     QString RowStr;
     bool IsStartRecv=ui->checkBox_canrecv->isChecked();
     if(IsStartRecv==false) return;
@@ -426,9 +497,12 @@ void  canDataShowForm::slotRealTimeUpdateMsg(/*UINT id, BYTE *data*/VCI_CAN_OBJ 
     {
         for(DWORD i=0;i<Recv_Len;i++){
             RecvCnt+=1;
-            theModel->appendRow(AddRowRecv(&Recv[i],&RowStr));
+            VCI_CAN_OBJ obj;
+            std::lock_guard<std::mutex> lgd(_mutex);
+            memmove(&obj,&Recv[i],sizeof (VCI_CAN_OBJ));
+            theModel->appendRow(AddRowRecv(&obj,&RowStr,can));
 #if NOT_TT
-            emit signalDataToRmdForm(Recv[i].ID, Recv[i].Data);
+            emit signalDataToForm(obj.ID, obj.Data);
 #else
             emit signalDataToView(Recv[i].ID, Recv[i].Data); //波形更新
             QString datastr = publicClass::getInstance()->Byte_16(Recv[i].Data,8);
@@ -503,1248 +577,90 @@ void canDataShowForm::on_checkBox_cansave_clicked(bool checked)
         filename.clear();
     }
 }
-//电机初始化
-void canDataShowForm::on_pushButton_init_clicked()
+void canDataShowForm::slotOpenCan(short canIndex)
 {
-    VCI_CAN_OBJ sendbuf[1];
-    ui->lineEdit_frame_id->setText("02");
-    bool ok;
-    QString sendMsg="10 10";//发送数据
-    QString RowStr;
-    if(ui->comboBox_work_mode->currentIndex()==1)//"只听模式"
+    VCI_ClearBuffer(m_DevType, m_DevIndex, m_CanIndex);//清理接收和发送缓冲器数据
+    //           stopThreadPoll();
+    //    if(VCI_CloseDevice(m_DevType,m_DevIndex)!=1)
+    //    {
+    //        qDebug()<<"reboot can failed";
+    //        return;
+    //    }
+
+    DWORD Reserved=0;
+    uchar BaudIndex=static_cast<uchar>(ui->comboBox_baudrate->currentIndex());  //获取波特率选取序号
+    //打开设备
+    if(VCI_OpenDevice(m_DevType,m_DevIndex,Reserved)!=1)
     {
-        QMessageBox::warning(this,QStringLiteral("注意!"),QStringLiteral("当前为只听模式"));
-        ui->checkBox_autoSend->setChecked(false);
-        AutoSendTimer->stop();
+        qDebug()<<m_DevType<<m_DevIndex;
         return;
     }
-    sendbuf->ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
-    sendbuf->RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
-
-    if((sendbuf->ExternFlag)==1)//帧格式，远程帧
+    VCI_INIT_CONFIG InitInfo[1];
+    InitInfo->Timing0=Bsp[BaudIndex][0];
+    InitInfo->Timing1=Bsp[BaudIndex][1];
+    InitInfo->Filter=static_cast<UCHAR>(ui->comboBox_recvDataType->currentIndex()+1); //接收数据类型
+    InitInfo->AccCode=0x80000008; //验收码
+    //InitInfo->AccCode=0x80000000;
+    InitInfo->AccMask=0xFFFFFFFF; //屏蔽码,表示全部接接收
+    InitInfo->Mode=static_cast<UCHAR>(ui->comboBox_work_mode->currentIndex());  //正常模式 工作模式
+    //初始化通道can1
+    m_CanIndex=static_cast<DWORD>(ui->comboBox_Channel->currentIndex());  //Can1或者Can2
+    if(VCI_InitCAN(m_DevType,m_DevIndex,0,InitInfo)!=1)	//
     {
-        sendbuf->ID =(ui->lineEdit_frame_id->text().toUInt(&ok,16)); //&0x1FFFFFFF;
-    }
-    else//标准帧格式
-    {
-        sendbuf->ID=(ui->lineEdit_frame_id->text().toUInt(&ok,16))&0x7FF;
-    }
-
-    sendbuf->SendType=1;
-    sendbuf->TimeFlag=0;
-    sendbuf->TimeStamp=0;
-    publicClass::getInstance()->Str2CharSplitBlank(sendMsg,sendbuf->Data,&sendbuf->DataLen);
-    ULONG flag;
-    SendCnt++;
-    //    qDebug()<<"m_DevType:"<<m_DevType<<"m_DevIndex:"<<m_DevIndex<<"m_CanIndex:"<<m_CanIndex
-    //           <<"sendMsg"<<sendMsg;
-    flag=VCI_Transmit(m_DevType,m_DevIndex,m_CanIndex,sendbuf,1); //调用动态链接库发送函数
-    //    emit  signalSendCanBuf(sendbuf,/*sendbuf->DataLen*/sizeof (VCI_CAN_OBJ));
-    if(flag<1)  //发送不正常
-    {
-        QMessageBox::warning(this,QStringLiteral("警告"),QStringLiteral("发送失败\n"));
-        if(ui->checkBox_autoSend->isChecked())  //关闭自动发送
-        {   AutoSendTimer->stop();
-            ui->checkBox_autoSend->setChecked(false);
-        }
-    }
-    else {
-        theModel->appendRow(AddRowSend(sendMsg,sendbuf->DataLen,&RowStr));
-        if(ui->checkBox_cansave->isChecked()){ //如果勾选了保存实时数据
-            SaveData2File(file,RowStr);
-        }
-        //qDebug()<<RowStr;
-        ui->label_sendNum->setText(QString::number(SendCnt,10)); // 显示发送计数
-
-    }
-}
-
-void canDataShowForm::on_pushButton_foreward_clicked()
-{
-    VCI_CAN_OBJ sendbuf[1];
-    bool ok;
-    ui->lineEdit_frame_id->setText("602");
-    QList<QString>   sendMsg;
-    sendMsg.clear();
-    //    sendMsg.append(QString("2F 60 60 00 03 00 00 00"));
-    //    sendMsg.append(QString("2B 40 60 00 80 00 00 00"));
-    //    sendMsg.append(QString("2B 40 60 00 06 00 00 00"));
-    //    sendMsg.append(QString("2B 40 60 00 07 00 00 00"));
-    //    sendMsg.append(QString("2B 40 60 00 0f 00 00 00"));
-    int32_t  ss2 = ui->lineEdit_suduRpm->text().simplified().toInt()*10; //设置速度
-
-    unsigned char out2[4] ={};
-    publicClass::getInstance()->int32Arr2Bytes(&ss2,4,out2);
-    QByteArray byArr2((const char*)out2,4);
-
-    QString ssss2 =  publicClass::getInstance()->Byte_16((unsigned char *)byArr2.data(),4);
-    QString sudu = QString("23 FF 60 00 %1").arg(ssss2);
-    sendMsg.append(sudu);
-
-    QString RowStr;
-    if(ui->comboBox_work_mode->currentIndex()==1)//"只听模式"
-    {
-        QMessageBox::warning(this,QStringLiteral("注意!"),QStringLiteral("当前为只听模式"));
-        ui->checkBox_autoSend->setChecked(false);
-        AutoSendTimer->stop();
+        VCI_CloseDevice(m_DevType, m_DevIndex);
+        qDebug()<<"Init-CAN failed!";
         return;
     }
-    for(int i=0;i<1;i++){
-        sendbuf[i].ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
-        sendbuf[i].RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
-
-        if((sendbuf->ExternFlag)==1)//帧格式，远程帧
-        {
-            sendbuf[i].ID =(ui->lineEdit_frame_id->text().toUInt(&ok,16)); //&0x1FFFFFFF;
-        }
-        else//标准帧格式
-        {
-            sendbuf[i].ID=(ui->lineEdit_frame_id->text().toUInt(&ok,16))&0x7FF;
-        }
-
-        sendbuf[i].SendType=1;
-        sendbuf[i].TimeFlag=0;
-        sendbuf[i].TimeStamp=0;
-        publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
-        ULONG flag;
-        SendCnt++;
-        //        qDebug()<<"m_DevType:"<<m_DevType<<"m_DevIndex:"<<m_DevIndex<<"m_CanIndex:"<<m_CanIndex
-        //               <<"sendMsg"<<sendMsg;
-        flag=VCI_Transmit(m_DevType,m_DevIndex,m_CanIndex,&sendbuf[i],1); //调用动态链接库发送函数
-        //        emit  signalSendCanBuf(&sendbuf[i],/*sendbuf->DataLen*/sizeof (VCI_CAN_OBJ));
-        if(flag<1)  //发送不正常
-        {
-            QMessageBox::warning(this,QStringLiteral("警告"),QStringLiteral("发送失败\n"));
-            if(ui->checkBox_autoSend->isChecked())  //关闭自动发送
-            {   AutoSendTimer->stop();
-                ui->checkBox_autoSend->setChecked(false);
-            }
-        }
-        else {
-            theModel->appendRow(AddRowSend(sendMsg[i],sendbuf[i].DataLen,&RowStr));
-            if(ui->checkBox_cansave->isChecked()){ //如果勾选了保存实时数据
-                SaveData2File(file,RowStr);
-            }
-            ui->label_sendNum->setText(QString::number(SendCnt,10)); // 显示发送计数
-        }
-    }
-
-}
-
-void canDataShowForm::on_pushButton_reversal_clicked()
-{
-    VCI_CAN_OBJ sendbuf[1];
-    bool ok;
-    ui->lineEdit_frame_id->setText("602");
-    QList<QString>   sendMsg;
-    sendMsg.clear();
-    //    sendMsg.append(QString("2F 60 60 00 03 00 00 00"));
-    //    sendMsg.append(QString("2B 40 60 00 80 00 00 00"));
-    //    sendMsg.append(QString("2B 40 60 00 06 00 00 00"));
-    //    sendMsg.append(QString("2B 40 60 00 07 00 00 00"));
-    //    sendMsg.append(QString("2B 40 60 00 0f 00 00 00"));
-
-    int32_t  ss2 = -ui->lineEdit_suduRpm->text().simplified().toInt()*10; //设置速度
-
-    unsigned char out2[4] ={};
-    publicClass::getInstance()->int32Arr2Bytes(&ss2,4,out2);
-    QByteArray byArr2((const char*)out2,4);
-
-    QString ssss2 =  publicClass::getInstance()->Byte_16((unsigned char *)byArr2.data(),4);
-    QString sudu = QString("23 FF 60 00 %1").arg(ssss2);
-    sendMsg.append(sudu);
-    QString RowStr;
-    if(ui->comboBox_work_mode->currentIndex()==1)//"只听模式"
+    if(VCI_InitCAN(m_DevType,m_DevIndex,1,InitInfo)!=1)	//
     {
-        QMessageBox::warning(this,QStringLiteral("注意!"),QStringLiteral("当前为只听模式"));
-        ui->checkBox_autoSend->setChecked(false);
-        AutoSendTimer->stop();
+        VCI_CloseDevice(m_DevType, m_DevIndex);
+        qDebug()<<"Init-CAN failed!";
         return;
     }
-    for(int i=0;i<1;i++){
-        sendbuf[i].ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
-        sendbuf[i].RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
-
-        if((sendbuf->ExternFlag)==1)//帧格式，远程帧
-        {
-            sendbuf[i].ID =(ui->lineEdit_frame_id->text().toUInt(&ok,16)); //&0x1FFFFFFF;
-        }
-        else//标准帧格式
-        {
-            sendbuf[i].ID=(ui->lineEdit_frame_id->text().toUInt(&ok,16))&0x7FF;
-        }
-
-        sendbuf[i].SendType=1;
-        sendbuf[i].TimeFlag=0;
-        sendbuf[i].TimeStamp=0;
-        publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
-        ULONG flag;
-        SendCnt++;
-        //        qDebug()<<"m_DevType:"<<m_DevType<<"m_DevIndex:"<<m_DevIndex<<"m_CanIndex:"<<m_CanIndex
-        //               <<"sendMsg"<<sendMsg;
-        flag=VCI_Transmit(m_DevType,m_DevIndex,m_CanIndex,&sendbuf[i],1); //调用动态链接库发送函数
-        //        emit  signalSendCanBuf(&sendbuf[i],/*sendbuf->DataLen*/sizeof (VCI_CAN_OBJ));
-        if(flag<1)  //发送不正常
-        {
-            QMessageBox::warning(this,QStringLiteral("警告"),QStringLiteral("发送失败\n"));
-            if(ui->checkBox_autoSend->isChecked())  //关闭自动发送
-            {   AutoSendTimer->stop();
-                ui->checkBox_autoSend->setChecked(false);
-            }
-        }
-        else {
-            theModel->appendRow(AddRowSend(sendMsg[i],sendbuf[i].DataLen,&RowStr));
-            if(ui->checkBox_cansave->isChecked()){ //如果勾选了保存实时数据
-                SaveData2File(file,RowStr);
-            }
-            ui->label_sendNum->setText(QString::number(SendCnt,10)); // 显示发送计数
-        }
-    }
-
-}
-/*
- * @brief   :速度模式使能
- * @author  :tanchuang
- * @date    :2023.04.04
- */
-void canDataShowForm::on_pushButton_enable_clicked()
-{
-    VCI_CAN_OBJ sendbuf[5];
-    bool ok;
-    ui->lineEdit_frame_id->setText("602");
-    QList<QString>   sendMsg;
-    sendMsg.clear();
-    sendMsg.append(QString("2F 60 60 00 03 00 00 00"));//速度模式
-    sendMsg.append(QString("2B 40 60 00 80 00 00 00"));
-    sendMsg.append(QString("2B 40 60 00 06 00 00 00"));
-    sendMsg.append(QString("2B 40 60 00 07 00 00 00"));
-    sendMsg.append(QString("2B 40 60 00 0f 00 00 00"));
-    QString RowStr;
-    if(ui->comboBox_work_mode->currentIndex()==1)//"只听模式"
+    if(VCI_StartCAN(m_DevType,m_DevIndex,0)!=1)	//
     {
-        QMessageBox::warning(this,QStringLiteral("注意!"),QStringLiteral("当前为只听模式"));
-        ui->checkBox_autoSend->setChecked(false);
-        AutoSendTimer->stop();
+        qDebug()<<"Start-CAN1 failed!";
         return;
     }
-    for(int i=0;i<5;i++){
-        sendbuf[i].ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
-        sendbuf[i].RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
-
-        if((sendbuf->ExternFlag)==1)//帧格式，远程帧
-        {
-            sendbuf[i].ID =(ui->lineEdit_frame_id->text().toUInt(&ok,16)); //&0x1FFFFFFF;
-        }
-        else//标准帧格式
-        {
-            sendbuf[i].ID=(ui->lineEdit_frame_id->text().toUInt(&ok,16))&0x7FF;
-        }
-
-        sendbuf[i].SendType=1;
-        sendbuf[i].TimeFlag=0;
-        sendbuf[i].TimeStamp=0;
-        publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
-        ULONG flag;
-        SendCnt++;
-        //        qDebug()<<"m_DevType:"<<m_DevType<<"m_DevIndex:"<<m_DevIndex<<"m_CanIndex:"<<m_CanIndex
-        //               <<"sendMsg"<<sendMsg;
-        flag=VCI_Transmit(m_DevType,m_DevIndex,m_CanIndex,&sendbuf[i],1); //调用动态链接库发送函数
-        //        emit  signalSendCanBuf(&sendbuf[i],/*sendbuf->DataLen*/sizeof (VCI_CAN_OBJ));
-        _sleep(10);
-        if(flag<1)  //发送不正常
-        {
-            QMessageBox::warning(this,QStringLiteral("警告"),QStringLiteral("发送失败\n"));
-            if(ui->checkBox_autoSend->isChecked())  //关闭自动发送
-            {   AutoSendTimer->stop();
-                ui->checkBox_autoSend->setChecked(false);
-            }
-        }
-        else {
-            theModel->appendRow(AddRowSend(sendMsg[i],sendbuf[i].DataLen,&RowStr));
-            if(ui->checkBox_cansave->isChecked()){ //如果勾选了保存实时数据
-                SaveData2File(file,RowStr);
-            }
-            ui->label_sendNum->setText(QString::number(SendCnt,10)); // 显示发送计数
-        }
-    }
-}
-//停止使能
-void canDataShowForm::on_pushButton_stopEnable_clicked()
-{
-    VCI_CAN_OBJ sendbuf[1];
-    bool ok;
-    ui->lineEdit_frame_id->setText("602");
-    QList<QString>   sendMsg;
-    sendMsg.clear();
-    sendMsg.append(QString("2B 40 60 00 02 00 00 00"));
-    QString RowStr;
-    if(ui->comboBox_work_mode->currentIndex()==1)//"只听模式"
+    if(VCI_StartCAN(m_DevType,m_DevIndex,1)!=1)	//
     {
-        QMessageBox::warning(this,QStringLiteral("注意!"),QStringLiteral("当前为只听模式"));
-        ui->checkBox_autoSend->setChecked(false);
-        AutoSendTimer->stop();
+        qDebug()<<"Start-CAN1 failed!";
         return;
     }
-    sendbuf->ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
-    sendbuf->RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
-
-    if((sendbuf->ExternFlag)==1)//帧格式，远程帧
-    {
-        sendbuf->ID =(ui->lineEdit_frame_id->text().toUInt(&ok,16)); //&0x1FFFFFFF;
-    }
-    else//标准帧格式
-    {
-        sendbuf->ID=(ui->lineEdit_frame_id->text().toUInt(&ok,16))&0x7FF;
-    }
-
-    sendbuf->SendType=1;
-    sendbuf->TimeFlag=0;
-    sendbuf->TimeStamp=0;
-    publicClass::getInstance()->Str2CharSplitBlank(sendMsg[0],sendbuf->Data,&sendbuf->DataLen);
-    ULONG flag;
-    SendCnt++;
-    //    qDebug()<<"m_DevType:"<<m_DevType<<"m_DevIndex:"<<m_DevIndex<<"m_CanIndex:"<<m_CanIndex
-    //           <<"sendMsg"<<sendMsg;
-    flag=VCI_Transmit(m_DevType,m_DevIndex,m_CanIndex,sendbuf,1); //调用动态链接库发送函数
-    //    emit  signalSendCanBuf(sendbuf,/*sendbuf->DataLen*/sizeof (VCI_CAN_OBJ));
-    if(flag<1)  //发送不正常
-    {
-        QMessageBox::warning(this,QStringLiteral("警告"),QStringLiteral("发送失败\n"));
-        if(ui->checkBox_autoSend->isChecked())  //关闭自动发送
-        {   AutoSendTimer->stop();
-            ui->checkBox_autoSend->setChecked(false);
-        }
-    }
-    else {
-        theModel->appendRow(AddRowSend(sendMsg[0],sendbuf->DataLen,&RowStr));
-        if(ui->checkBox_cansave->isChecked()){ //如果勾选了保存实时数据
-            SaveData2File(file,RowStr);
-        }
-        ui->label_sendNum->setText(QString::number(SendCnt,10)); // 显示发送计数
-    }
-
-
+    startThreadPoll();
+    _isRelease = false;
 }
-
-/*
- * @brief   :原点定位
- * @author  :tanchuang
- * @date    :2023.04.04
- */
-void canDataShowForm::on_pushButton_setyuandian_clicked()
+void canDataShowForm::readShareMemary()
 {
-    VCI_CAN_OBJ sendbuf[7];
-    bool ok;
-    ui->lineEdit_frame_id->setText("602");
-    QList<QString>   sendMsg;
-    sendMsg.clear();
-    sendMsg.append(QString("2F 98 60 00 23 00 00 00"));//速度模式
-    sendMsg.append(QString("2F 60 60 00 06 00 00 00"));
-    sendMsg.append(QString("2B 40 60 00 80 00 00 00"));
-    sendMsg.append(QString("2B 40 60 00 06 00 00 00"));
-    sendMsg.append(QString("2B 40 60 00 07 00 00 00"));
-    sendMsg.append(QString("2B 40 60 00 0F 00 00 00"));
-    sendMsg.append(QString("2B 40 60 00 1F 00 00 00"));
-
-    //    sendMsg.append(QString("23 FF 60 00 E8 03 00 00"));
-    QString RowStr;
-    if(ui->comboBox_work_mode->currentIndex()==1)//"只听模式"
-    {
-        QMessageBox::warning(this,QStringLiteral("注意!"),QStringLiteral("当前为只听模式"));
-        ui->checkBox_autoSend->setChecked(false);
-        AutoSendTimer->stop();
-        return;
-    }
-    for(int i=0;i<7;i++){
-        sendbuf[i].ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
-        sendbuf[i].RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
-
-        if((sendbuf->ExternFlag)==1)//帧格式，远程帧
-        {
-            sendbuf[i].ID =(ui->lineEdit_frame_id->text().toUInt(&ok,16)); //&0x1FFFFFFF;
-        }
-        else//标准帧格式
-        {
-            sendbuf[i].ID=(ui->lineEdit_frame_id->text().toUInt(&ok,16))&0x7FF;
-        }
-
-        sendbuf[i].SendType=1;
-        sendbuf[i].TimeFlag=0;
-        sendbuf[i].TimeStamp=0;
-        publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
-        ULONG flag;
-        SendCnt++;
-        //        qDebug()<<"m_DevType:"<<m_DevType<<"m_DevIndex:"<<m_DevIndex<<"m_CanIndex:"<<m_CanIndex
-        //               <<"sendMsg"<<sendMsg;
-        flag=VCI_Transmit(m_DevType,m_DevIndex,m_CanIndex,&sendbuf[i],1); //调用动态链接库发送函数
-        //        emit  signalSendCanBuf(&sendbuf[i],/*sendbuf->DataLen*/sizeof (VCI_CAN_OBJ));
-        _sleep(10);
-        if(flag<1)  //发送不正常
-        {
-            QMessageBox::warning(this,QStringLiteral("警告"),QStringLiteral("发送失败\n"));
-            if(ui->checkBox_autoSend->isChecked())  //关闭自动发送
-            {   AutoSendTimer->stop();
-                ui->checkBox_autoSend->setChecked(false);
-            }
-        }
-        else {
-            theModel->appendRow(AddRowSend(sendMsg[i],sendbuf[i].DataLen,&RowStr));
-            if(ui->checkBox_cansave->isChecked()){ //如果勾选了保存实时数据
-                SaveData2File(file,RowStr);
-            }
-            ui->label_sendNum->setText(QString::number(SendCnt,10)); // 显示发送计数
-        }
-    }
-}
-
-void canDataShowForm::on_pushButton_enable_weizhimoshi_clicked()
-{
-
-
-    int num =  publicClass::getInstance()->readValueIni("index/limit").toInt();
-
-    if(ui->comboBox_xiangduiweizhi->currentIndex()==0){
-        VCI_CAN_OBJ sendbuf[10];
-        bool ok;
-        ui->lineEdit_frame_id->setText("602");
-        QList<QString>   sendMsg;
-        sendMsg.clear();
-        sendMsg.append(QString("2F 60 60 00 01 00 00 00"));//相对位置模式
-
-
-        int32_t ss = ui->lineEdit_jiasushijian->text().simplified().toInt();
-        unsigned char out[4] ={};
-        publicClass::getInstance()->int32Arr2Bytes(&ss,4,out);
-        QByteArray byArr((const char*)out,4);
-        QString ssss =  publicClass::getInstance()->Byte_16((unsigned char *)byArr.data(),4);
-        sendMsg.append(QString("23 83 60 00 ")+ssss); //设置加速时间 ms
-
-
-        int32_t  ss1 =  ui->lineEdit_jiansushijian->text().simplified().toInt();
-        unsigned char out1[4] ={};
-        publicClass::getInstance()->int32Arr2Bytes(&ss1,4,out1);
-        QByteArray byArr1((const char*)out1,4);
-        QString ssss1 =  publicClass::getInstance()->Byte_16((unsigned char *)byArr1.data(),4);
-        sendMsg.append(QString("23 84 60 00 ")+ssss1); //设置减速时间 ms
-        int32_t  ssangle = 0;
-
-#if LIMIT
-        
-        if(abs(ui->lineEdit_zhuandongjiaodu->text().simplified().toInt())>num){
-
-            //            if(ui->lineEdit_zhuandongjiaodu->text().simplified().toInt()>0){
-            //                ssangle = (32768*101* num)/360; //设置角度
-            //            }
-            //            else {
-            //                ssangle = (32768*101* (-num))/360; //设置角度
-            //            }
-            QMessageBox::warning(this,QStringLiteral("注意!"),QStringLiteral("当前角度超过限位"));
-            return;
-        }
-        else {
-            ssangle = (32768*101* ui->lineEdit_zhuandongjiaodu->text().simplified().toInt())/360; //设置角度
-        }
-
-#else
-        ssangle = (32768*101/360)* ui->lineEdit_zhuandongjiaodu->text().simplified().toInt(); //设置角度
-#endif
-        unsigned char outangle[4] ={};
-        publicClass::getInstance()->int32Arr2Bytes(&ssangle,4,outangle);
-        QByteArray byArrangle((const char*)outangle,4);
-
-        QString ssssangle =  publicClass::getInstance()->Byte_16((unsigned char *)byArrangle.data(),4);
-
-        QString jiaodu = QString("23 7A 60 00 %1").arg(ssssangle);
-        sendMsg.append(jiaodu);//设置转动角度
-
-        int32_t  ss2 =  ui->lineEdit_weizhiRpm->text().simplified().toInt()*10;
-        unsigned char out2[4] ={};
-        publicClass::getInstance()->int32Arr2Bytes(&ss2,4,out2);
-        QByteArray byArr2((const char*)out2,4);
-
-        QString ssss2 =  publicClass::getInstance()->Byte_16((unsigned char *)byArr2.data(),4);
-
-
-        sendMsg.append(QString("23 81 60 00 ")+ssss2);//设置速度转速 rpm
-        sendMsg.append(QString("2B 40 60 00 80 00 00 00"));
-        sendMsg.append(QString("2B 40 60 00 06 00 00 00"));
-        sendMsg.append(QString("2B 40 60 00 07 00 00 00"));
-        sendMsg.append(QString("2B 40 60 00 4F 00 00 00"));
-        sendMsg.append(QString("2B 40 60 00 5F 00 00 00"));
-
-        QString RowStr;
-        if(ui->comboBox_work_mode->currentIndex()==1)//"只听模式"
-        {
-            QMessageBox::warning(this,QStringLiteral("注意!"),QStringLiteral("当前为只听模式"));
-            ui->checkBox_autoSend->setChecked(false);
-            AutoSendTimer->stop();
-            return;
-        }
-        for(int i=0;i<10;i++){
-            sendbuf[i].ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
-            sendbuf[i].RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
-
-            if((sendbuf->ExternFlag)==1)//帧格式，远程帧
-            {
-                sendbuf[i].ID =(ui->lineEdit_frame_id->text().toUInt(&ok,16)); //&0x1FFFFFFF;
-            }
-            else//标准帧格式
-            {
-                sendbuf[i].ID=(ui->lineEdit_frame_id->text().toUInt(&ok,16))&0x7FF;
-            }
-
-            sendbuf[i].SendType=1;
-            sendbuf[i].TimeFlag=0;
-            sendbuf[i].TimeStamp=0;
-            publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
-            ULONG flag;
-            SendCnt++;
-            //            qDebug()<<"m_DevType:"<<m_DevType<<"m_DevIndex:"<<m_DevIndex<<"m_CanIndex:"<<m_CanIndex
-            //                   <<"sendMsg"<<sendMsg;
-            flag=VCI_Transmit(m_DevType,m_DevIndex,m_CanIndex,&sendbuf[i],1); //调用动态链接库发送函数
-            //            emit  signalSendCanBuf(&sendbuf[i],/*sendbuf->DataLen*/sizeof (VCI_CAN_OBJ));
-            _sleep(10);
-            if(flag<1)  //发送不正常
-            {
-                QMessageBox::warning(this,QStringLiteral("警告"),QStringLiteral("发送失败\n"));
-                if(ui->checkBox_autoSend->isChecked())  //关闭自动发送
-                {   AutoSendTimer->stop();
-                    ui->checkBox_autoSend->setChecked(false);
-                }
-                return;
-            }
-            else {
-                theModel->appendRow(AddRowSend(sendMsg[i],sendbuf[i].DataLen,&RowStr));
-                if(ui->checkBox_cansave->isChecked()){ //如果勾选了保存实时数据
-                    SaveData2File(file,RowStr);
-                }
-                ui->label_sendNum->setText(QString::number(SendCnt,10)); // 显示发送计数
-            }
-        }
-    }
-    else {
-        VCI_CAN_OBJ sendbuf[10];
-        bool ok;
-        ui->lineEdit_frame_id->setText("602");
-        QList<QString>   sendMsg;
-        sendMsg.clear();
-        sendMsg.append(QString("2F 60 60 00 01 00 00 00"));//绝对位置模式
-
-        int32_t ss = ui->lineEdit_jiasushijian->text().simplified().toInt();
-        unsigned char out[4] ={};
-        publicClass::getInstance()->int32Arr2Bytes(&ss,4,out);
-        QByteArray byArr((const char*)out,4);
-
-        QString ssss =  publicClass::getInstance()->Byte_16((unsigned char *)byArr.data(),4);
-
-        sendMsg.append(QString("23 83 60 00 ")+ssss); //设置加速时间 ms
-
-        int32_t  ss1 =  ui->lineEdit_jiansushijian->text().simplified().toInt();
-        unsigned char out1[4] ={};
-        publicClass::getInstance()->int32Arr2Bytes(&ss1,4,out1);
-        QByteArray byArr1((const char*)out1,4);
-
-        QString ssss1 =  publicClass::getInstance()->Byte_16((unsigned char *)byArr1.data(),4);
-
-
-        sendMsg.append(QString("23 84 60 00 ")+ssss1); //设置减速时间 ms
-
-        //        sendMsg.append(QString("23 7A 60 00 10 27 00 00"));//设置目标位置 一圈32768 除以减速比1/101
-
-        //        sendMsg.append(QString("23 7A 60 00 00 00 00 00"));//设置转动角度
-
-        int32_t  ssangle = 0;
-
-#if LIMIT
-        if(abs(ui->lineEdit_zhuandongjiaodu->text().simplified().toInt())>num){
-
-            //            if(ui->lineEdit_zhuandongjiaodu->text().simplified().toInt()>0){
-            //                ssangle = (32768*101* num)/360; //设置角度
-            //            }
-            //            else {
-            //                ssangle = (32768*101* (-num))/360; //设置角度
-            //            }
-            QMessageBox::warning(this,QStringLiteral("注意!"),QStringLiteral("当前角度超过限位"));
-            return;
-        }
-        else {
-            ssangle = (32768*101* ui->lineEdit_zhuandongjiaodu->text().simplified().toInt())/360; //设置角度
-        }
-
-#else
-        ssangle = (32768*101/360)* ui->lineEdit_zhuandongjiaodu->text().simplified().toInt(); //设置角度
-#endif
-        unsigned char outangle[4] ={};
-        publicClass::getInstance()->int32Arr2Bytes(&ssangle,4,outangle);
-        QByteArray byArrangle((const char*)outangle,4);
-
-        QString ssssangle =  publicClass::getInstance()->Byte_16((unsigned char *)byArrangle.data(),4);
-
-        QString jiaodu = QString("23 7A 60 00 %1").arg(ssssangle);
-        sendMsg.append(jiaodu);//设置转动角度
-
-        int32_t  ss2 =  ui->lineEdit_weizhiRpm->text().simplified().toInt()*10;
-        unsigned char out2[4] ={};
-        publicClass::getInstance()->int32Arr2Bytes(&ss2,4,out2);
-        QByteArray byArr2((const char*)out2,4);
-
-        QString ssss2 =  publicClass::getInstance()->Byte_16((unsigned char *)byArr2.data(),4);
-        sendMsg.append(QString("23 81 60 00 ")+ssss2);//设置速度转速 rpm
-        sendMsg.append(QString("2B 40 60 00 80 00 00 00"));
-        sendMsg.append(QString("2B 40 60 00 06 00 00 00"));
-        sendMsg.append(QString("2B 40 60 00 07 00 00 00"));
-        sendMsg.append(QString("2B 40 60 00 0F 00 00 00"));
-        sendMsg.append(QString("2B 40 60 00 1F 00 00 00"));
-
-        QString RowStr;
-        if(ui->comboBox_work_mode->currentIndex()==1)//"只听模式"
-        {
-            QMessageBox::warning(this,QStringLiteral("注意!"),QStringLiteral("当前为只听模式"));
-            ui->checkBox_autoSend->setChecked(false);
-            AutoSendTimer->stop();
-            return;
-        }
-        for(int i=0;i<10;i++){
-            sendbuf[i].ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
-            sendbuf[i].RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
-
-            if((sendbuf->ExternFlag)==1)//帧格式，远程帧
-            {
-                sendbuf[i].ID =(ui->lineEdit_frame_id->text().toUInt(&ok,16)); //&0x1FFFFFFF;
-            }
-            else//标准帧格式
-            {
-                sendbuf[i].ID=(ui->lineEdit_frame_id->text().toUInt(&ok,16))&0x7FF;
-            }
-
-            sendbuf[i].SendType=1;
-            sendbuf[i].TimeFlag=0;
-            sendbuf[i].TimeStamp=0;
-            publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
-            ULONG flag;
-            SendCnt++;
-            //            qDebug()<<"m_DevType:"<<m_DevType<<"m_DevIndex:"<<m_DevIndex<<"m_CanIndex:"<<m_CanIndex
-            //                   <<"sendMsg"<<sendMsg;
-            flag=VCI_Transmit(m_DevType,m_DevIndex,m_CanIndex,&sendbuf[i],1); //调用动态链接库发送函数
-            //            emit  signalSendCanBuf(&sendbuf[i],/*sendbuf->DataLen*/sizeof (VCI_CAN_OBJ));
-
-            _sleep(10);
-            if(flag<1)  //发送不正常
-            {
-                QMessageBox::warning(this,QStringLiteral("警告"),QStringLiteral("发送失败\n"));
-                if(ui->checkBox_autoSend->isChecked())  //关闭自动发送
-                {   AutoSendTimer->stop();
-                    ui->checkBox_autoSend->setChecked(false);
-                }
-                return;
-            }
-            else {
-                theModel->appendRow(AddRowSend(sendMsg[i],sendbuf[i].DataLen,&RowStr));
-                if(ui->checkBox_cansave->isChecked()){ //如果勾选了保存实时数据
-                    SaveData2File(file,RowStr);
-                }
-                ui->label_sendNum->setText(QString::number(SendCnt,10)); // 显示发送计数
-            }
-        }
-    }
-
-}
-
-void canDataShowForm::on_pushButton_zhuandong_clicked()
-{
-
-
-    if(ui->comboBox_xiangduiweizhi->currentIndex()==0){ // 相对位置
-        VCI_CAN_OBJ sendbuf[3];
-        bool ok;
-        QString id = "602";
-        QList<QString>   sendMsg;
-        sendMsg.clear();
-        int32_t  ss2 = (32768*101/360)* ui->lineEdit_zhuandongjiaodu->text().simplified().toInt(); //设置角度
-        unsigned char out2[4] ={};
-        publicClass::getInstance()->int32Arr2Bytes(&ss2,4,out2);
-        QByteArray byArr2((const char*)out2,4);
-
-        QString ssss2 =  publicClass::getInstance()->Byte_16((unsigned char *)byArr2.data(),4);
-        //        sendMsg.append(QString("2F 60 60 00 01 00 00 00"));//相对位置模式
-        QString jiaodu = QString("23 7A 60 00 %1").arg(ssss2);
-        sendMsg.append(jiaodu);//设置转动角度
-        //        sendMsg.append(QString("2B 40 60 00 80 00 00 00"));
-        //        sendMsg.append(QString("2B 40 60 00 06 00 00 00"));
-        //        sendMsg.append(QString("2B 40 60 00 07 00 00 00"));
-        sendMsg.append(QString("2B 40 60 00 4F 00 00 00"));
-        sendMsg.append(QString("2B 40 60 00 5F 00 00 00"));
-        for(int i=0;i<3;i++){
-            sendbuf[i].ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
-            sendbuf[i].RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
-
-            if((sendbuf->ExternFlag)==1)//帧格式，远程帧
-            {
-                sendbuf[i].ID =(id.toUInt(&ok,16)); //&0x1FFFFFFF;
-            }
-            else//标准帧格式
-            {
-                sendbuf[i].ID=(id.toUInt(&ok,16))&0x7FF;
-            }
-
-            sendbuf[i].SendType=1;
-            sendbuf[i].TimeFlag=0;
-            sendbuf[i].TimeStamp=0;
-            publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
-            ULONG flag;
-
-            flag=VCI_Transmit(4,0,0,&sendbuf[i],1); //调用动态链接库发送函数
-            //            emit  signalSendCanBuf(&sendbuf[i],/*sendbuf->DataLen*/sizeof (VCI_CAN_OBJ));
-            _sleep(10);
-            if(flag<1)  //发送不正常
-            {
-                //             emit signalError("error");
-
-            }
-            else {
-
-            }
-        }
-
-    }
-    else{//绝对位置
-        VCI_CAN_OBJ sendbuf[3];
-        bool ok;
-        QString id = "602";
-        QList<QString>  sendMsg;
-        sendMsg.clear();
-        int32_t  ss2 = (32768*101/360)* ui->lineEdit_zhuandongjiaodu->text().simplified().toInt(); //设置角度
-        unsigned char out2[4] ={};
-        publicClass::getInstance()->int32Arr2Bytes(&ss2,4,out2);
-        QByteArray byArr2((const char*)out2,4);
-
-        QString ssss2 =  publicClass::getInstance()->Byte_16((unsigned char *)byArr2.data(),4);
-
-        //        sendMsg.append(QString("2F 60 60 00 01 00 00 00"));//绝对位置模式
-        QString jiaodu = QString("23 7A 60 00 %1").arg(ssss2);
-        sendMsg.append(jiaodu);//设置转动角度
-        //        sendMsg.append(QString("2B 40 60 00 80 00 00 00"));
-        //        sendMsg.append(QString("2B 40 60 00 06 00 00 00"));
-        //        sendMsg.append(QString("2B 40 60 00 07 00 00 00"));
-        sendMsg.append(QString("2B 40 60 00 0F 00 00 00"));
-        sendMsg.append(QString("2B 40 60 00 1F 00 00 00"));
-
-        for(int i=0;i<3;i++){
-            sendbuf[i].ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
-            sendbuf[i].RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
-
-            if((sendbuf->ExternFlag)==1)//帧格式，远程帧
-            {
-                sendbuf[i].ID =(id.toUInt(&ok,16)); //&0x1FFFFFFF;
-            }
-            else//标准帧格式
-            {
-                sendbuf[i].ID=(id.toUInt(&ok,16))&0x7FF;
-            }
-
-            sendbuf[i].SendType=1;
-            sendbuf[i].TimeFlag=0;
-            sendbuf[i].TimeStamp=0;
-            publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
-            ULONG flag;
-
-            flag=VCI_Transmit(4,0,0,&sendbuf[i],1); //调用动态链接库发送函数
-            //            emit  signalSendCanBuf(&sendbuf[i],/*sendbuf->DataLen*/sizeof (VCI_CAN_OBJ));
-            _sleep(10);
-            if(flag<1)  //发送不正常
-            {
-                //             emit signalError("error");
-
-            }
-            else {
-
-            }
-        }
-    }
-
-}
-//记录0点
-void canDataShowForm::on_pushButton_clicked()
-{
-    publicClass::getInstance()->setValueIni("index/limit0",getValue());
-    ui->lineEdit_0->setText( publicClass::getInstance()->readValueIni("index/limit0"));
-}
-
-void canDataShowForm::on_pushButton_2_clicked()
-{
-    publicClass::getInstance()->setValueIni("index/limit1",getValue());
-    ui->lineEdit_1->setText( publicClass::getInstance()->readValueIni("index/limit1"));
-}
-
-void canDataShowForm::on_pushButton_3_clicked()
-{
-    publicClass::getInstance()->setValueIni("index/limitfu",getValue());
-    ui->lineEdit_fu->setText( publicClass::getInstance()->readValueIni("index/limitfu"));
-}
-void canDataShowForm::slotTimerTest()
-{
-    VCI_CAN_OBJ sendbuf[3]={};
-    bool ok;
-    ui->lineEdit_frame_id->setText("602");
-    QList<QString>  sendMsg;
-    sendMsg.clear();
-    //    sendMsg.append(QString("2F 60 60 00 01 00 00 00"));//绝对位置模式
-
-    //    int32_t ss = ui->lineEdit_jiasushijian->text().simplified().toInt();
-    //    unsigned char out[4] ={};
-    //    publicClass::getInstance()->int32Arr2Bytes(&ss,4,out);
-    //    QByteArray byArr((const char*)out,4);
-
-    //    QString ssss =  publicClass::getInstance()->Byte_16((unsigned char *)byArr.data(),4);
-
-    //    sendMsg.append(QString("23 83 60 00 ")+ssss); //设置加速时间 ms
-
-    //    int32_t  ss1 =  ui->lineEdit_jiansushijian->text().simplified().toInt();
-    //    unsigned char out1[4] ={};
-    //    publicClass::getInstance()->int32Arr2Bytes(&ss1,4,out1);
-    //    QByteArray byArr1((const char*)out1,4);
-
-    //    QString ssss1 =  publicClass::getInstance()->Byte_16((unsigned char *)byArr1.data(),4);
-
-
-    //    sendMsg.append(QString("23 84 60 00 ")+ssss1); //设置减速时间 ms
-
-    //        sendMsg.append(QString("23 7A 60 00 10 27 00 00"));//设置目标位置 一圈32768 除以减速比1/101
-
-    //        sendMsg.append(QString("23 7A 60 00 00 00 00 00"));//设置转动角度
-
-    int32_t  ssangle = 0;
-    ssangle = (32768*101*8)/360; //设置角度
-    _lastDirection = 1;
-    unsigned char outangle[4] ={};
-    publicClass::getInstance()->int32Arr2Bytes(&ssangle,4,outangle);
-    QByteArray byArrangle((const char*)outangle,4);
-
-    QString ssssangle =  publicClass::getInstance()->Byte_16((unsigned char *)byArrangle.data(),4);
-
-    QString jiaodu = QString("23 7A 60 00 %1").arg(ssssangle);
-    sendMsg.append(jiaodu);//设置转动角度
-
-    //    int32_t  ss2 =  400*10;
-    //    unsigned char out2[4] ={};
-    //    publicClass::getInstance()->int32Arr2Bytes(&ss2,4,out2);
-    //    QByteArray byArr2((const char*)out2,4);
-
-    //    QString ssss2 =  publicClass::getInstance()->Byte_16((unsigned char *)byArr2.data(),4);
-    //    sendMsg.append(QString("23 81 60 00 ")+ssss2);//设置速度转速 rpm
-    //    sendMsg.append(QString("2B 40 60 00 80 00 00 00"));
-    //    sendMsg.append(QString("2B 40 60 00 06 00 00 00"));
-    //    sendMsg.append(QString("2B 40 60 00 07 00 00 00"));
-    sendMsg.append(QString("2B 40 60 00 0F 00 00 00"));
-    sendMsg.append(QString("2B 40 60 00 1F 00 00 00"));
-
-    //    qDebug()<<sendMsg.size()<<"KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK";
-    QString RowStr;
-    if(ui->comboBox_work_mode->currentIndex()==1)//"只听模式"
-    {
-        QMessageBox::warning(this,QStringLiteral("注意!"),QStringLiteral("当前为只听模式"));
-        ui->checkBox_autoSend->setChecked(false);
-        AutoSendTimer->stop();
-        return;
-    }
-    for(int i=0;i<3;i++){
-        sendbuf[i].ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
-        sendbuf[i].RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
-
-        if((sendbuf->ExternFlag)==1)//帧格式，远程帧
-        {
-            sendbuf[i].ID =(ui->lineEdit_frame_id->text().toUInt(&ok,16)); //&0x1FFFFFFF;
-        }
-        else//标准帧格式
-        {
-            sendbuf[i].ID=(ui->lineEdit_frame_id->text().toUInt(&ok,16))&0x7FF;
-        }
-
-        sendbuf[i].SendType=1;
-        sendbuf[i].TimeFlag=0;
-        sendbuf[i].TimeStamp=0;
-        publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
-        ULONG flag;
-        SendCnt++;
-        //        qDebug()<<"m_DevType:"<<m_DevType<<"m_DevIndex:"<<m_DevIndex<<"m_CanIndex:"<<m_CanIndex
-        //               <<"sendMsg"<<sendMsg;
-        flag=VCI_Transmit(m_DevType,m_DevIndex,m_CanIndex,&sendbuf[i],1); //调用动态链接库发送函数
-        //        emit  signalSendCanBuf(&sendbuf[i],/*sendbuf->DataLen*/sizeof (VCI_CAN_OBJ));
-
-
-        _sleep(10);
-        if(flag<1)  //发送不正常
-        {
-            QMessageBox::warning(this,QStringLiteral("警告"),QStringLiteral("发送失败\n"));
-            if(ui->checkBox_autoSend->isChecked())  //关闭自动发送
-            {   AutoSendTimer->stop();
-                ui->checkBox_autoSend->setChecked(false);
-            }
-            return;
-        }
-        else {
-            theModel->appendRow(AddRowSend(sendMsg[i],sendbuf[i].DataLen,&RowStr));
-            if(ui->checkBox_cansave->isChecked()){ //如果勾选了保存实时数据
-                SaveData2File(file,RowStr);
-            }
-            ui->label_sendNum->setText(QString::number(SendCnt,10)); // 显示发送计数
-
-        }
-    }
-    _timer->stop();
-    _timer1->start(TIMEOUT);
-    _testNum ++;
-    if(_testNum == TESTNUM){
-        _timer->stop();
-        _timer1->stop();
-        _sleep(3000);
-        //        on_pushButton_STOP_clicked();
-        //        _sleep(2000);
-        //        _timer2->stop();
-        //        slotTimerTest2();
-        //        _sleep(2000);
-        on_pushButton_STOP_clicked();
-    }
-}
-void canDataShowForm::slotTimerTest1()
-{
-    VCI_CAN_OBJ sendbuf[3]={};
-    bool ok;
-    ui->lineEdit_frame_id->setText("602");
-    QList<QString>   sendMsg;
-    sendMsg.clear();
-    //    sendMsg.append(QString("2F 60 60 00 01 00 00 00"));//绝对位置模式
-
-    //    int32_t ss = ui->lineEdit_jiasushijian->text().simplified().toInt();
-    //    unsigned char out[4] ={};
-    //    publicClass::getInstance()->int32Arr2Bytes(&ss,4,out);
-    //    QByteArray byArr((const char*)out,4);
-
-    //    QString ssss =  publicClass::getInstance()->Byte_16((unsigned char *)byArr.data(),4);
-
-    //    sendMsg.append(QString("23 83 60 00 ")+ssss); //设置加速时间 ms
-
-    //    int32_t  ss1 =  ui->lineEdit_jiansushijian->text().simplified().toInt();
-    //    unsigned char out1[4] ={};
-    //    publicClass::getInstance()->int32Arr2Bytes(&ss1,4,out1);
-    //    QByteArray byArr1((const char*)out1,4);
-
-    //    QString ssss1 =  publicClass::getInstance()->Byte_16((unsigned char *)byArr1.data(),4);
-
-
-    //    sendMsg.append(QString("23 84 60 00 ")+ssss1); //设置减速时间 ms
-
-    //        sendMsg.append(QString("23 7A 60 00 10 27 00 00"));//设置目标位置 一圈32768 除以减速比1/101
-
-    //        sendMsg.append(QString("23 7A 60 00 00 00 00 00"));//设置转动角度
-
-    int32_t  ssangle = 0;
-
-    ssangle = (32768*101* (-8))/360; //设置角度
-
-    _lastDirection = -1;
-    //        qDebug()<<ssangle<<"KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK"
-    //                   <<ui->lineEdit_zhuandongjiaodu->text().simplified().toInt();
-    unsigned char outangle[4] ={};
-    publicClass::getInstance()->int32Arr2Bytes(&ssangle,4,outangle);
-    QByteArray byArrangle((const char*)outangle,4);
-
-    QString ssssangle =  publicClass::getInstance()->Byte_16((unsigned char *)byArrangle.data(),4);
-
-    QString jiaodu = QString("23 7A 60 00 %1").arg(ssssangle);
-    sendMsg.append(jiaodu);//设置转动角度
-
-    //    int32_t  ss2 =  400*10;
-    //    unsigned char out2[4] ={};
-    //    publicClass::getInstance()->int32Arr2Bytes(&ss2,4,out2);
-    //    QByteArray byArr2((const char*)out2,4);
-
-    //    QString ssss2 =  publicClass::getInstance()->Byte_16((unsigned char *)byArr2.data(),4);
-    //    sendMsg.append(QString("23 81 60 00 ")+ssss2);//设置速度转速 rpm
-    //    sendMsg.append(QString("2B 40 60 00 80 00 00 00"));
-    //    sendMsg.append(QString("2B 40 60 00 06 00 00 00"));
-    //    sendMsg.append(QString("2B 40 60 00 07 00 00 00"));
-    sendMsg.append(QString("2B 40 60 00 0F 00 00 00"));
-    sendMsg.append(QString("2B 40 60 00 1F 00 00 00"));
-    QString RowStr;
-    if(ui->comboBox_work_mode->currentIndex()==1)//"只听模式"
-    {
-        QMessageBox::warning(this,QStringLiteral("注意!"),QStringLiteral("当前为只听模式"));
-        ui->checkBox_autoSend->setChecked(false);
-        AutoSendTimer->stop();
-        return;
-    }
-    for(int i=0;i<3;i++){
-        sendbuf[i].ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
-        sendbuf[i].RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
-
-        if((sendbuf->ExternFlag)==1)//帧格式，远程帧
-        {
-            sendbuf[i].ID =(ui->lineEdit_frame_id->text().toUInt(&ok,16)); //&0x1FFFFFFF;
-        }
-        else//标准帧格式
-        {
-            sendbuf[i].ID=(ui->lineEdit_frame_id->text().toUInt(&ok,16))&0x7FF;
-        }
-
-        sendbuf[i].SendType=1;
-        sendbuf[i].TimeFlag=0;
-        sendbuf[i].TimeStamp=0;
-        publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
-        ULONG flag;
-        SendCnt++;
-        //        qDebug()<<"m_DevType:"<<m_DevType<<"m_DevIndex:"<<m_DevIndex<<"m_CanIndex:"<<m_CanIndex
-        //               <<"sendMsg"<<sendMsg;
-        flag=VCI_Transmit(m_DevType,m_DevIndex,m_CanIndex,&sendbuf[i],1); //调用动态链接库发送函数
-        //        emit  signalSendCanBuf(&sendbuf[i],/*sendbuf->DataLen*/sizeof (VCI_CAN_OBJ));
-
-
-        _sleep(10);
-        if(flag<1)  //发送不正常
-        {
-            QMessageBox::warning(this,QStringLiteral("警告"),QStringLiteral("发送失败\n"));
-            if(ui->checkBox_autoSend->isChecked())  //关闭自动发送
-            {   AutoSendTimer->stop();
-                ui->checkBox_autoSend->setChecked(false);
-            }
-            return;
-        }
-        else {
-            theModel->appendRow(AddRowSend(sendMsg[i],sendbuf[i].DataLen,&RowStr));
-            if(ui->checkBox_cansave->isChecked()){ //如果勾选了保存实时数据
-                SaveData2File(file,RowStr);
-            }
-            ui->label_sendNum->setText(QString::number(SendCnt,10)); // 显示发送计数
-
-        }
-    }
-    _timer1->stop();
-    _timer->start(TIMEOUT);
-    _testNum ++;
-    if(_testNum == TESTNUM){
-        _timer->stop();
-        _timer1->stop();
-        _sleep(3000);
-        //        on_pushButton_STOP_clicked();
-        //        _sleep(2000);
-        //        _timer2->stop();
-        //        slotTimerTest2();
-        //        _sleep(2000);
-        on_pushButton_STOP_clicked();
-    }
-}
-void canDataShowForm::on_pushButton_test_clicked()
-{
-    _timer->start(TIMEOUT);
-
-}
-
-void canDataShowForm::on_pushButton_STOP_clicked()
-{
-    _timer->stop();
-    _timer1->stop();
-    VCI_CAN_OBJ sendbuf[3]={};
-    bool ok;
-    ui->lineEdit_frame_id->setText("602");
-    QList<QString>   sendMsg;
-    sendMsg.clear();
-    int32_t ss = ui->lineEdit_jiasushijian->text().simplified().toInt();
-    unsigned char out[4] ={};
-    publicClass::getInstance()->int32Arr2Bytes(&ss,4,out);
-    QByteArray byArr((const char*)out,4);
-
-    QString ssss =  publicClass::getInstance()->Byte_16((unsigned char *)byArr.data(),4);
-    int32_t  ss1 =  ui->lineEdit_jiansushijian->text().simplified().toInt();
-    unsigned char out1[4] ={};
-    publicClass::getInstance()->int32Arr2Bytes(&ss1,4,out1);
-    QByteArray byArr1((const char*)out1,4);
-
-    QString ssss1 =  publicClass::getInstance()->Byte_16((unsigned char *)byArr1.data(),4);
-
-    int32_t  ssangle = 0;
-    ssangle = (32768*101* 0)/360; //设置角度
-    unsigned char outangle[4] ={};
-    publicClass::getInstance()->int32Arr2Bytes(&ssangle,4,outangle);
-    QByteArray byArrangle((const char*)outangle,4);
-    QString ssssangle =  publicClass::getInstance()->Byte_16((unsigned char *)byArrangle.data(),4);
-    QString jiaodu = QString("23 7A 60 00 %1").arg(ssssangle);
-    sendMsg.append(jiaodu);//设置转动角度
-    sendMsg.append(QString("2B 40 60 00 0F 00 00 00"));
-    sendMsg.append(QString("2B 40 60 00 1F 00 00 00"));
-
-    QString RowStr;
-    if(ui->comboBox_work_mode->currentIndex()==1)//"只听模式"
-    {
-        QMessageBox::warning(this,QStringLiteral("注意!"),QStringLiteral("当前为只听模式"));
-        ui->checkBox_autoSend->setChecked(false);
-        AutoSendTimer->stop();
-        return;
-    }
-    for(int i=0;i<3;i++){
-        sendbuf[i].ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
-        sendbuf[i].RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
-
-        if((sendbuf->ExternFlag)==1)//帧格式，远程帧
-        {
-            sendbuf[i].ID =(ui->lineEdit_frame_id->text().toUInt(&ok,16)); //&0x1FFFFFFF;
-        }
-        else//标准帧格式
-        {
-            sendbuf[i].ID=(ui->lineEdit_frame_id->text().toUInt(&ok,16))&0x7FF;
-        }
-
-        sendbuf[i].SendType=1;
-        sendbuf[i].TimeFlag=0;
-        sendbuf[i].TimeStamp=0;
-        publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
-        ULONG flag;
-        SendCnt++;
-        //        qDebug()<<"m_DevType:"<<m_DevType<<"m_DevIndex:"<<m_DevIndex<<"m_CanIndex:"<<m_CanIndex
-        //               <<"sendMsg"<<sendMsg;
-        flag=VCI_Transmit(m_DevType,m_DevIndex,m_CanIndex,&sendbuf[i],1); //调用动态链接库发送函数
-        //        emit  signalSendCanBuf(&sendbuf[i],/*sendbuf->DataLen*/sizeof (VCI_CAN_OBJ));
-
-        _sleep(10);
-        if(flag<1)  //发送不正常
-        {
-            QMessageBox::warning(this,QStringLiteral("警告"),QStringLiteral("发送失败\n"));
-            if(ui->checkBox_autoSend->isChecked())  //关闭自动发送
-            {   AutoSendTimer->stop();
-                ui->checkBox_autoSend->setChecked(false);
-            }
-            return;
-        }
-        else {
-            theModel->appendRow(AddRowSend(sendMsg[i],sendbuf[i].DataLen,&RowStr));
-            if(ui->checkBox_cansave->isChecked()){ //如果勾选了保存实时数据
-                SaveData2File(file,RowStr);
-            }
-            ui->label_sendNum->setText(QString::number(SendCnt,10)); // 显示发送计数
-
-        }
-    }
-    _testNum = 0;
-}
-void canDataShowForm::test()
-{
-
-}
-
-void canDataShowForm::on_pushButton_4_clicked()
-{
-
-}
-
-void canDataShowForm::slotTimerTest2()
-{
-    VCI_CAN_OBJ sendbuf[10];
-    bool ok;
-    ui->lineEdit_frame_id->setText("602");
-    QList<QString>   sendMsg;
-    sendMsg.clear();
-    sendMsg.append(QString("2F 60 60 00 01 00 00 00"));//绝对位置模式
-
-    int32_t ss = ui->lineEdit_jiasushijian->text().simplified().toInt();
-    unsigned char out[4] ={};
-    publicClass::getInstance()->int32Arr2Bytes(&ss,4,out);
-    QByteArray byArr((const char*)out,4);
-
-    QString ssss =  publicClass::getInstance()->Byte_16((unsigned char *)byArr.data(),4);
-
-    sendMsg.append(QString("23 83 60 00 ")+ssss); //设置加速时间 ms
-
-    int32_t  ss1 =  ui->lineEdit_jiansushijian->text().simplified().toInt();
-    unsigned char out1[4] ={};
-    publicClass::getInstance()->int32Arr2Bytes(&ss1,4,out1);
-    QByteArray byArr1((const char*)out1,4);
-
-    QString ssss1 =  publicClass::getInstance()->Byte_16((unsigned char *)byArr1.data(),4);
-
-
-    sendMsg.append(QString("23 84 60 00 ")+ssss1); //设置减速时间 ms
-
-    //        sendMsg.append(QString("23 7A 60 00 10 27 00 00"));//设置目标位置 一圈32768 除以减速比1/101
-
-    //        sendMsg.append(QString("23 7A 60 00 00 00 00 00"));//设置转动角度
-
-    int32_t  ssangle = 0;
-    if(_lastDirection==1){
-        ssangle = (32768*101* (-6))/360; //设置角度
-    }
-    else if(_lastDirection==-1){
-        ssangle = (32768*101* 6)/360; //设置角度
-    }
-    unsigned char outangle[4] ={};
-    publicClass::getInstance()->int32Arr2Bytes(&ssangle,4,outangle);
-    QByteArray byArrangle((const char*)outangle,4);
-
-    QString ssssangle =  publicClass::getInstance()->Byte_16((unsigned char *)byArrangle.data(),4);
-
-    QString jiaodu = QString("23 7A 60 00 %1").arg(ssssangle);
-    sendMsg.append(jiaodu);//设置转动角度
-
-    int32_t  ss2 =  600*10;
-    unsigned char out2[4] ={};
-    publicClass::getInstance()->int32Arr2Bytes(&ss2,4,out2);
-    QByteArray byArr2((const char*)out2,4);
-
-    QString ssss2 =  publicClass::getInstance()->Byte_16((unsigned char *)byArr2.data(),4);
-    sendMsg.append(QString("23 81 60 00 ")+ssss2);//设置速度转速 rpm
-    sendMsg.append(QString("2B 40 60 00 80 00 00 00"));
-    sendMsg.append(QString("2B 40 60 00 06 00 00 00"));
-    sendMsg.append(QString("2B 40 60 00 07 00 00 00"));
-    sendMsg.append(QString("2B 40 60 00 0F 00 00 00"));
-    sendMsg.append(QString("2B 40 60 00 1F 00 00 00"));
-
-    QString RowStr;
-    if(ui->comboBox_work_mode->currentIndex()==1)//"只听模式"
-    {
-        QMessageBox::warning(this,QStringLiteral("注意!"),QStringLiteral("当前为只听模式"));
-        ui->checkBox_autoSend->setChecked(false);
-        AutoSendTimer->stop();
-        return;
-    }
-    for(int i=0;i<10;i++){
-        sendbuf[i].ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
-        sendbuf[i].RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
-
-        if((sendbuf->ExternFlag)==1)//帧格式，远程帧
-        {
-            sendbuf[i].ID =(ui->lineEdit_frame_id->text().toUInt(&ok,16)); //&0x1FFFFFFF;
-        }
-        else//标准帧格式
-        {
-            sendbuf[i].ID=(ui->lineEdit_frame_id->text().toUInt(&ok,16))&0x7FF;
-        }
-
-        sendbuf[i].SendType=1;
-        sendbuf[i].TimeFlag=0;
-        sendbuf[i].TimeStamp=0;
-        publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
-        ULONG flag;
-        SendCnt++;
-        //        qDebug()<<"m_DevType:"<<m_DevType<<"m_DevIndex:"<<m_DevIndex<<"m_CanIndex:"<<m_CanIndex
-        //               <<"sendMsg"<<sendMsg;
-        flag=VCI_Transmit(m_DevType,m_DevIndex,m_CanIndex,&sendbuf[i],1); //调用动态链接库发送函数
-        //                emit  signalSendCanBuf(&sendbuf[i],/*sendbuf->DataLen*/sizeof (VCI_CAN_OBJ));
-        _sleep(10);
-        if(flag<1)  //发送不正常
-        {
-            QMessageBox::warning(this,QStringLiteral("警告"),QStringLiteral("发送失败\n"));
-            if(ui->checkBox_autoSend->isChecked())  //关闭自动发送
-            {   AutoSendTimer->stop();
-                ui->checkBox_autoSend->setChecked(false);
-            }
-            return;
-        }
-        else {
-            theModel->appendRow(AddRowSend(sendMsg[i],sendbuf[i].DataLen,&RowStr));
-            if(ui->checkBox_cansave->isChecked()){ //如果勾选了保存实时数据
-                SaveData2File(file,RowStr);
-            }
-            ui->label_sendNum->setText(QString::number(SendCnt,10)); // 显示发送计数
-
-        }
-    }
-
+    //    QString A2 =  publicClass::getInstance()->readValueIni("COM/A2");
+    //    _threadPool_A2 = new serialWorkThreadPool_BMQ(A2);
+    //    _threadPool_A2->startWork();
+    //    _threadPool_A2->setAutoDelete(true);
+    //    _poolBmq.start(_threadPool_A2);
+    //    //转发编码器数据
+    //    connect(_threadPool_A2,&serialWorkThreadPool_BMQ::signalComData,this,&canDataShowForm::signalBmqDataToForm);
+
+    //    QString A3 =  publicClass::getInstance()->readValueIni("COM/A3");
+    //    _threadPool_A3 = new serialWorkThreadPool_BMQ(A3);
+    //    _threadPool_A3->startWork();
+    //    _threadPool_A3->setAutoDelete(true);
+    //    _poolBmq.start(_threadPool_A3);
+    //    //转发编码器数据
+    //    connect(_threadPool_A3,&serialWorkThreadPool_BMQ::signalComData,this,&canDataShowForm::signalBmqDataToForm);
+
+    //    QString A4 =  publicClass::getInstance()->readValueIni("COM/A4");
+    //    _threadPool_A4 = new serialWorkThreadPool_BMQ(A4);
+    //    _threadPool_A4->startWork();
+    //    _threadPool_A4->setAutoDelete(true);
+    //    _poolBmq.start(_threadPool_A4);
+    //    //转发编码器数据
+    //    connect(_threadPool_A4,&serialWorkThreadPool_BMQ::signalComData,this,&canDataShowForm::signalBmqDataToForm);
+
+    //    QString A8 =  publicClass::getInstance()->readValueIni("COM/A8");
+    //    _threadPool_A8 = new serialWorkThreadPool_BMQ(A8);
+    //    _threadPool_A8->startWork();
+    //    _threadPool_A8->setAutoDelete(true);
+    //    _poolBmq.start(_threadPool_A8);
+    //    //转发编码器数据
+    //    connect(_threadPool_A8,&serialWorkThreadPool_BMQ::signalComData,this,&canDataShowForm::signalBmqDataToForm);
 }

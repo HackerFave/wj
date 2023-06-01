@@ -66,13 +66,13 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    //    MainWindow w;
-    //    w.show();
+        MainWindow w;
+        w.show();
     //         pub-sub wrapper
     MsgTestT result;
     result.result = 1;
 
-    for(int i=1; i<5001; i++)
+    for(int i=1; i<5; i++)
     {
         std::unique_ptr<RepeatT> rep(new RepeatT());
         rep->id = i;
@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
     {
 
         sender.PostWithMessage("tcp/message/test_topic", fbb.GetBufferPointer(), fbb.GetSize());
-        Sleep(1000);
+        Sleep(10);
     }
 
 

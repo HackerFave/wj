@@ -1,4 +1,4 @@
-﻿#include "publicclass.h"
+#include "publicclass.h"
 #include <QUuid>
 #include <QCryptographicHash>
 #include <QtDebug>
@@ -31,12 +31,19 @@ publicClass::publicClass(QObject *parent ):QObject(parent)
 {
 
     //iniSystemConfigFile();
-     _setting = new QSettings(QApplication::applicationDirPath()+"/config/config.ini",QSettings::IniFormat);
+    _setting = new QSettings(QApplication::applicationDirPath()+"/config/config.ini",QSettings::IniFormat);
+
 }
-
-
 publicClass::~publicClass()
 {
+    //    if(P_ThreadSend){
+    //        P_canDataSendThread->stopWork();
+    //        P_ThreadSend->quit();
+    //        P_ThreadSend->deleteLater();
+    //        P_ThreadSend = nullptr;
+    //        P_canDataSendThread = nullptr;
+    //    }
+
     P_publicClass->delInstance();
 }
 QString publicClass::Byte_16(uchar *Data,int iLength)      //输入 uchar 型 字符串，返回 QString 型 16进制 字符串。
@@ -67,6 +74,19 @@ QString publicClass::Byte_16(uchar *Data,int iLength)      //输入 uchar 型 �
         ST += strT;
     }
     return ST;
+}
+QString publicClass::Byte_16(QString strData,int strLen)      //输入 uchar 型 字符串，返回 QString 型 16进制 字符串。
+{
+
+    if(strData.size()!=strLen){
+        return QString("");
+    }
+    QString ST="",strT;
+    for(int i=0;i<strData.size()-1;i=i+2){
+        ST= ST+strData.at(i)+strData.at(i+1)+" ";
+    }
+
+    return ST.simplified();
 }
 uint8_t publicClass::cllc_checkSum(uint8_t const *p_data,int32_t datalen)
 {
@@ -237,7 +257,7 @@ QString  publicClass::ByteArrayToHexStr(QByteArray buf)
 {
     QString ret(buf.toHex().toUpper());
     int len = ret.length()/2;
-//    qDebug()<<len;
+    //    qDebug()<<len;
     for(int i=1;i<len;i++)
     {
         ret.insert(2*i+i-1," ");
@@ -319,9 +339,72 @@ QString publicClass::hex2StrFloat(unsigned char *m)
 }
 void publicClass::setValueIni(QString key,QString value)
 {
-   _setting->setValue(key,value);
+    _setting->setValue(key,value);
 }
 QString  publicClass::readValueIni(QString key)
 {
     return _setting->value(key).toString();
+}
+QString publicClass::getTimeStampStr(uint32_t TimeStamp)
+
+{
+
+    QString resultStr = "";
+
+    int hour = TimeStamp/36000000;
+
+    int minute = (TimeStamp - hour*36000000)/600000;
+
+    int second = (TimeStamp - hour*36000000 - minute*600000)/10000;
+
+    int ms = (TimeStamp - hour*36000000 - minute*600000 - second*10000)/10;
+
+    int mms = (TimeStamp - hour*36000000 - minute*600000 - second*10000 - ms*10);
+
+    resultStr = QString("%1:").arg(hour,2,10,QChar('0'));//时
+
+    resultStr += QString("%1:").arg(minute,2,10,QChar('0'));//分
+
+    resultStr += QString("%1:").arg(second,2,10,QChar('0'));//秒
+
+    resultStr += QString("%1:").arg(ms,3,10,QChar('0'));//毫秒
+
+    resultStr += QString::number(mms);//0.1ms
+
+    return resultStr;
+
+}
+void publicClass::setBj(canBufstruct &vc){
+    std::lock_guard<std::mutex> lgd(_mutex);
+    canBufstruct bjs;
+    memmove(&bjs,&vc,sizeof (canBufstruct));
+    _canbuf.enqueue(vc);
+
+}
+canBufstruct publicClass::getBj(){
+    std::lock_guard<std::mutex> lgd(_mutex);
+    return  _canbuf.dequeue();
+}
+bool publicClass::sendCanBuf(const QString &id, const QString &canbuf,const short &canindex)
+{
+
+    VCI_CAN_OBJ sendbuf;
+    bool ok;
+    sendbuf.ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
+    sendbuf.RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
+    sendbuf.ID=(id.toUInt(&ok,16))&0x7FF;
+    sendbuf.SendType=1;
+    sendbuf.TimeFlag=0;
+    sendbuf.TimeStamp=0;
+    Str2CharSplitBlank(canbuf,sendbuf.Data,&sendbuf.DataLen);
+    ULONG flag;
+    flag=VCI_Transmit(4,0,canindex,&sendbuf,1); //调用动态链接库发送函数
+    _sleep(100);
+    if(flag<1)  //发送不正常
+    {
+        return  false;
+    }
+    else {
+        return true;
+    }
 }

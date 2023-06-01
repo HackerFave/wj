@@ -10,8 +10,8 @@ Node::Node(void) {
     //#if 0
     m_inproc_sub = std::make_shared<datax::ZmqSubWrapper>("inproc://sub_channel");
     m_inproc_pub = std::make_shared<datax::ZmqPubWrapper>("inproc://pub_channel");
-    m_tcp_sub = std::make_shared<datax::ZmqSubWrapper>("tcp://127.0.0.1:7000");
-    m_tcp_pub = std::make_shared<datax::ZmqPubWrapper>("tcp://127.0.0.1:7001");
+    m_tcp_sub = std::make_shared<datax::ZmqSubWrapper>("tcp://192.168.1.104:7000");
+    m_tcp_pub = std::make_shared<datax::ZmqPubWrapper>("tcp://192.168.1.104:7001");
 }
 
 Node::~Node(void) {

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>635</width>
+    <width>998</width>
     <height>556</height>
    </rect>
   </property>
@@ -33,7 +33,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -75,6 +75,56 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="tab_5">
+       <attribute name="title">
+        <string> 网络</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_5">
+        <item row="0" column="0">
+         <widget class="ClientWidget" name="widget" native="true"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_6">
+       <attribute name="title">
+        <string> 零差云控</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_7">
+        <item row="0" column="0">
+         <widget class="lingChaCanform" name="widget_lingcha" native="true"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_7">
+       <attribute name="title">
+        <string>鑫拓电机</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_8">
+        <item row="0" column="0">
+         <widget class="xintuoCanForm" name="widget_xintuo" native="true"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_9">
+       <attribute name="title">
+        <string>转向电机（研控）</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_10">
+        <item row="0" column="0">
+         <widget class="yankongDataForm" name="widget_yankong" native="true"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_8">
+       <attribute name="title">
+        <string>测试联调</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_9">
+        <item row="0" column="0">
+         <widget class="multipleMotorTestForm" name="widget_test" native="true"/>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -84,7 +134,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>635</width>
+     <width>998</width>
      <height>23</height>
     </rect>
    </property>
@@ -107,13 +157,43 @@
   <customwidget>
    <class>viewShowForm</class>
    <extends>QWidget</extends>
-   <header>viewShowForm.h</header>
+   <header location="global">viewShowForm.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>rmdSettingForm</class>
    <extends>QWidget</extends>
    <header>rmdSettingForm.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ClientWidget</class>
+   <extends>QWidget</extends>
+   <header>network/clientwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>lingChaCanform</class>
+   <extends>QWidget</extends>
+   <header>lingChaCanform.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>xintuoCanForm</class>
+   <extends>QWidget</extends>
+   <header>xintuoCanForm.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>multipleMotorTestForm</class>
+   <extends>QWidget</extends>
+   <header location="global">multipleMotorTestForm.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>yankongDataForm</class>
+   <extends>QWidget</extends>
+   <header>yankongDataForm.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

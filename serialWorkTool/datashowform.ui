@@ -21,6 +21,13 @@
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_5">
       <item>
+       <widget class="QPushButton" name="pushButton_shuaxin">
+        <property name="text">
+         <string>刷新</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QLabel" name="label">
         <property name="text">
          <string>端口</string>
@@ -43,7 +50,7 @@
       <item>
        <widget class="QComboBox" name="comboBox_BaudRate">
         <property name="currentIndex">
-         <number>7</number>
+         <number>0</number>
         </property>
         <item>
          <property name="text">
@@ -83,6 +90,11 @@
         <item>
          <property name="text">
           <string>115200</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>2560000</string>
          </property>
         </item>
        </widget>
@@ -135,6 +147,16 @@
        <widget class="QPushButton" name="pushButton_disconnect">
         <property name="text">
          <string>断开</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_readMemory">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>读内存</string>
         </property>
        </widget>
       </item>
@@ -194,6 +216,13 @@
        <widget class="QPushButton" name="pushButton_send">
         <property name="text">
          <string>发送</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_jiaoyan">
+        <property name="text">
+         <string>校验和</string>
         </property>
        </widget>
       </item>

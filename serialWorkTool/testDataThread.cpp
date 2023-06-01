@@ -23,6 +23,7 @@ Q_INVOKABLE void testDataThread::slotWork()
     while (_isStart) {
         VCI_CAN_OBJ Recv[2500];
         DWORD Recv_Len;
+
         Recv_Len=VCI_Receive(m_DevType, m_DevIndex,m_CanIndex,Recv,2500,0);
         if(Recv_Len>0)
         {

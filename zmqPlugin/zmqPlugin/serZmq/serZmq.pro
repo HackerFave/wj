@@ -9,10 +9,10 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 LIBS += -L$$PWD/lib -lflatbuffers -lzmq_wrapper
-LIBS += -L$$PWD/ZeroMQ -lzmq -llibzmq -llibzmq-v141-mt-4_3_2
+LIBS += -L$$PWD/ZeroMQ -llibzmq-v141-mt-4_3_2  -lzmq -llibzmq
 
 LIBS += -lAdvapi32
-LIBS +=  -lmsvcrtd
+#LIBS +=  -lmsvcrtd
 CONFIG += c++11
 QMAKE_CXXFLAGS += -std=c++11
 
@@ -24,10 +24,10 @@ INCLUDEPATH += $$PWD/ZeroMQ
 
 
 CONFIG+=debug_and_release
-pclversion1=1.11.1
-pclversion2=1.11
-boostversion=1_74
-vtkversion=8.2
+#pclversion1=1.11.1
+#pclversion2=1.11
+#boostversion=1_74
+#vtkversion=8.2
 
 SOURCES += \
     main.cpp \

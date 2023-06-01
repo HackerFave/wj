@@ -5,6 +5,7 @@
 #include "methord/qcustomplot.h"
 #include "public/publicclass.h"
 #include <QTimer>
+#include "ControlCAN.h"
 namespace Ui {
 class viewShowForm;
 }
@@ -50,6 +51,22 @@ private slots:
     void on_horizontalSlider_sliderMoved(int position);
 
     void on_pushButton_clicked();
+
+    void on_pushButton_reversal_clicked();
+
+    void on_pushButton_enable_clicked();
+
+    void on_pushButton_foreward_clicked();
+
+    void on_pushButton_enable_weizhimoshi_clicked();
+
+    void on_pushButton_setyuandian_clicked();
+
+    void on_pushButton_stopEnable_clicked();
+
+    void on_pushButton_init_clicked();
+
+    void on_pushButton_zhuandong_clicked();
 
 public slots:
     void slotPlotViewUpdate(UINT id, BYTE *data);
