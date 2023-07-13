@@ -14,7 +14,6 @@ yankongDataForm::yankongDataForm(QWidget *parent) :
     _groupBtn.addButton(ui->radioButton_up);
     _groupBtn.addButton(ui->radioButton_back);
     ui->radioButton_up->setChecked(true);
-//    p_func->control("AA B0 03 01 01 00 00 0D 0A");
 }
 
 yankongDataForm::~yankongDataForm()
@@ -24,7 +23,12 @@ yankongDataForm::~yankongDataForm()
 
 void yankongDataForm::on_pushButton_zhengzhuan_clicked()
 {
+#if CANDEV_CX
     VCI_CAN_OBJ sendbuf[8];
+#endif
+#if CANDEV_GC
+    CAN_OBJ sendbuf[8];
+#endif
     bool ok;
     QString id = "602";
     QStringList sendMsg;
@@ -65,11 +69,16 @@ void yankongDataForm::on_pushButton_zhengzhuan_clicked()
         publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
         ULONG flag;
         _sleep(10);
-        flag=VCI_Transmit(4,0,1,&sendbuf[i],1); //调用动态链接库发送函数
+#if CANDEV_CX
+        flag=VCI_Transmit(4,0,0,&sendbuf[i],1); //调用动态链接库发送函数
+#endif
+#if CANDEV_GC
+        flag=Transmit(3,0,0,&sendbuf[i],1); //调用动态链接库发送函数
+#endif
         if(flag<1)  //发送不正常
         {
-            //             emit signalError("error");
-            //                qDebug()<<"error"<<id<<_CanId;
+
+            qDebug()<<"[ID:602]"<<"[SEND ERROR:"<<publicClass::getInstance()->Byte_16(sendbuf[i].Data,8).simplified()<<"]";
 
         }
         else {
@@ -83,7 +92,12 @@ void yankongDataForm::on_pushButton_zhengzhuan_clicked()
 void yankongDataForm::on_pushButton_fanzhuan_clicked()
 {    
 
+#if CANDEV_CX
     VCI_CAN_OBJ sendbuf[7];
+#endif
+#if CANDEV_GC
+    CAN_OBJ sendbuf[7];
+#endif
     bool ok;
     QString id = "602";
     QStringList sendMsg;
@@ -134,7 +148,12 @@ void yankongDataForm::on_pushButton_fanzhuan_clicked()
         publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
         ULONG flag;
         _sleep(10);
-        flag=VCI_Transmit(4,0,1,&sendbuf[i],1); //调用动态链接库发送函数
+#if CANDEV_CX
+        flag=VCI_Transmit(4,0,0,&sendbuf[i],1); //调用动态链接库发送函数
+#endif
+#if CANDEV_GC
+        flag=Transmit(3,0,0,&sendbuf[i],1); //调用动态链接库发送函数
+#endif
         if(flag<1)  //发送不正常
         {
             //             emit signalError("error");
@@ -165,7 +184,12 @@ void yankongDataForm::slotRecvData(UINT id, BYTE *data)
 
 void yankongDataForm::on_pushButton_stop_clicked()
 {
+#if CANDEV_CX
     VCI_CAN_OBJ sendbuf[5];
+#endif
+#if CANDEV_GC
+    CAN_OBJ sendbuf[5];
+#endif
     bool ok;
     QString id = "602";
     QStringList sendMsg;
@@ -199,7 +223,12 @@ void yankongDataForm::on_pushButton_stop_clicked()
         publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
         ULONG flag;
         _sleep(10);
-        flag=VCI_Transmit(4,0,1,&sendbuf[i],1); //调用动态链接库发送函数
+#if CANDEV_CX
+        flag=VCI_Transmit(4,0,0,&sendbuf[i],1); //调用动态链接库发送函数
+#endif
+#if CANDEV_GC
+        flag=Transmit(3,0,0,&sendbuf[i],1); //调用动态链接库发送函数
+#endif
         if(flag<1)  //发送不正常
         {
             //             emit signalError("error");
@@ -215,12 +244,12 @@ void yankongDataForm::on_pushButton_stop_clicked()
 
 void yankongDataForm::on_pushButton_start_clicked()
 {
-//    p_func->control(ui->lineEdit->text().simplified());
+    //    p_func->control(ui->lineEdit->text().simplified());
 }
 
 void yankongDataForm::on_pushButton_stop_2_clicked()
 {
-//    p_func->control("AA AB 02 00 00 00 0D 0A");
+        p_func->stopMove();
 }
 void int32Arr2Bytes(int32_t* Arr, unsigned int len, unsigned char* byteBufOut)
 {
@@ -237,59 +266,24 @@ void int32Arr2Bytes(int32_t* Arr, unsigned int len, unsigned char* byteBufOut)
 }
 void yankongDataForm::on_horizontalSlider_sliderMoved(int position)
 {
-    qDebug()<<position<<"XXXXXXXXXXXXXXXXXXXXXXX";
-    //    //    int32_t ss = arr.toInt();
-    ui->label_value->setText(QString::number(position));
-    unsigned char out[4] ={};
-    int32Arr2Bytes(&position,4,out);
-    QByteArray byArr((const char*)out,4);
-
-    QStringList ssss =  publicClass::getInstance()->Byte_16((unsigned char *)byArr.data(),4).split(" ");
-    //    //    ui->textEdit_sum->append(QString("[result:11111111111]:%1").arg(ssss));
-    qDebug()<<ssss[1]<<ssss[0]<<"XXXXXXXXXXXXXXXXXX";
-
-
-
-    //    canBufstruct bjs;
-    //    memmove(&bjs,&vc,sizeof (canBufstruct));
-    //    _canbuf.enqueue(vc);
-
-
-    QString send =QString("AA AB 02 ")+ssss[1]+" "+ssss[0]+ " 00 0D 0A";
-
-    _data485.enqueue(send);
-//    std::lock_guard<std::mutex> lgd(_mutex);
-//    QString str = _data485.dequeue();
-//    ui->lineEdit->setText(str);
-//    p_func->control(str);
+    p_func->throttleMoved(position);
+    ui->lineEdit->setText(QString::number(position));
 
 }
 
-//void yankongDataForm::on_horizontalSlider_actionTriggered(int action)
-//{
-//    qDebug()<<action<<"XXXXXXXXXXXXXXXXXXXXXXX";
-//    //    //    int32_t ss = arr.toInt();
-//    ui->label_value->setText(QString::number(action));
-//    unsigned char out[4] ={};
-//    int32Arr2Bytes(&action,4,out);
-//    QByteArray byArr((const char*)out,4);
-
-//    QString ssss =  publicClass::getInstance()->Byte_16((unsigned char *)byArr.data(),4);
-//    //    //    ui->textEdit_sum->append(QString("[result:11111111111]:%1").arg(ssss));
-//    qDebug()<<ssss<<"XXXXXXXXXXXXXXXXXX";
-
-//    QString str;
-//    memmove(&str,&ssss,sizeof (ssss));
-//}
 
 //前进
 void yankongDataForm::on_radioButton_up_clicked()
 {
-//    p_func->control("AA B0 03 01 01 00 00 0D 0A");
+    p_func->frontMove();
 }
 //后退
 void yankongDataForm::on_radioButton_back_clicked()
 {
-//    p_func->control("AA B0 03 01 01 01 00 0D 0A");
+    p_func->backMove();
 
+}
+void yankongDataForm::setValue(int32_t value)
+{
+    ui->label_bmq->setText(QString::number(value));
 }

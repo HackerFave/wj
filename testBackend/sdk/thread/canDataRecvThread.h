@@ -3,8 +3,6 @@
 
 #include "baseThread.h"
 #include "publicclass.h"
-#include "ControlCAN.h"
-#include "ECanVci.h"
 #include "define.h"
 class canDataRecvThread : public baseThread
 {
@@ -24,7 +22,7 @@ signals:
     void signalSendRecvData(void *data,  DWORD len,short can);
     void signalSendError(short);
     void signalRecvStatus(bool);
-
+    void signalReset();
 private:
     bool _isStart;
     DWORD m_DevType = 4;
@@ -32,6 +30,8 @@ private:
     DWORD m_CanIndex =1;
     DWORD m_nDevType;
     int16_t _index = 0;
+    int _numStart =0;
+    int _numEnd =0;
 };
 
 #endif // CANDATARECVTHREAD_H

@@ -73,7 +73,7 @@ void canDataShowForm::initThreadPool()
 
     _serialWorkThreadPool_MT_145->setAutoDelete(true);
 
-    _serialWorkThreadPool_YK_602 = new serialWorkThreadPool_YK_602(8,1);
+    _serialWorkThreadPool_YK_602 = new serialWorkThreadPool_YK_602(8,0);
 
     _serialWorkThreadPool_YK_602->setAutoDelete(true);
 

@@ -5,12 +5,13 @@
 #include <QtDebug>
 #include <QProcess>
 
-
+#define TEST_GKJ 0
 dataShowForm::dataShowForm(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::dataShowForm)
 {
     ui->setupUi(this);
+
     exitProcess();
 
     _A2 = publicClass::getInstance()->readValueIni("COM/A2").simplified();
@@ -32,7 +33,7 @@ dataShowForm::dataShowForm(QWidget *parent) :
     //    connect(_timer,&QTimer::timeout,this,&dataShowForm::slotTimer);
 
     ui->textEdit_recv->document()->setMaximumBlockCount(1000);
-
+#if TEST_GKJ
     _process_A2 = new QProcess(0);
     QString str = QApplication::applicationDirPath()+ "/A2/encoder.exe";//加可执行文件路径
 
@@ -87,25 +88,27 @@ dataShowForm::dataShowForm(QWidget *parent) :
     }
     connect(&_timerBmqRead,SIGNAL(timeout()),this,SLOT(slotUpdateBmq()));
     _timerBmqRead.start(3000);
+
     initServer();
     initThread();
-//    connect(this,&dataShowForm::signalBmqDataToForm_A2,_serialWorkThreadPool_BMQ_A2,&serialWorkThreadPool_BMQ_A2::slotWorkData,Qt::DirectConnection);
-//    connect(this,&dataShowForm::signalBmqDataToForm_A3,_serialWorkThreadPool_BMQ_A3,&serialWorkThreadPool_BMQ_A3::slotWorkData,Qt::DirectConnection);
-//    connect(this,&dataShowForm::signalBmqDataToForm_A4,_serialWorkThreadPool_BMQ_A4,&serialWorkThreadPool_BMQ_A4::slotWorkData,Qt::DirectConnection);
-////    connect(this,&dataShowForm::signalBmqDataToForm_A8,_serialWorkThreadPool_BMQ_A8,&serialWorkThreadPool_BMQ_A8::slotWorkData,Qt::DirectConnection);
-//    connect(this,&dataShowForm::signalBmqDataToForm_A1,_serialWorkThreadPool_BMQ_A1,&serialWorkThreadPool_BMQ_A1::slotWorkData,Qt::DirectConnection);
+#endif
+    //    connect(this,&dataShowForm::signalBmqDataToForm_A2,_serialWorkThreadPool_BMQ_A2,&serialWorkThreadPool_BMQ_A2::slotWorkData,Qt::DirectConnection);
+    //    connect(this,&dataShowForm::signalBmqDataToForm_A3,_serialWorkThreadPool_BMQ_A3,&serialWorkThreadPool_BMQ_A3::slotWorkData,Qt::DirectConnection);
+    //    connect(this,&dataShowForm::signalBmqDataToForm_A4,_serialWorkThreadPool_BMQ_A4,&serialWorkThreadPool_BMQ_A4::slotWorkData,Qt::DirectConnection);
+    ////    connect(this,&dataShowForm::signalBmqDataToForm_A8,_serialWorkThreadPool_BMQ_A8,&serialWorkThreadPool_BMQ_A8::slotWorkData,Qt::DirectConnection);
+    //    connect(this,&dataShowForm::signalBmqDataToForm_A1,_serialWorkThreadPool_BMQ_A1,&serialWorkThreadPool_BMQ_A1::slotWorkData,Qt::DirectConnection);
 
-////    connect(this,SIGNAL(signalBmqDataToForm01(QString,int32_t,int32_t)),_serialWorkThreadPool_BMQ_XT_1,SLOT(slotWorkData(QString,int32_t,int32_t)),Qt::DirectConnection);
-////    connect(this,SIGNAL(signalBmqDataToForm02(QString,int32_t,int32_t)),_serialWorkThreadPool_BMQ_XT_2,SLOT(slotWorkData(QString,int32_t,int32_t)),Qt::DirectConnection);
+    ////    connect(this,SIGNAL(signalBmqDataToForm01(QString,int32_t,int32_t)),_serialWorkThreadPool_BMQ_XT_1,SLOT(slotWorkData(QString,int32_t,int32_t)),Qt::DirectConnection);
+    ////    connect(this,SIGNAL(signalBmqDataToForm02(QString,int32_t,int32_t)),_serialWorkThreadPool_BMQ_XT_2,SLOT(slotWorkData(QString,int32_t,int32_t)),Qt::DirectConnection);
 
-//    connect(this,&dataShowForm::signalMachineData_A2,_serialWorkThreadPool_BMQ_A2,&serialWorkThreadPool_BMQ_A2::slotMachineData,Qt::DirectConnection);
-//    connect(this,&dataShowForm::signalMachineData_A3,_serialWorkThreadPool_BMQ_A3,&serialWorkThreadPool_BMQ_A3::slotMachineData,Qt::DirectConnection);
-//    connect(this,&dataShowForm::signalMachineData_A4,_serialWorkThreadPool_BMQ_A4,&serialWorkThreadPool_BMQ_A4::slotMachineData,Qt::DirectConnection);
-////    connect(this,&dataShowForm::signalMachineData_A8,_serialWorkThreadPool_BMQ_A8,&serialWorkThreadPool_BMQ_A8::slotMachineData,Qt::DirectConnection);
+    //    connect(this,&dataShowForm::signalMachineData_A2,_serialWorkThreadPool_BMQ_A2,&serialWorkThreadPool_BMQ_A2::slotMachineData,Qt::DirectConnection);
+    //    connect(this,&dataShowForm::signalMachineData_A3,_serialWorkThreadPool_BMQ_A3,&serialWorkThreadPool_BMQ_A3::slotMachineData,Qt::DirectConnection);
+    //    connect(this,&dataShowForm::signalMachineData_A4,_serialWorkThreadPool_BMQ_A4,&serialWorkThreadPool_BMQ_A4::slotMachineData,Qt::DirectConnection);
+    ////    connect(this,&dataShowForm::signalMachineData_A8,_serialWorkThreadPool_BMQ_A8,&serialWorkThreadPool_BMQ_A8::slotMachineData,Qt::DirectConnection);
 
-//    connect(this,&dataShowForm::signalMachineData_A1,_serialWorkThreadPool_BMQ_A1,&serialWorkThreadPool_BMQ_A1::slotMachineData,Qt::DirectConnection);
-////    connect(this,&dataShowForm::signalMachineData_XT01,_serialWorkThreadPool_BMQ_XT_1,&serialWorkThreadPool_BMQ_XT_1::slotMachineData,Qt::DirectConnection);
-////    connect(this,&dataShowForm::signalMachineData_XT02,_serialWorkThreadPool_BMQ_XT_2,&serialWorkThreadPool_BMQ_XT_2::slotMachineData,Qt::DirectConnection);
+    //    connect(this,&dataShowForm::signalMachineData_A1,_serialWorkThreadPool_BMQ_A1,&serialWorkThreadPool_BMQ_A1::slotMachineData,Qt::DirectConnection);
+    ////    connect(this,&dataShowForm::signalMachineData_XT01,_serialWorkThreadPool_BMQ_XT_1,&serialWorkThreadPool_BMQ_XT_1::slotMachineData,Qt::DirectConnection);
+    ////    connect(this,&dataShowForm::signalMachineData_XT02,_serialWorkThreadPool_BMQ_XT_2,&serialWorkThreadPool_BMQ_XT_2::slotMachineData,Qt::DirectConnection);
 
 }
 
@@ -359,7 +362,7 @@ void dataShowForm::on_pushButton_send_clicked()
 
         ui->textEdit_recv->append("send data:"+data);
         ui->textEdit_recv->append(QString("head src:")+src+QString("body src:")+srcbody+"send size:"+QString::number(byte.size()));
-        ui->textEdit_recv->append(QString("send:")+ QString(byte));
+        ui->textEdit_recv->append(QString("send:")+ QString(byte.toUpper()));
         P_Serial->WriteData(byte,byte.size());
     }
 
@@ -769,42 +772,42 @@ void dataShowForm::initThread()
 {
     _poolBMQ.setMaxThreadCount(7);
 
-//    QString com_A2 = "COM6";
-//    QString com_A3 = "COM5";
-//    QString com_A4 = "COM7";
-//    QString com_A8 = "COM8";
-//    QString com =" ";
-//    _serialWorkThreadPool_BMQ_A2 = new serialWorkThreadPool_BMQ_A2(com_A2);
-//    _serialWorkThreadPool_BMQ_A3 = new serialWorkThreadPool_BMQ_A3(com_A3);
-//    _serialWorkThreadPool_BMQ_A4 = new serialWorkThreadPool_BMQ_A4(com_A4);
-////    _serialWorkThreadPool_BMQ_A8 = new serialWorkThreadPool_BMQ_A8(com_A8);
-//    _serialWorkThreadPool_BMQ_A1 = new serialWorkThreadPool_BMQ_A1(com);// 603
-////    _serialWorkThreadPool_BMQ_XT_1 = new serialWorkThreadPool_BMQ_XT_1(com);//01
-////    _serialWorkThreadPool_BMQ_XT_2 = new serialWorkThreadPool_BMQ_XT_2(com);//02
+    //    QString com_A2 = "COM6";
+    //    QString com_A3 = "COM5";
+    //    QString com_A4 = "COM7";
+    //    QString com_A8 = "COM8";
+    //    QString com =" ";
+    //    _serialWorkThreadPool_BMQ_A2 = new serialWorkThreadPool_BMQ_A2(com_A2);
+    //    _serialWorkThreadPool_BMQ_A3 = new serialWorkThreadPool_BMQ_A3(com_A3);
+    //    _serialWorkThreadPool_BMQ_A4 = new serialWorkThreadPool_BMQ_A4(com_A4);
+    ////    _serialWorkThreadPool_BMQ_A8 = new serialWorkThreadPool_BMQ_A8(com_A8);
+    //    _serialWorkThreadPool_BMQ_A1 = new serialWorkThreadPool_BMQ_A1(com);// 603
+    ////    _serialWorkThreadPool_BMQ_XT_1 = new serialWorkThreadPool_BMQ_XT_1(com);//01
+    ////    _serialWorkThreadPool_BMQ_XT_2 = new serialWorkThreadPool_BMQ_XT_2(com);//02
 
-//    _serialWorkThreadPool_BMQ_A2->setAutoDelete(true);
-//    _serialWorkThreadPool_BMQ_A3->setAutoDelete(true);
-//    _serialWorkThreadPool_BMQ_A4->setAutoDelete(true);
-////    _serialWorkThreadPool_BMQ_A8->setAutoDelete(true);
-//    _serialWorkThreadPool_BMQ_A1->setAutoDelete(true);
-////    _serialWorkThreadPool_BMQ_XT_1->setAutoDelete(true);
-////    _serialWorkThreadPool_BMQ_XT_2->setAutoDelete(true);
+    //    _serialWorkThreadPool_BMQ_A2->setAutoDelete(true);
+    //    _serialWorkThreadPool_BMQ_A3->setAutoDelete(true);
+    //    _serialWorkThreadPool_BMQ_A4->setAutoDelete(true);
+    ////    _serialWorkThreadPool_BMQ_A8->setAutoDelete(true);
+    //    _serialWorkThreadPool_BMQ_A1->setAutoDelete(true);
+    ////    _serialWorkThreadPool_BMQ_XT_1->setAutoDelete(true);
+    ////    _serialWorkThreadPool_BMQ_XT_2->setAutoDelete(true);
 
-//    _serialWorkThreadPool_BMQ_A2->startWork();
-//    _serialWorkThreadPool_BMQ_A3->startWork();
-//    _serialWorkThreadPool_BMQ_A4->startWork();
-////    _serialWorkThreadPool_BMQ_A8->startWork();
-//    _serialWorkThreadPool_BMQ_A1->startWork();
-////    _serialWorkThreadPool_BMQ_XT_1->startWork();
-////    _serialWorkThreadPool_BMQ_XT_2->startWork();
+    //    _serialWorkThreadPool_BMQ_A2->startWork();
+    //    _serialWorkThreadPool_BMQ_A3->startWork();
+    //    _serialWorkThreadPool_BMQ_A4->startWork();
+    ////    _serialWorkThreadPool_BMQ_A8->startWork();
+    //    _serialWorkThreadPool_BMQ_A1->startWork();
+    ////    _serialWorkThreadPool_BMQ_XT_1->startWork();
+    ////    _serialWorkThreadPool_BMQ_XT_2->startWork();
 
-//    _poolBMQ.start(_serialWorkThreadPool_BMQ_A2);
-//    _poolBMQ.start(_serialWorkThreadPool_BMQ_A3);
-//    _poolBMQ.start(_serialWorkThreadPool_BMQ_A4);
-////    _poolBMQ.start(_serialWorkThreadPool_BMQ_A8);
-//    _poolBMQ.start(_serialWorkThreadPool_BMQ_A1);
-////    _poolBMQ.start(_serialWorkThreadPool_BMQ_XT_1);
-////    _poolBMQ.start(_serialWorkThreadPool_BMQ_XT_2);
+    //    _poolBMQ.start(_serialWorkThreadPool_BMQ_A2);
+    //    _poolBMQ.start(_serialWorkThreadPool_BMQ_A3);
+    //    _poolBMQ.start(_serialWorkThreadPool_BMQ_A4);
+    ////    _poolBMQ.start(_serialWorkThreadPool_BMQ_A8);
+    //    _poolBMQ.start(_serialWorkThreadPool_BMQ_A1);
+    ////    _poolBMQ.start(_serialWorkThreadPool_BMQ_XT_1);
+    ////    _poolBMQ.start(_serialWorkThreadPool_BMQ_XT_2);
 
 }
 void dataShowForm::exitProcess()

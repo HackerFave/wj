@@ -4,6 +4,7 @@
 #include <synchapi.h>  //QSleep
 #include <QDebug>
 #include <usbscan.h>
+#include <QDir>
 funcCan::funcCan(QObject *parent) : QObject(parent)
 {
     qRegisterMetaType<UINT>("UINT");
@@ -12,9 +13,12 @@ funcCan::funcCan(QObject *parent) : QObject(parent)
     qRegisterMetaType<DWORD>("DWORD");
     qRegisterMetaType<int16_t>("int16_t");
     exitProcess();//退出编码器进程
-    initBmq();//初始化编码器
+    //判断是否使用限位 1使用 0不使用
+    _isLimit = publicClass::getInstance()->readValueIni("CHECK/isLimit").simplified().toUShort();
+    if(1 == _isLimit){
+        initBmq();//初始化编码器
+    }
     initCan();//初始化can通道
-    initSerialPort();//初始化底盘
 }
 /*
  * @brief   : 析构
@@ -23,6 +27,7 @@ funcCan::funcCan(QObject *parent) : QObject(parent)
  */
 funcCan::~funcCan()
 {
+    exitProcess();//退出编码器进程
     closeCan();
     releaseThread();
 }
@@ -40,23 +45,92 @@ void funcCan::releaseThread()
         P_ThreadRecv_CAN1 = nullptr;
         P_canDataRecvThread_CAN1 = nullptr;
     }
-    if(P_ThreadRecv_CAN2){
-        qDebug()<<P_canDataRecvThread_CAN2<<P_ThreadRecv_CAN2<<"ID";
-        P_canDataRecvThread_CAN2->stopWork();
-        P_ThreadRecv_CAN2->quit();
-        P_ThreadRecv_CAN2->deleteLater();
-        P_ThreadRecv_CAN2 = nullptr;
-        P_canDataRecvThread_CAN2 = nullptr;
-    }
-    if(P_ThreadSend){
-        P_canDataSendThread->stopWork();
-        P_ThreadSend->quit();
-        P_ThreadSend->deleteLater();
-        P_ThreadSend = nullptr;
-        P_canDataSendThread = nullptr;
-    }
+//    if(P_ThreadRecv_CAN2){
+//        qDebug()<<P_canDataRecvThread_CAN2<<P_ThreadRecv_CAN2<<"ID";
+//        P_canDataRecvThread_CAN2->stopWork();
+//        P_ThreadRecv_CAN2->quit();
+//        P_ThreadRecv_CAN2->deleteLater();
+//        P_ThreadRecv_CAN2 = nullptr;
+//        P_canDataRecvThread_CAN2 = nullptr;
+//    }
+//    if(P_ThreadSend){
+//        P_canDataSendThread->stopWork();
+//        P_ThreadSend->quit();
+//        P_ThreadSend->deleteLater();
+//        P_ThreadSend = nullptr;
+//        P_canDataSendThread = nullptr;
+//    }
     _pool.releaseThread();
 }
+void funcCan::turnMove(int32_t value)
+{
+#if CANDEV_CX
+    VCI_CAN_OBJ sendbuf[8];
+#endif
+#if CANDEV_GC
+    CAN_OBJ sendbuf[8];
+#endif
+    bool ok;
+    QString id = "602";
+    QStringList sendMsg;
+    sendMsg.clear();
+
+    //    int32_t valuebmq = value*360/1000/20*524287/360;
+//    if(1 == _isLimit){//转向限位
+//        if(value<0&&_currentA0Bmq<(_A0minBmq+200)){
+//            qDebug()<<"[ID:A0]"<<" Over limit position "<<_currentA0Bmq<<value;
+//            return;
+//        }
+//        else if (value>0&&_currentA0Bmq>(_A0maxBmq-200)) {
+//            qDebug()<<"[ID:A0]"<<" Over limit position "<<_currentA0Bmq<<value;
+//            return;
+//        }
+//    }
+    unsigned char s[4]={0,0,0,0} ;
+    memmove(s,&value,4);
+    //    sendMsg.append("2B 40 60 00 01 00 00 00");
+    //    sendMsg.append("2B 40 60 00 00 00 00 00");
+    //    sendMsg.append("2B 40 60 00 06 00 00 00");
+    //    sendMsg.append("60 40 60 00 00 00 00 00");
+    sendMsg.append(QString("23 7A 60 00 %1").arg(publicClass::getInstance()->Byte_16(s,4).simplified()));
+    //    sendMsg.append(QString("2F 60 60 00 01 00 00 00"));
+    sendMsg.append(QString("40 41 60 00 01 00 00 00"));
+    sendMsg.append(QString("2B 40 60 00 80 00 00 00"));
+    sendMsg.append(QString("2B 40 60 00 06 00 00 00"));
+    sendMsg.append(QString("2f 60 60 00 01 00 00 00"));
+
+    sendMsg.append(QString("2B 40 60 00 4F 00 00 00"));
+    sendMsg.append(QString("2B 40 60 00 5F 00 00 00"));
+    for(int i=0;i<sendMsg.size();i++){
+        sendbuf[i].ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
+        sendbuf[i].RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
+
+        sendbuf[i].ID=(id.toUInt(&ok,16))&0x7FF;
+
+        sendbuf[i].SendType=1;
+        sendbuf[i].TimeFlag=0;
+        sendbuf[i].TimeStamp=0;
+        publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
+        ULONG flag;
+        _sleep(10);
+#if CANDEV_CX
+        flag=VCI_Transmit(4,0,0,&sendbuf[i],1); //调用动态链接库发送函数
+#endif
+#if CANDEV_GC
+        flag=Transmit(3,0,0,&sendbuf[i],1); //调用动态链接库发送函数
+#endif
+        if(flag<1)  //发送不正常
+        {
+
+            qDebug()<<"[ID:602]"<<"[SEND ERROR:"<<publicClass::getInstance()->Byte_16(sendbuf[i].Data,8).simplified()<<"]";
+
+        }
+        else {
+        }
+    }
+
+}
+
 
 void funcCan::initCan()
 {
@@ -142,70 +216,69 @@ void funcCan::initCan()
 }
 void funcCan::initBmq()
 {
+
+//    _A0 = publicClass::getInstance()->readValueIni("COM/A0").simplified();//底盘转向
     _A2 = publicClass::getInstance()->readValueIni("COM/A2").simplified();
     _A3 = publicClass::getInstance()->readValueIni("COM/A3").simplified();
     _A4 = publicClass::getInstance()->readValueIni("COM/A4").simplified();
-    _A8 = publicClass::getInstance()->readValueIni("COM/A8").simplified();
+
+//    _A0maxBmq=publicClass::getInstance()->readValueIni("A0-max/danquan").simplified().toInt()
+//            +524287*publicClass::getInstance()->readValueIni("A0-max/duoquan").simplified().toInt();
+//    _A0minBmq=publicClass::getInstance()->readValueIni("A0-min/danquan").simplified().toInt()
+//            +524287*publicClass::getInstance()->readValueIni("A0-min/duoquan").simplified().toInt();
+
+    _A1maxBmq = publicClass::getInstance()->readValueIni("A1-max/danquan").simplified().toInt();
+    _A1minBmq = publicClass::getInstance()->readValueIni("A1-min/danquan").simplified().toInt();
+
+    _A2maxBmq=publicClass::getInstance()->readValueIni("A2-max/danquan").simplified().toInt()
+            +524287*publicClass::getInstance()->readValueIni("A2-max/duoquan").simplified().toInt();
+    _A2minBmq=publicClass::getInstance()->readValueIni("A2-min/danquan").simplified().toInt()
+            +524287*publicClass::getInstance()->readValueIni("A2-min/duoquan").simplified().toInt();
+
+    _A3maxBmq=publicClass::getInstance()->readValueIni("A3-max/danquan").simplified().toInt()
+            +524287*publicClass::getInstance()->readValueIni("A3-max/duoquan").simplified().toInt();
+    _A3minBmq=publicClass::getInstance()->readValueIni("A3-min/danquan").simplified().toInt()
+            +524287*publicClass::getInstance()->readValueIni("A3-min/duoquan").simplified().toInt();
+
+    _A4maxBmq=publicClass::getInstance()->readValueIni("A4-max/danquan").simplified().toInt()
+            +524287*publicClass::getInstance()->readValueIni("A4-max/duoquan").simplified().toInt();
+    _A4minBmq=publicClass::getInstance()->readValueIni("A4-min/danquan").simplified().toInt()
+            +524287*publicClass::getInstance()->readValueIni("A4-min/duoquan").simplified().toInt();
+
+    qDebug()<<QString("<<BMQ--->>[A0max:%1][A0min:%2][A2max:%3][A2min:%4][A3max:%5][A3min:%6][A4max:%7][A4min:%8]")
+              .arg(_A1maxBmq)
+              .arg(_A1minBmq)
+              .arg(_A2maxBmq)
+              .arg(_A2minBmq)
+              .arg(_A3maxBmq)
+              .arg(_A3minBmq)
+              .arg(_A4maxBmq)
+              .arg(_A4minBmq);
     qRegisterMetaType<int16_t>("int32_t");
 
-    _process_A2 = new QProcess(0);
-    QString str = QCoreApplication::applicationDirPath()+ "/A2/encoder.exe";//加可执行文件路径
 
-    _process_A2->setProcessChannelMode(QProcess::MergedChannels);
-    //    connect(_process , &QProcess::readyReadStandardOutput , this , &dataShowForm::onOut);
-    _process_A2->start(str);
+    _process = new QProcess(0);
+    QString str = QDir::currentPath()+ "/start.bat";//加可执行文件路径
 
-    if (!_process_A2->waitForStarted()) {
-        qDebug() << "start failed:" << _process_A2->errorString();
+    _process->setProcessChannelMode(QProcess::MergedChannels);
+    _process->start(str);
+
+    if (!_process->waitForStarted()) {
+        qDebug() << "start failed:" << _process->errorString();
     } else {
-        qDebug() << "start success:";
+        qDebug()  << "[bat]"<< "start success:";
     }
 
-    _process_A3 = new QProcess(0);
-    QString str_A3 = QCoreApplication::applicationDirPath()+ "/A3/encoder.exe";//加可执行文件路径
-
-    _process_A3->setProcessChannelMode(QProcess::MergedChannels);
-    //    connect(_process , &QProcess::readyReadStandardOutput , this , &dataShowForm::onOut);
-    _process_A3->start(str_A3);
-
-    if (!_process_A3->waitForStarted()) {
-        qDebug() << "start failed:" << _process_A3->errorString();
-    } else {
-        qDebug() << "start success:";
-    }
-
-
-    _process_A4 = new QProcess(0);
-    QString str_A4 = QCoreApplication::applicationDirPath()+ "/A4/encoder.exe";//加可执行文件路径
-
-    _process_A4->setProcessChannelMode(QProcess::MergedChannels);
-    //    connect(_process , &QProcess::readyReadStandardOutput , this , &dataShowForm::onOut);
-    _process_A4->start(str_A4);
-
-    if (!_process_A4->waitForStarted()) {
-        qDebug() << "start failed:" << _process_A4->errorString();
-    } else {
-        qDebug() << "start success:";
-    }
-
-    _process_A8 = new QProcess(0);
-    QString str_A8 = QCoreApplication::applicationDirPath()+ "/A8/encoder.exe";//加可执行文件路径
-
-    _process_A8->setProcessChannelMode(QProcess::MergedChannels);
-    //    connect(_process , &QProcess::readyReadStandardOutput , this , &dataShowForm::onOut);
-    _process_A8->start(str_A8);
-
-    if (!_process_A8->waitForStarted()) {
-        qDebug() << "start failed:" << _process_A8->errorString();
-    } else {
-        qDebug() << "start success:";
-    }
     connect(&_timerBmqRead,SIGNAL(timeout()),this,SLOT(slotUpdateBmq()));
-    _timerBmqRead.start(3000);
+
+#if IS_GKJ
+    _timerBmqRead.start(30000);
+#endif
     initServer();
 }
 void funcCan::closeCan()
 {
+#if CANDEV_CX
     VCI_ClearBuffer(4, 0, 0);//清理接收和发送缓冲器数据
     VCI_ClearBuffer(4, 0, 1);//清理接收和发送缓冲器数据
     if(VCI_CloseDevice(4,0)!=1)
@@ -213,62 +286,54 @@ void funcCan::closeCan()
         qDebug()<<"Close failed";
         return;
     }
+#endif
+#if CANDEV_GC
+    CloseDevice(3, 0);
+#endif
     qDebug()<<"Close successful!";
-}
-void funcCan::openCan()
-{
-
 }
 void funcCan::initThread()
 {
     //线程池
     _threadMap.clear();
-    _pool.setMaxThreadCount(4);
-    //    _threadMap[0] = new messageReportThreadPool_XT_01(0,1);
-    //    _threadMap[0]->startWork();
-    //    _threadMap[0]->setAutoDelete(true);
+    _pool.setMaxThreadCount(6);
 
-    //    _threadMap[1] = new messageReportThreadPool_XT_02(1,1);
-    //    _threadMap[1]->startWork();
-    //    _threadMap[1]->setAutoDelete(true);
+    _threadMap[0] = new messageReportThreadPool_LX_603(1,0);
+    _threadMap[0]->startWork();
+    _threadMap[0]->setAutoDelete(true);
+    _pool.start(_threadMap[0]);
 
-    _threadMap[2] = new messageReportThreadPool_LX_603(2,0);
+    _threadMap[1] = new messageReportThreadPool_TT_601(2,0);
+    _threadMap[1]->startWork();
+    _threadMap[1]->setAutoDelete(true);
+    _pool.start(_threadMap[1]);
+
+    _threadMap[2] = new messageReportThreadPool_MT_141(3,0);
     _threadMap[2]->startWork();
     _threadMap[2]->setAutoDelete(true);
+    _pool.start(_threadMap[2]);
 
-    _threadMap[3] = new messageReportThreadPool_TT_602(3,0);
+    _threadMap[3] = new messageReportThreadPool_MT_145(4,0);
     _threadMap[3]->startWork();
     _threadMap[3]->setAutoDelete(true);
+    _pool.start(_threadMap[3]);
 
-    _threadMap[4] = new messageReportThreadPool_MT_141(4,0);
+    _threadMap[4] = new messageReportThreadPool_YK_602(5,0);
     _threadMap[4]->startWork();
     _threadMap[4]->setAutoDelete(true);
-
-    //    _threadMap[5] = new messageReportThreadPool_MT_142(5,1);
-    //    _threadMap[5]->startWork();
-    //    _threadMap[5]->setAutoDelete(true);
-
-    //    _threadMap[6] = new messageReportThreadPool_MT_143(6,1);
-    //    _threadMap[6]->startWork();
-    //    _threadMap[6]->setAutoDelete(true);
-
-    _threadMap[7] = new messageReportThreadPool_MT_145(7,0);
-    _threadMap[7]->startWork();
-    _threadMap[7]->setAutoDelete(true);
-
-    //    _pool.start(_threadMap[0]);
-    //    _pool.start(_threadMap[1]);
-    _pool.start(_threadMap[2]);
-    _pool.start(_threadMap[3]);
     _pool.start(_threadMap[4]);
-    //    _pool.start(_threadMap[5]);
-    //    _pool.start(_threadMap[6]);
-    _pool.start(_threadMap[7]);
+
+    _threadMap[5] = new MachineEnableThreadPool(6,0);
+    _threadMap[5]->startWork();
+    _threadMap[5]->setAutoDelete(true);
+    _pool.start(_threadMap[5]);
     /*
  * @brief   :初始化recv线程
  * @author  :tanchuang
  * @date    :2023.04.10
  */
+
+#if CANDEV_CX
     /*******************************CAN1****************************************/
     P_canDataRecvThread_CAN1 = new canDataRecvThread(4,0,0);
     P_ThreadRecv_CAN1 = new QThread;
@@ -293,22 +358,37 @@ void funcCan::initThread()
 
     connect(P_canDataRecvThread_CAN2,&canDataRecvThread::signalSendRecvData,this,&funcCan::slotRecvCanMessage,Qt::DirectConnection);
 
+#endif
 
-    //    P_canDataSendThread = new canDataSendThread(m_DevType,m_DevIndex,m_CanIndex);
-    //    P_ThreadSend = new QThread;
+#if CANDEV_GC
+    P_canDataRecvThread_CAN1 = new canDataRecvThread(3,0,0);
+    P_ThreadRecv_CAN1 = new QThread;
+    P_canDataRecvThread_CAN1->moveToThread(P_ThreadRecv_CAN1);
 
-    //    P_canDataSendThread->moveToThread(P_ThreadSend);
-    //    connect(P_ThreadSend,SIGNAL(finished()),P_canDataSendThread,SLOT(deleteLater()));
-    //    connect(P_ThreadSend,SIGNAL(started()),P_canDataSendThread,SLOT(slotWork()));
+    connect(P_ThreadRecv_CAN1,SIGNAL(finished()),P_canDataRecvThread_CAN1,SLOT(deleteLater()));
+    connect(P_ThreadRecv_CAN1,SIGNAL(started()),P_canDataRecvThread_CAN1,SLOT(slotWork()));
+    P_ThreadRecv_CAN1->start();
+    P_canDataRecvThread_CAN1->startWork();
 
-    //    //can报文写入线程
-    //    connect(this,SIGNAL(signalSendCanBuf(void *,int)),P_canDataSendThread,SLOT(slotSendCanBuf(void *,int)),Qt::DirectConnection);
-    //    connect(this,SIGNAL(signalRecvId(QString)),P_canDataSendThread,SLOT(slotRecvId(QString)),Qt::DirectConnection);
-
-    //    P_ThreadSend->start();
-    //    P_canDataSendThread->startWork();
+    connect(P_canDataRecvThread_CAN1,&canDataRecvThread::signalSendRecvData,this,&funcCan::slotRecvCanMessage,Qt::DirectConnection);
+    connect(P_canDataRecvThread_CAN1,&canDataRecvThread::signalReset,this,&funcCan::slotResetCan,Qt::DirectConnection);
+#endif
 }
+void funcCan::slotResetCan()
+{
+#if CANDEV_GC
 
+    //    if(ClearBuffer(3,0,0)){
+    //        qDebug()<<"clear canbuffer success!!!";
+    //    }
+    if(ResetCAN(3,0,0)){
+        qDebug()<<"CAN reset success!!!";
+    }
+    else {
+        qDebug()<<"CAN reset failed!!!";
+    }
+#endif
+}
 void funcCan::slotRecvCanMessage(void *Recv,  DWORD Recv_Len,short can)
 {
 
@@ -325,112 +405,12 @@ void funcCan::slotRecvCanMessage(void *Recv,  DWORD Recv_Len,short can)
 #endif
 #if CANDEV_GC
         for(DWORD i=0;i<Recv_Len;i++){
-            CAN_OBJ obj;
-            std::lock_guard<std::mutex> lgd(_mutex);
-            memmove(&obj,&((CAN_OBJ*)Recv)[i],sizeof (CAN_OBJ));
-            emit signalDataToForm(obj.ID, obj.Data);
-            setBuf(obj.ID, obj.Data,obj.DataLen);
+            doBuf(&((CAN_OBJ*)Recv)[i]);
         }
 #endif
     }
 
 }
-bool funcCan::writeData(uint32_t &ids,std::string &data)
-{
-#if CANDEV_CX
-    VCI_CAN_OBJ sendbuf;
-    bool ok;
-    uint32_t id =ids;
-    QString sendMsg = data.c_str();
-    sendbuf.ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
-    sendbuf.RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
-    sendbuf.ID=id&0x7FF;
-    sendbuf.SendType=0;
-    sendbuf.TimeFlag=0;
-    sendbuf.TimeStamp=0;
-    publicClass::getInstance()->Str2CharSplitBlank(sendMsg,sendbuf.Data,&sendbuf.DataLen);
-    ULONG flag;
-
-    flag=VCI_Transmit(4,0,0,&sendbuf,1); //调用动态链接库发送函数
-    if(flag<1)  //发送不正常
-    {
-        return false;
-
-    }
-    else {
-        return true;
-    }
-#endif
-#if CANDEV_GC
-    CAN_OBJ frame;
-    memset(&frame,0,sizeof(frame));
-    frame.ID=ids&0x7FF;
-    frame. DataLen=8;
-    frame. SendType=0;
-    frame. RemoteFlag=0;
-    frame. ExternFlag=0;
-    //        BYTE data[]={1,2,3,4,5,6,7,8};
-    QString sendMsg = data.c_str();
-    publicClass::getInstance()->Str2CharSplitBlank(sendMsg,frame.Data,&frame.DataLen);
-    //        memcpy(frame.Data,data, frame.DataLen);
-    if(Transmit(3, 0, 0,&frame,1) !=STATUS_OK)
-    {
-        qDebug()<<"send data failed!";
-        return  false;
-    }
-    //    CloseDevice(3 ,0);
-    return true;
-    qDebug()<<"send data success!";
-#endif
-}
-
-
-
-QSerialPort* funcCan::initSerialPort()
-{
-    _serialPort = new QSerialPort(this);
-    foreach(const QSerialPortInfo &info,QSerialPortInfo::availablePorts())
-    {
-        qDebug()<<"[在线端口:]"<<info.portName();
-
-    }
-    _com = publicClass::getInstance()->readValueIni("COM/port").toLatin1();
-    _serialPort->setPortName(_com);
-    _serialPort->setBaudRate((QSerialPort::BaudRate)115200,QSerialPort::AllDirections);//波特率
-    _serialPort->setDataBits((QSerialPort::DataBits)8);//数据位
-    _serialPort->setParity(QSerialPort::NoParity);
-    _serialPort->setStopBits(QSerialPort::OneStop);
-    _serialPort->setFlowControl(QSerialPort::NoFlowControl);
-    if(_serialPort->open(QSerialPort::ReadWrite))
-    {
-        //        initThread();
-        //        connect(&_timerTest, &QTimer::timeout, this, &func::slotWriteData);
-        connect(_serialPort, &QSerialPort::readyRead, this, &funcCan::slotDataArrived);
-        //        _timerTest.start(50);
-        //        emit signalStatus(QSERIALWORK_ERR_OPEN_SUCCESS);
-        //        _shareMemory.setKey(publicClass::getInstance()->readValueIni("COM/port"));//创建共享内存
-        qDebug()<<"OPEN SUCCESS:"<<"[端口"<<publicClass::getInstance()->readValueIni("COM/port")<<"]";
-    }else
-    {
-        qDebug() << __FUNCTION__ << "open fail，error info: " << this->_serialPort->errorString();
-        //        emit signalStatus(QSERIALWORK_ERR_OPEN_FAILED);
-        qDebug()<<"OPEN ERROR:"<<"[端口"<<publicClass::getInstance()->readValueIni("COM/port")<<"不在线]";
-    }
-    return _serialPort;
-}
-
-
-
-void funcCan::slotDataArrived()
-{
-    _buffer.append(_com);
-    _buffer.append(_serialPort->readAll());
-    QString ret(_buffer.toHex().toUpper());
-    //    m_socket->write(_buffer);
-    qDebug() << __FUNCTION__ << "Thread ID:" << QThread::currentThreadId()<<ret;
-    _buffer.clear();
-}
-
 void funcCan::control(QString value)//向前
 {
     QByteArray byte = QByteArray::fromHex(value.toLatin1());
@@ -465,15 +445,39 @@ void funcCan::slot_recv_data()
     QByteArray rcv_data = local->readAll();
     QString rcvstr = rcv_data.toHex().toUpper();
     if(rcvstr>8){
-        QByteArray byte = QByteArray::fromHex(rcvstr.left(8).toUtf8());
+        QString head = rcvstr.split("1A").at(0);
+        QByteArray byte = QByteArray::fromHex(/*rcvstr.left(10).toUtf8()*/head.toUtf8());
         QString str;
         for(int i = 0; i < byte.count(); ++i)
         {
             str.append(QChar(byte .at(i)));
         }
+//        if(str==_A0){
+
+//            _isA0Start = true;
+//            QStringList st = publicClass::getInstance()->Byte_16(rcvstr.mid(head.size()),rcvstr.mid(head.size()).size()).split(" ");
+//            if(st.size()==11){
+//                QString dataDanquan = st.at(2)+" "+st.at(3)+" "+st.at(4)+" "+"00";
+//                QString dataFBL = st.at(5);
+//                QString dataDuoquan = st.at(6)+" "+st.at(7)+" "+st.at(8)+" "+"00";
+//                int32_t valueDanquan,valueDuoquan ;
+//                int8_t valueFBL;
+//                QByteArray byte = QByteArray::fromHex(dataDanquan.toLatin1());
+//                memcpy(&valueDanquan,byte.data(),byte.size());
+
+//                byte =  QByteArray::fromHex(dataFBL.toLatin1());
+//                memcpy(&valueFBL,byte.data(),byte.size());
+
+//                byte =  QByteArray::fromHex(dataDuoquan.toLatin1());
+//                memcpy(&valueDuoquan,byte.data(),byte.size());
+//                setBmqBuf(str.toStdString(),valueFBL,valueDanquan,valueDuoquan);
+//                _currentA0Bmq = valueDanquan;
+//            }
+
+//        }
         if(str==_A2){
             _isA2Start = true;
-            QStringList st = publicClass::getInstance()->Byte_16(rcvstr.mid(8),rcvstr.mid(8).size()).split(" ");
+            QStringList st = publicClass::getInstance()->Byte_16(rcvstr.mid(head.size()),rcvstr.mid(head.size()).size()).split(" ");
             if(st.size()==11){
                 QString dataDanquan = st.at(2)+" "+st.at(3)+" "+st.at(4)+" "+"00";
                 QString dataFBL = st.at(5);
@@ -488,13 +492,27 @@ void funcCan::slot_recv_data()
 
                 byte =  QByteArray::fromHex(dataDuoquan.toLatin1());
                 memcpy(&valueDuoquan,byte.data(),byte.size());
-                emit signalBmqDataToForm_A2(str,valueDuoquan,valueDanquan);
+                setBmqBuf(str.toStdString(),valueFBL,valueDanquan,valueDuoquan);
+                _currentA2Bmq = valueDanquan+524287*valueDuoquan;
+
+
+                if((_currentA2Bmq>_A2maxBmq)&&(_valueSpeed141<0)){
+
+                    qDebug()<<"[ID:A2]"<<" Over limit position "<<_currentA2Bmq<<_valueSpeed141;
+                    stopRmd(0x141);
+
+                }
+                else if ((_currentA2Bmq<=_A2minBmq)&&(_valueSpeed141>0)) {
+                    qDebug()<<"[ID:A2]"<<" Over limit position "<<_currentA2Bmq<<_valueSpeed141;
+                    stopRmd(0x141);
+                }
+
             }
 
         }
         if(str==_A3){
             _isA3Start = true;
-            QStringList st = publicClass::getInstance()->Byte_16(rcvstr.mid(8),rcvstr.mid(8).size()).split(" ");
+            QStringList st = publicClass::getInstance()->Byte_16(rcvstr.mid(head.size()),rcvstr.mid(head.size()).size()).split(" ");
             if(st.size()==11){
                 QString dataDanquan = st.at(2)+" "+st.at(3)+" "+st.at(4)+" "+"00";
                 QString dataFBL = st.at(5);
@@ -509,16 +527,27 @@ void funcCan::slot_recv_data()
 
                 byte =  QByteArray::fromHex(dataDuoquan.toLatin1());
                 memcpy(&valueDuoquan,byte.data(),byte.size());
+                setBmqBuf(str.toStdString(),valueFBL,valueDanquan,valueDuoquan);
+                _currentA3Bmq = valueDanquan+524287*valueDuoquan;
 
-                emit signalBmqDataToForm_A3(str,valueDuoquan,valueDanquan);
+                if((_currentA3Bmq>_A3maxBmq)&&(_valueSpeed601<0)){
+
+                    qDebug()<<"[ID:A3]"<<" Over limit position "<<_currentA3Bmq<<_valueSpeed601;
+                    stopTT();
+
+                }
+                else if ((_currentA3Bmq<=_A3minBmq)&&(_valueSpeed601>0)) {
+                    qDebug()<<"[ID:A3]"<<" Over limit position "<<_currentA3Bmq<<_valueSpeed601;
+                    stopTT();
+                }
             }
 
-            //             _serialWorkThreadPool_BMQ_A3->slotWorkData(rcvstr.mid(8),str);
+
         }
         if(str==_A4){
 
             _isA4Start = true;
-            QStringList st = publicClass::getInstance()->Byte_16(rcvstr.mid(8),rcvstr.mid(8).size()).split(" ");
+            QStringList st = publicClass::getInstance()->Byte_16(rcvstr.mid(head.size()),rcvstr.mid(head.size()).size()).split(" ");
             if(st.size()==11){
                 QString dataDanquan = st.at(2)+" "+st.at(3)+" "+st.at(4)+" "+"00";
                 QString dataFBL = st.at(5);
@@ -534,87 +563,43 @@ void funcCan::slot_recv_data()
                 byte =  QByteArray::fromHex(dataDuoquan.toLatin1());
                 memcpy(&valueDuoquan,byte.data(),byte.size());
 
-                emit signalBmqDataToForm_A4(str,valueDuoquan,valueDanquan);
+                setBmqBuf(str.toStdString(),valueFBL,valueDanquan,valueDuoquan);
+                _currentA4Bmq = valueDanquan+524287*valueDuoquan;
+
+                if((_currentA4Bmq>_A4maxBmq)&&(_valueSpeed145>0)){
+
+                    qDebug()<<"[ID:A4]"<<" Over limit position "<<_currentA4Bmq<<_valueSpeed145;
+                    stopRmd(0x145);
+
+                }
+                else if ((_currentA4Bmq<=_A4minBmq)&&(_valueSpeed145<0)) {
+                    qDebug()<<"[ID:A4]"<<" Over limit position "<<_currentA4Bmq<<_valueSpeed145;
+                    stopRmd(0x145);
+                }
             }
 
-            //             _serialWorkThreadPool_BMQ_A4->slotWorkData(rcvstr.mid(8),str);
-        }
-        if(str==_A8){
-            _isA8Start = true;
-            QStringList st = publicClass::getInstance()->Byte_16(rcvstr.mid(8),rcvstr.mid(8).size()).split(" ");
-            if(st.size()==11){
-                QString dataDanquan = st.at(2)+" "+st.at(3)+" "+st.at(4)+" "+"00";
-                QString dataFBL = st.at(5);
-                QString dataDuoquan = st.at(6)+" "+st.at(7)+" "+st.at(8)+" "+"00";
-                int32_t valueDanquan,valueDuoquan ;
-                int8_t valueFBL;
-                QByteArray byte = QByteArray::fromHex(dataDanquan.toLatin1());
-                memcpy(&valueDanquan,byte.data(),byte.size());
 
-                byte =  QByteArray::fromHex(dataFBL.toLatin1());
-                memcpy(&valueFBL,byte.data(),byte.size());
-
-                byte =  QByteArray::fromHex(dataDuoquan.toLatin1());
-                memcpy(&valueDuoquan,byte.data(),byte.size());
-
-                emit signalBmqDataToForm_A8(str,valueDuoquan,valueDanquan);
-            }
         }
     }
 }
 
 void funcCan::slotUpdateBmq()
 {
-    if(_isA2Start==true&&_isA3Start==true&&_isA4Start==true&&_isA8Start==true){
+    if(_isA2Start==true&&_isA3Start==true&&_isA4Start==true/*&&_isA0Start==true*/){
         _timerBmqRead.stop();
         qDebug()<<"running";
         return;
     }
-    BYTE ss[8] = "1111111";
-    setBuf(0x131,ss,8);
     exitProcess();
-    QString str = QCoreApplication::applicationDirPath()+ "/A2/encoder.exe";//加可执行文件路径
+    QString str = QDir::currentPath()+ "/start.bat";//加可执行文件路径
 
-    _process_A2->setProcessChannelMode(QProcess::MergedChannels);
-    _process_A2->start(str);
+    _process->setProcessChannelMode(QProcess::MergedChannels);
+    _process->start(str);
 
-    if (!_process_A2->waitForStarted()) {
-        qDebug() << "start failed:" << _process_A2->errorString();
+    if (!_process->waitForStarted()) {
+        qDebug() << "start failed:" << _process->errorString();
     } else {
-        qDebug() << "start success:";
-    }
-
-    QString str_A3 = QCoreApplication::applicationDirPath()+ "/A3/encoder.exe";//加可执行文件路径
-
-    _process_A3->setProcessChannelMode(QProcess::MergedChannels);
-    _process_A3->start(str_A3);
-
-    if (!_process_A3->waitForStarted()) {
-        qDebug() << "start failed:" << _process_A3->errorString();
-    } else {
-        qDebug() << "start success:";
-    }
-
-    QString str_A4 = QCoreApplication::applicationDirPath()+ "/A4/encoder.exe";//加可执行文件路径
-
-    _process_A4->setProcessChannelMode(QProcess::MergedChannels);
-    _process_A4->start(str_A4);
-
-    if (!_process_A4->waitForStarted()) {
-        qDebug() << "start failed:" << _process_A4->errorString();
-    } else {
-        qDebug() << "start success:";
-    }
-
-    QString str_A8 = QCoreApplication::applicationDirPath()+ "/A8/encoder.exe";//加可执行文件路径
-
-    _process_A8->setProcessChannelMode(QProcess::MergedChannels);
-    _process_A8->start(str_A8);
-
-    if (!_process_A8->waitForStarted()) {
-        qDebug() << "start failed:" << _process_A8->errorString();
-    } else {
-        qDebug() << "start success:";
+        qDebug()  << "[BMQ]"<< "start success:";
     }
 }
 void funcCan::exitProcess()
@@ -626,11 +611,606 @@ void funcCan::exitProcess()
     process.data()->close();
 
 }
-void funcCan::setBuf(UINT id, BYTE *data,int len)
+#if CANDEV_CX
+void funcCan::setBuf(VCI_CAN_OBJ *data)
 {
-    _fun(id,data);
+    _fun(data);
 }
+#endif
+
+#if CANDEV_GC
+void funcCan::setBuf(CAN_OBJ * data)
+{
+    _fun(data);
+}
+void funcCan::setBmqBuf(std::string com,int8_t valueFBL, int32_t valueDanquan,int32_t valueDuoquan )
+{
+
+    _funBmq(com,valueFBL,valueDanquan,valueDuoquan);
+}
+#endif
 void funcCan::regeditCallBack(Func fun)/*注册回调函数*/
 {
     _fun = fun;
+}
+void funcCan::regeditCallBack(FuncBmq fun)/*注册回调函数*/
+{
+    _funBmq = fun;
+}
+void funcCan::doBuf(CAN_OBJ *data)
+{
+    setBuf(data);
+    CAN_OBJ obj;
+    memmove(&obj,data,sizeof (CAN_OBJ));
+
+    int id = obj.ID;
+    switch (id) {
+    case 0x581:{
+        int16_t index;
+        memmove(&index,&data->Data[1],2);
+
+        if(index == 0x3000){//速度
+            int16_t value;
+            memmove(&value,&data->Data[4],2);
+            _valueSpeed601 = value;
+        }
+        else if(index == 0x6041){ //查询使能状态
+            if(data->Data[4] == 0x37){
+                static_cast<MachineEnableThreadPool*>(_threadMap[5])->setStatusEnable(0x601,true);
+
+            }
+            else {
+                static_cast<MachineEnableThreadPool*>(_threadMap[5])->setStatusEnable(0x601,false);
+            }
+        }
+        break;
+    }
+    case 0x583:{
+        int32_t value;
+        int16_t index;
+        memmove(&index,&data->Data[1],2);
+        if(index == 0x6064){
+            memmove(&value,&data->Data[4],4);
+            _currentA1Bmq = value;
+            if(1 == _isLimit){
+                if((_currentA1Bmq>_A1maxBmq)&&(_valueSpeed603>0)){
+
+                    qDebug()<<"[ID:A1]"<<" Over limit position "<<_currentA1Bmq<<_valueSpeed603;
+                    stopLX();
+
+                }
+                else if ((_currentA1Bmq<=_A1minBmq)&&(_valueSpeed603<0)) {
+                    qDebug()<<"[ID:A1]"<<" Over limit position "<<_currentA1Bmq<<_valueSpeed603;
+                    stopLX();
+                }
+            }
+        }
+        break;
+    }
+    case 0x141:{
+        //        int8_t valuetem;
+        //        int16_t valueiq;
+        int16_t valuespeed;
+        //        uint16_t valueencoder;
+        //        memmove(&valuetem,&data->Data[1],1);
+        //        memmove(&valueiq,&data->Data[2],2);
+        memmove(&valuespeed,&data->Data[4],2);
+        //        memmove(&valueencoder,&data->Data[6],2);
+        _valueSpeed141 = valuespeed;
+        break;
+    }
+    case 0x145:{
+        //        int8_t valuetem;
+        //        int16_t valueiq;
+        int16_t valuespeed;
+        //        uint16_t valueencoder;
+        //        memmove(&valuetem,&data->Data[1],1);
+        //        memmove(&valueiq,&data->Data[2],2);
+        memmove(&valuespeed,&data->Data[4],2);
+        //        memmove(&valueencoder,&data->Data[6],2);
+        _valueSpeed145 = valuespeed;
+        break;
+    }
+    case 0x5C3:
+    {
+        int32_t valuespeed;
+        char out[4] = {};
+        out[0] = data->Data[3];
+        out[1] = data->Data[2];
+        out[2] = data->Data[1];
+        out[3] = data->Data[0];
+        memmove(&valuespeed,out,4);
+        _valueSpeed603 = valuespeed;
+        break;
+    }
+
+    default:
+        break;
+    }
+}
+void funcCan::stopTT()
+{
+#if CANDEV_GC
+
+    CAN_OBJ sendbuf;
+    sendbuf.Data[0] = 0x23;
+    sendbuf.Data[1] = 0xFF;
+    sendbuf.Data[2] = 0x60;
+    sendbuf.Data[3] = 0x00;
+    sendbuf.Data[4] = 0x00;
+    sendbuf.Data[5] = 0x00;
+    sendbuf.Data[6] = 0x00;
+    sendbuf.Data[7] = 0x00;
+    QString RowStr;
+    sendbuf.DataLen=8 ;
+    sendbuf.ExternFlag=0 ;
+    sendbuf.RemoteFlag=0;
+    sendbuf.ID=0x601&0x7ff;
+    sendbuf.SendType=0;
+    sendbuf.TimeFlag=0;
+    sendbuf.TimeStamp=0;
+    ULONG flag;
+    flag=Transmit(3,0,0,&sendbuf,1); //调用动态链接库发送函数
+    _sleep(5);
+    if(flag<1)  //发送不正常
+    {
+    }
+    else {
+    }
+
+#endif
+}
+void funcCan::stopLX()
+{
+#if CANDEV_GC
+    CAN_OBJ sendbuf[9];
+    QStringList sendMsg;
+    sendMsg.append(QString("00 8A 00 00 00 00 "));//设置速度
+    sendMsg.append(QString("00 84"));//停止运动
+    for(int i=0;i<sendMsg.size();i++){
+        sendbuf[i].ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
+        sendbuf[i].RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
+        sendbuf[i].ID= 0x643;
+        sendbuf[i].SendType=1;
+        sendbuf[i].TimeFlag=0;
+        sendbuf[i].TimeStamp=0;
+        publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
+        ULONG flag;
+
+        flag=Transmit(3,0,0,&sendbuf[i],1); //调用动态链接库发送函数
+        _sleep(5);
+        if(flag<1)  //发送不正常
+        {
+            qDebug()<<"error";
+
+        }
+        else {
+
+        }
+    }
+#endif
+}
+void funcCan::stopRmd(uint16_t id)
+{
+#if CANDEV_GC
+    if(id == 0x145){
+        CAN_OBJ sendbuf[1];
+        QStringList sendMsg;
+        QString datastr = "81 00 00 00 00 00 00 00";
+        sendMsg.append(datastr.simplified());
+        for(int i=0;i<sendMsg.size();i++){
+            sendbuf[i].ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
+            sendbuf[i].RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
+
+            sendbuf[i].ID=id&0x7FF;
+
+            sendbuf[i].SendType=1;
+            sendbuf[i].TimeFlag=0;
+            sendbuf[i].TimeStamp=0;
+            publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
+
+            ULONG flag =Transmit(3,0,0,&sendbuf[i],1); //调用动态链接库发送函数
+            if(flag<1)  //发送不正常
+            {
+                //             emit signalError("error");
+
+            }
+            else {
+                qDebug()<<publicClass::getInstance()->Byte_16(sendbuf[0].Data,8);
+            }
+        }
+        return;
+    }
+    CAN_OBJ sendbuf[1];
+    //    QString id = "141";
+    QStringList sendMsg;
+    //    bool ok;
+    QString datastr = "A2 00 00 00";
+    unsigned char s[4]={0,0,0,0} ;
+    int32_t value = 0;//(0.01dps/lsb) 1秒钟转0.01度  3000dps/lsb 表示 3000/360*60 rpm 转/min
+    memmove(s,&value,4);
+
+    datastr = datastr+ " "+ publicClass::getInstance()->Byte_16(s,4).simplified() ;
+
+    sendMsg.append(datastr.simplified());
+    for(int i=0;i<sendMsg.size();i++){
+        sendbuf[i].ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
+        sendbuf[i].RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
+
+        sendbuf[i].ID=id&0x7FF;
+
+
+        sendbuf[i].SendType=0;
+        sendbuf[i].TimeFlag=0;
+        sendbuf[i].TimeStamp=0;
+        publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
+
+        ULONG flag =Transmit(3,0,0,&sendbuf[i],1); //调用动态链接库发送函数
+        if(flag<1)  //发送不正常
+        {
+
+        }
+        else {
+            qDebug()<<publicClass::getInstance()->Byte_16(sendbuf[0].Data,8);
+        }
+    }
+
+#endif
+}
+//设置加速度
+void  funcCan::setRmdAcceleration(ID id,int32_t acc)
+{
+#if CANDEV_GC
+    if(id == 0x141){
+        //加速度 1dps/s 1秒钟加速到1dps速度 200
+        CAN_OBJ sendbuf[1];
+        QStringList sendMsg;
+        QString datastr = "34 00 00 00";
+        unsigned char s[4]={0,0,0,0} ;
+        memmove(s,&acc,4);
+        datastr = datastr+ " "+ publicClass::getInstance()->Byte_16(s,4) ;
+        sendMsg.append(datastr.simplified());
+        qDebug()<<datastr<<publicClass::getInstance()->Byte_16(s,4);
+        for(int i=0;i<sendMsg.size();i++){
+            sendbuf[i].ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
+            sendbuf[i].RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
+
+            sendbuf[i].ID=0x141&0x7FF;
+
+            sendbuf[i].SendType=1;
+            sendbuf[i].TimeFlag=0;
+            sendbuf[i].TimeStamp=0;
+            publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
+
+            ULONG flag =Transmit(3,0,0,&sendbuf[i],1); //调用动态链接库发送函数
+            if(flag<1)  //发送不正常
+            {
+                //             emit signalError("error");
+
+            }
+            else {
+                qDebug()<<QStringLiteral("写入成功")<<publicClass::getInstance()->Byte_16(sendbuf[0].Data,8)
+                        <<QString::number(sendbuf->ID,16).toUpper()
+                       <<sendbuf[i].DataLen;
+            }
+        }
+    }
+    else if (id ==0x145) {
+        //加速度 1dps/s 1秒钟加速到1dps速度 200
+        CAN_OBJ sendbuf[1];
+        QStringList sendMsg;
+        QString datastr = "34 00 00 00";
+        unsigned char s[4]={0,0,0,0} ;
+        memmove(s,&acc,4);
+        datastr = datastr+ " "+ publicClass::getInstance()->Byte_16(s,4) ;
+        sendMsg.append(datastr.simplified());
+        qDebug()<<datastr<<publicClass::getInstance()->Byte_16(s,4);
+        for(int i=0;i<sendMsg.size();i++){
+            sendbuf[i].ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
+            sendbuf[i].RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
+
+            sendbuf[i].ID=0x145&0x7FF;
+
+            sendbuf[i].SendType=1;
+            sendbuf[i].TimeFlag=0;
+            sendbuf[i].TimeStamp=0;
+            publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
+
+            ULONG flag =Transmit(3,0,0,&sendbuf[i],1); //调用动态链接库发送函数
+            if(flag<1)  //发送不正常
+            {
+                //             emit signalError("error");
+
+            }
+            else {
+                qDebug()<<QStringLiteral("写入成功")<<publicClass::getInstance()->Byte_16(sendbuf[0].Data,8)
+                        <<QString::number(sendbuf->ID,16).toUpper()
+                       <<sendbuf[i].DataLen;
+            }
+        }
+    }
+#endif
+}
+void funcCan::controlMachine(ID id,int32_t angle)
+{
+#if CANDEV_GC
+
+    if(id == 0x643){
+#if 0
+        CAN_OBJ sendbuf[9];
+        QStringList sendMsg;
+        static bool enabel = false;
+        if(!enabel){
+            sendMsg.append(QString("00 88 00 00 4E 20"));//设置加速度为 10000 count/s²
+            sendMsg.append(QString("00 89 00 00 4E 20"));//设置减速度为 10000 count/s²
+            sendMsg.append(QString("00 8A 00 00 4E 20"));//设置目标速度为 10000 count/s
+            sendMsg.append(QString("01 00 00 00 00 01"));//电机使能
+        }
+        sendMsg.append(QString("00 8D 00 00 00 01"));//设置不带往返运动模式
+        sendMsg.append(QString("00 87 00 00 00 00"));//设置相对位置为 0 count
+        /***
+     * 设置目标绝对位置 262144count,运动方向取决于目标位置相对当前位置是递增(向前运动)还是递减（向后运动）
+     * （注：eRobxx-xxxI-BS 为单圈编码器型号，适用 于 运 动 位 置 范 围 0~360° ，
+     * 对应编码器值范围0~524287count，实际位置可超出一圈，但掉电重启后多圈值不保存）
+     * */
+        if(angle<0) return;
+        int32_t value = angle*(524287/360)+300000;
+        if(value>450953){
+            qDebug()<<"[ID:A1]"<<" Over limit position ";
+            return;
+        }
+        unsigned char out4[4] ={};
+        memmove(out4,&value,4);
+        QString str4 =  publicClass::getInstance()->Byte_16(out4,4);
+        sendMsg.append(QString("00 86 ")+str4.split(" ").at(3)+" "
+                       +str4.split(" ").at(2)+" "
+                       +str4.split(" ").at(1)+" "
+                       +str4.split(" ").at(0));//262144count 相当于180度=262144*（360/524287）
+        sendMsg.append(QString("00 83"));//开始运动
+
+        for(int i=0;i<sendMsg.size();i++){
+            sendbuf[i].ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
+            sendbuf[i].RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
+            sendbuf[i].ID= 0x643;
+            sendbuf[i].SendType=1;
+            sendbuf[i].TimeFlag=0;
+            sendbuf[i].TimeStamp=0;
+            publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
+            ULONG flag;
+
+            flag=Transmit(3,0,0,&sendbuf[i],1); //调用动态链接库发送函数
+            _sleep(10);
+            if(flag<1)  //发送不正常
+            {
+                qDebug()<<"error";
+
+            }
+            else {
+                //                qDebug()<<"success"<<publicClass::getInstance()->Byte_16(sendbuf[i].Data,sendbuf[i].DataLen);
+                enabel = true;
+            }
+        }
+#endif
+
+        int32_t valuespeed = angle;
+        if(1 == _isLimit){
+            if(_currentA1Bmq<_A1minBmq&&(valuespeed<0)){
+                qDebug()<<"[ID:A1]"<<" Over limit position "<<"[speed:]"<<valuespeed<<"[BMQ:]"<<_currentA1Bmq;
+                stopLX();
+                return;
+            }
+            else if ((_currentA1Bmq>_A1maxBmq)&&(valuespeed>0)) {
+                qDebug()<<"[ID:A1]"<<" Over limit position "<<"[speed:]"<<valuespeed<<"[BMQ:]"<<_currentA1Bmq;
+                stopLX();
+                return;
+            }
+        }
+        CAN_OBJ sendbuf[9];
+        QStringList sendMsg;
+        static bool enabel = false;
+        if(!enabel){
+            sendMsg.append(QString("00 4E 00 00 00 03"));//设置控制模式为连续运动
+            sendMsg.append(QString("00 8D 00 00 00 00"));//设置运动模式为连续运动模式（相当于速度模式，以5C1 3E 设定速度连续运行）
+            sendMsg.append(QString("00 88 00 00 75 30"));// 设置加速度 30000
+            sendMsg.append(QString("00 89 00 00 75 30"));//设置减速度 30000
+            unsigned char out4[4] ={};
+            memmove(out4,&valuespeed,4);
+            QString str4 =  publicClass::getInstance()->Byte_16(out4,4);
+            sendMsg.append(QString("00 8A ")+str4.split(" ").at(3)+" "
+                           +str4.split(" ").at(2)+" "
+                           +str4.split(" ").at(1)+" "
+                           +str4.split(" ").at(0));//设置速度
+
+            sendMsg.append(QString("01 00 00 00 00 01"));//电机使能
+            sendMsg.append(QString("00 83"));//开始运动
+        }
+        else
+        {
+            unsigned char out4[4] ={};
+            memmove(out4,&valuespeed,4);
+            QString str4 =  publicClass::getInstance()->Byte_16(out4,4);
+            sendMsg.append(QString("00 8A ")+str4.split(" ").at(3)+" "
+                           +str4.split(" ").at(2)+" "
+                           +str4.split(" ").at(1)+" "
+                           +str4.split(" ").at(0));//设置速度
+            sendMsg.append(QString("00 83"));//开始运动
+        }
+
+
+        for(int i=0;i<sendMsg.size();i++){
+            sendbuf[i].ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
+            sendbuf[i].RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
+            sendbuf[i].ID= 0x643;
+            sendbuf[i].SendType=1;
+            sendbuf[i].TimeFlag=0;
+            sendbuf[i].TimeStamp=0;
+            publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
+            ULONG flag;
+
+            flag=Transmit(3,0,0,&sendbuf[i],1); //调用动态链接库发送函数
+            _sleep(10);
+            if(flag<1)  //发送不正常
+            {
+                qDebug()<<"error";
+
+            }
+            else {
+                //                qDebug()<<"success"<<publicClass::getInstance()->Byte_16(sendbuf[i].Data,sendbuf[i].DataLen);
+                enabel = true;
+            }
+        }
+    }
+    if(id == 0x601){
+        CAN_OBJ sendbuf;
+
+        int32_t valuespeed = angle*10;
+        if(1 == _isLimit){
+            if(_currentA3Bmq<_A3minBmq&&(valuespeed>0)){
+                qDebug()<<"[ID:A3]"<<" Over limit position "<<"[speed:]"<<valuespeed<<"[BMQ:]"<<_currentA3Bmq;
+                stopTT();
+                return;
+            }
+            else if ((_currentA3Bmq>_A3maxBmq)&&(valuespeed<0)) {
+                qDebug()<<"[ID:A3]"<<" Over limit position "<<"[speed:]"<<valuespeed<<"[BMQ:]"<<_currentA3Bmq;
+                stopTT();
+                return;
+            }
+        }
+        char speed[4] = {};
+        memmove(speed,&valuespeed,4);
+        sendbuf.Data[0] = 0x23;
+        sendbuf.Data[1] = 0xFF;
+        sendbuf.Data[2] = 0x60;
+        sendbuf.Data[3] = 0x00;
+        sendbuf.Data[4] = speed[0];
+        sendbuf.Data[5] = speed[1];
+        sendbuf.Data[6] = speed[2];
+        sendbuf.Data[7] = speed[3];
+        QString RowStr;
+        sendbuf.DataLen=8 ;
+        sendbuf.ExternFlag=0 ;
+        sendbuf.RemoteFlag=0;
+        sendbuf.ID=0x601&0x7ff;
+        sendbuf.SendType=0;
+        sendbuf.TimeFlag=0;
+        sendbuf.TimeStamp=0;
+        ULONG flag;
+        flag=Transmit(3,0,0,&sendbuf,1); //调用动态链接库发送函数
+        _sleep(5);
+        if(flag<1)  //发送不正常
+        {
+        }
+        else {
+        }
+    }
+    if(id == 0x141){
+        if(1 == _isLimit){
+            if(_currentA2Bmq>_A2maxBmq){
+
+                if(angle<0){
+                    qDebug()<<"[ID:A2]"<<" Over limit position "<<_currentA2Bmq<<angle;
+                    stopRmd(0x141);
+                    return;
+                }
+
+            }
+            else if (_currentA2Bmq<=_A2minBmq) {
+                if(angle>0){
+                    qDebug()<<"[ID:A2]"<<" Over limit position "<<_currentA2Bmq<<angle;
+                    stopRmd(0x141);
+                    return;
+                }
+
+            }
+        }
+        CAN_OBJ sendbuf[1];
+        QString id = "141";
+        QStringList sendMsg;
+        bool ok;
+        QString datastr = "A2 00 00 00";
+        unsigned char s[4]={0,0,0,0} ;
+        int32_t value = angle*100;//(0.01dps/lsb) 1秒钟转0.01度  3000dps/lsb 表示 3000/360*60 rpm 转/min
+        memmove(s,&value,4);
+
+        datastr = datastr+ " "+ publicClass::getInstance()->Byte_16(s,4).simplified() ;
+
+        sendMsg.append(datastr.simplified());
+        for(int i=0;i<sendMsg.size();i++){
+            sendbuf[i].ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
+            sendbuf[i].RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
+
+            sendbuf[i].ID=(id.toUInt(&ok,16))&0x7FF;
+
+
+            sendbuf[i].SendType=0;
+            sendbuf[i].TimeFlag=0;
+            sendbuf[i].TimeStamp=0;
+            publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
+
+            ULONG flag =Transmit(3,0,0,&sendbuf[i],1); //调用动态链接库发送函数
+            if(flag<1)  //发送不正常
+            {
+
+            }
+            else {
+                qDebug()<<publicClass::getInstance()->Byte_16(sendbuf[0].Data,8);
+            }
+        }
+    }
+    if(id == 0x145){
+        if(1 == _isLimit){
+            if(_currentA4Bmq> _A4maxBmq){
+
+                if(angle>0){
+                    qDebug()<<"[ID:A4]"<<" Over limit position "<<_currentA4Bmq<<angle;
+                    stopRmd(0x145);
+                    return;
+                }
+
+            }
+            else if (_currentA4Bmq<=_A4minBmq) {
+                if(angle<0){
+                    qDebug()<<"[ID:A4]"<<" Over limit position "<<_currentA4Bmq<<angle;
+                    stopRmd(0x145);
+                    return;
+                }
+
+            }
+        }
+
+        CAN_OBJ sendbuf[1];
+        QString id = "145";
+        QStringList sendMsg;
+        bool ok;
+        QString datastr = "A2 00 00 00";
+        unsigned char s[4]={0,0,0,0} ;
+        int32_t value = angle*100;//(0.01dps/lsb) 1秒钟转0.01度  3000dps/lsb 表示 3000/360*60 rpm 转/min
+        memmove(s,&value,4);
+
+        datastr = datastr+ " "+ publicClass::getInstance()->Byte_16(s,4).simplified() ;
+
+        sendMsg.append(datastr.simplified());
+        for(int i=0;i<sendMsg.size();i++){
+            sendbuf[i].ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
+            sendbuf[i].RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
+
+            sendbuf[i].ID=(id.toUInt(&ok,16))&0x7FF;
+
+
+            sendbuf[i].SendType=0;
+            sendbuf[i].TimeFlag=0;
+            sendbuf[i].TimeStamp=0;
+            publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
+
+            ULONG flag =Transmit(3,0,0,&sendbuf[i],1); //调用动态链接库发送函数
+            if(flag<1)  //发送不正常
+            {
+
+            }
+            else {
+                qDebug()<<publicClass::getInstance()->Byte_16(sendbuf[0].Data,8);
+            }
+        }
+    }
+#endif
 }

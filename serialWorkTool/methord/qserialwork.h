@@ -51,7 +51,7 @@ private:
     bool m_isOpen;
     int _errorState;
     QTimer _timer;
-    QTimer _timerTest;
+//    QTimer _timerTest;
     QByteArray _buffer;
     std::mutex _mutex;
 //    QStringList _list;

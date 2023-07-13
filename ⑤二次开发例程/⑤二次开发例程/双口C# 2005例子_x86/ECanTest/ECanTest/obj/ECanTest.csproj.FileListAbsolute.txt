@@ -1,0 +1,66 @@
+E:\work\USBCAN\ECan\Sample\WinXP\C#例子\ECanTest\ECanTest\obj\Debug\ResolveAssemblyReference.cache
+E:\work\USBCAN\ECan\Sample\WinXP\C#例子\ECanTest\ECanTest\obj\Debug\ECanTest.Form1.resources
+E:\work\USBCAN\ECan\Sample\WinXP\C#例子\ECanTest\ECanTest\obj\Debug\ECanTest.Properties.Resources.resources
+E:\work\USBCAN\ECan\Sample\WinXP\C#例子\ECanTest\ECanTest\obj\Debug\ECanTest.csproj.GenerateResource.Cache
+E:\work\USBCAN\ECan\Sample\WinXP\C#例子\ECanTest\ECanTest\bin\Debug\ECanTest.exe
+E:\work\USBCAN\ECan\Sample\WinXP\C#例子\ECanTest\ECanTest\bin\Debug\ECanTest.pdb
+E:\work\USBCAN\ECan\Sample\WinXP\C#例子\ECanTest\ECanTest\obj\Debug\ECanTest.exe
+E:\work\USBCAN\ECan\Sample\WinXP\C#例子\ECanTest\ECanTest\obj\Debug\ECanTest.pdb
+E:\work\USBCAN\ECan\Sample\WinXP\C# 2005例子\ECanTest\ECanTest\obj\Debug\ECanTest.exe
+E:\work\USBCAN\ECan\Sample\WinXP\C# 2005例子\ECanTest\ECanTest\obj\Debug\ECanTest.pdb
+E:\work\USBCAN\ECan\Sample\WinXP\C# 2005例子\ECanTest\ECanTest\bin\Debug\ECanTest.exe
+E:\work\USBCAN\ECan\Sample\WinXP\C# 2005例子\ECanTest\ECanTest\bin\Debug\ECanTest.pdb
+E:\work\USBCAN\ECan\Sample\WinXP\C# 2005例子\ECanTest\ECanTest\obj\Debug\ResolveAssemblyReference.cache
+E:\work\USBCAN\ECan\Sample\WinXP\C# 2005例子\ECanTest\ECanTest\obj\Debug\ECanTest.Form1.resources
+E:\work\USBCAN\ECan\Sample\WinXP\C# 2005例子\ECanTest\ECanTest\obj\Debug\ECanTest.Properties.Resources.resources
+E:\work\USBCAN\ECan\Sample\WinXP\C# 2005例子\ECanTest\ECanTest\obj\Debug\ECanTest.csproj.GenerateResource.Cache
+E:\work\USBCAN\ECan\Sample\WinXP\C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ECanTest.exe
+E:\work\USBCAN\ECan\Sample\WinXP\C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ECanTest.pdb
+E:\work\USBCAN\ECan\Sample\WinXP\C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ResolveAssemblyReference.cache
+E:\work\USBCAN\ECan\Sample\WinXP\C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ECanTest.frmM.resources
+E:\work\USBCAN\ECan\Sample\WinXP\C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ECanTest.Properties.Resources.resources
+E:\work\USBCAN\ECan\Sample\WinXP\C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ECanTest.csproj.GenerateResource.Cache
+E:\work\USBCAN\ECan\Sample\WinXP\C# 2005例子_Thread\ECanTest\ECanTest\bin\Debug\ECanTest.exe
+E:\work\USBCAN\ECan\Sample\WinXP\C# 2005例子_Thread\ECanTest\ECanTest\bin\Debug\ECanTest.pdb
+E:\work\USBCAN\ECan\Sample\WinXP\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ECanTest.exe
+E:\work\USBCAN\ECan\Sample\WinXP\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ECanTest.pdb
+E:\work\USBCAN\ECan\Sample\WinXP\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ResolveAssemblyReference.cache
+E:\work\USBCAN\ECan\Sample\WinXP\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ECanTest.frmM.resources
+E:\work\USBCAN\ECan\Sample\WinXP\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ECanTest.Properties.Resources.resources
+E:\work\USBCAN\ECan\Sample\WinXP\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ECanTest.csproj.GenerateResource.Cache
+E:\work\USBCAN\ECan\Sample\WinXP\双口C# 2005例子_Thread\ECanTest\ECanTest\bin\Debug\ECanTest.exe
+E:\work\USBCAN\ECan\Sample\WinXP\双口C# 2005例子_Thread\ECanTest\ECanTest\bin\Debug\ECanTest.pdb
+E:\myWork\USBCAN\ECan\Sample\WinXP\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ECanTest.exe
+E:\myWork\USBCAN\ECan\Sample\WinXP\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ECanTest.pdb
+E:\myWork\USBCAN\ECan\Sample\WinXP\双口C# 2005例子_Thread\ECanTest\ECanTest\bin\Debug\ECanTest.exe
+E:\myWork\USBCAN\ECan\Sample\WinXP\双口C# 2005例子_Thread\ECanTest\ECanTest\bin\Debug\ECanTest.pdb
+E:\myWork\USBCAN\ECan\Sample\WinXP\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ResolveAssemblyReference.cache
+E:\myWork\USBCAN\ECan\Sample\WinXP\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ECanTest.frmM.resources
+E:\myWork\USBCAN\ECan\Sample\WinXP\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ECanTest.Properties.Resources.resources
+E:\myWork\USBCAN\ECan\Sample\WinXP\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ECanTest.csproj.GenerateResource.Cache
+E:\nWork\usbcan\soft\ECanVci\exmple\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ECanTest.exe
+E:\nWork\usbcan\soft\ECanVci\exmple\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ECanTest.pdb
+E:\nWork\usbcan\soft\ECanVci\exmple\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ResolveAssemblyReference.cache
+E:\nWork\usbcan\soft\ECanVci\exmple\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ECanTest.frmM.resources
+E:\nWork\usbcan\soft\ECanVci\exmple\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ECanTest.Properties.Resources.resources
+E:\nWork\usbcan\soft\ECanVci\exmple\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ECanTest.csproj.GenerateResource.Cache
+E:\nWork\usbcan\soft\ECanVci\exmple\双口C# 2005例子_Thread\ECanTest\ECanTest\bin\Debug\ECanTest.exe
+E:\nWork\usbcan\soft\ECanVci\exmple\双口C# 2005例子_Thread\ECanTest\ECanTest\bin\Debug\ECanTest.pdb
+E:\nWork\usbcan\soft\ECanVci及例程\exmple\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ECanTest.exe
+E:\nWork\usbcan\soft\ECanVci及例程\exmple\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ECanTest.pdb
+E:\nWork\usbcan\soft\ECanVci及例程\exmple\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ResolveAssemblyReference.cache
+E:\nWork\usbcan\soft\ECanVci及例程\exmple\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ECanTest.frmM.resources
+E:\nWork\usbcan\soft\ECanVci及例程\exmple\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ECanTest.Properties.Resources.resources
+E:\nWork\usbcan\soft\ECanVci及例程\exmple\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\Debug\ECanTest.csproj.GenerateResource.Cache
+E:\nWork\usbcan\soft\ECanVci及例程\exmple\双口C# 2005例子_Thread\ECanTest\ECanTest\bin\Debug\ECanTest.exe
+E:\nWork\usbcan\soft\ECanVci及例程\exmple\双口C# 2005例子_Thread\ECanTest\ECanTest\bin\Debug\ECanTest.pdb
+E:\nWork\usbcan\soft\ECanVci及例程\exmple\双口C# 2005例子_Thread\ECanTest\ECanTest\bin\x86\Debug\ECanTest.exe
+E:\nWork\usbcan\soft\ECanVci及例程\exmple\双口C# 2005例子_Thread\ECanTest\ECanTest\bin\x86\Debug\ECanTest.pdb
+E:\nWork\usbcan\soft\ECanVci及例程\exmple\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\x86\Debug\ResolveAssemblyReference.cache
+E:\nWork\usbcan\soft\ECanVci及例程\exmple\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\x86\Debug\ECanTest.frmM.resources
+E:\nWork\usbcan\soft\ECanVci及例程\exmple\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\x86\Debug\ECanTest.Properties.Resources.resources
+E:\nWork\usbcan\soft\ECanVci及例程\exmple\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\x86\Debug\ECanTest.csproj.GenerateResource.Cache
+E:\nWork\usbcan\soft\ECanVci及例程\exmple\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\x86\Debug\ECanTest.exe
+E:\nWork\usbcan\soft\ECanVci及例程\exmple\双口C# 2005例子_Thread\ECanTest\ECanTest\obj\x86\Debug\ECanTest.pdb
+Z:\③广成发货光盘中心\！！！  GC-USBCAN V502 V4.0\⑤二次开发例程\双口C# 2005例子_x86\ECanTest\ECanTest\obj\x86\Debug\ECanTest.exe
+Z:\③广成发货光盘中心\！！！  GC-USBCAN V502 V4.0\⑤二次开发例程\双口C# 2005例子_x86\ECanTest\ECanTest\obj\x86\Debug\ECanTest.pdb

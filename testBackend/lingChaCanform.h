@@ -2,7 +2,7 @@
 #define LINGCHACANFORM_H
 
 #include <QWidget>
-#include "ControlCAN.h"
+#include "define.h"
 #include "publicclass.h"
 #include <QTimer>
 namespace Ui {
@@ -16,6 +16,7 @@ class lingChaCanform : public QWidget
 public:
     explicit lingChaCanform(QWidget *parent = nullptr);
     ~lingChaCanform();
+    void setValue(int32_t value);
 public slots:
     void slotRecvLingChaData(UINT id, BYTE *data);
 private slots:
@@ -40,6 +41,10 @@ private slots:
     void on_pushButton_ceshi_clicked();
 
     void on_pushButton_xiangduienable_clicked();
+
+    void on_pushButton_clicked();
+
+    void on_comboBox_mode_activated(const QString &arg1);
 
 private:
     void  sportsMode_jueduiweizhi();

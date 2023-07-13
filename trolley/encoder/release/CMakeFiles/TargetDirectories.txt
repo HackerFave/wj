@@ -1,0 +1,4 @@
+D:/work/qtwork/wj/testBackend/encoder/release/CMakeFiles/encoder.dir
+D:/work/qtwork/wj/testBackend/encoder/release/CMakeFiles/edit_cache.dir
+D:/work/qtwork/wj/testBackend/encoder/release/CMakeFiles/rebuild_cache.dir
+D:/work/qtwork/wj/testBackend/encoder/release/CMakeFiles/encoder_autogen.dir

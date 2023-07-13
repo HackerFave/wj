@@ -1,0 +1,19 @@
+﻿<?xml version="1.0"?>
+<doc>
+<assembly>
+<name>
+ECanTest
+</name>
+</assembly>
+<members>
+<member name="F:ECanTest.ECAN.ECANStatus.STATUS_ERR">
+	<summary>
+  error
+ </summary>
+</member><member name="F:ECanTest.ECAN.ECANStatus.STATUS_OK">
+	<summary>
+ No error
+ </summary>
+</member>
+</members>
+</doc>

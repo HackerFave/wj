@@ -27,6 +27,7 @@ private:
     QSerialPort *init();
     void initThread();
     void initClient();
+    void reset();
 signals:
     void signalStatus(int);
 private slots:

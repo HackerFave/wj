@@ -1,0 +1,35 @@
+E:\C#1\ECanTest\ECanTest\obj\x64\Debug\ECanTest.exe
+E:\C#1\ECanTest\ECanTest\obj\x64\Debug\ECanTest.pdb
+E:\C#1\ECanTest\ECanTest\bin\x64\Debug\ECanTest.exe
+E:\C#1\ECanTest\ECanTest\bin\x64\Debug\ECanTest.pdb
+E:\C#1\ECanTest\ECanTest\obj\x64\Debug\ECanTest.csprojResolveAssemblyReference.cache
+E:\C#1\ECanTest\ECanTest\obj\x64\Debug\ECanTest.frmM.resources
+E:\C#1\ECanTest\ECanTest\obj\x64\Debug\ECanTest.Properties.Resources.resources
+E:\C#1\ECanTest\ECanTest\obj\x64\Debug\ECanTest.csproj.GenerateResource.Cache
+Z:\③广成发货光盘中心\！！！  GC-USBCAN V502 V4.0\⑤二次开发例程\C# 例子_x64\C# 2010例子_x64\ECanTest\ECanTest\obj\x64\Debug\ECanTest.exe
+Z:\③广成发货光盘中心\！！！  GC-USBCAN V502 V4.0\⑤二次开发例程\C# 例子_x64\C# 2010例子_x64\ECanTest\ECanTest\obj\x64\Debug\ECanTest.pdb
+Z:\③广成发货光盘中心\!GC-USBCAN V502 V4.0\⑤二次开发例程\C# 例子_x64\C# 2010例子_x64\ECanTest\ECanTest\bin\x64\Debug\ECanTest.exe
+Z:\③广成发货光盘中心\!GC-USBCAN V502 V4.0\⑤二次开发例程\C# 例子_x64\C# 2010例子_x64\ECanTest\ECanTest\bin\x64\Debug\ECanTest.pdb
+Z:\③广成发货光盘中心\!GC-USBCAN V502 V4.0\⑤二次开发例程\C# 例子_x64\C# 2010例子_x64\ECanTest\ECanTest\bin\x64\Debug\mscorlib.dll
+Z:\③广成发货光盘中心\!GC-USBCAN V502 V4.0\⑤二次开发例程\C# 例子_x64\C# 2010例子_x64\ECanTest\ECanTest\bin\x64\Debug\zh-CHS\mscorlib.resources.dll
+Z:\③广成发货光盘中心\!GC-USBCAN V502 V4.0\⑤二次开发例程\C# 例子_x64\C# 2010例子_x64\ECanTest\ECanTest\bin\x64\Debug\sortkey.nlp
+Z:\③广成发货光盘中心\!GC-USBCAN V502 V4.0\⑤二次开发例程\C# 例子_x64\C# 2010例子_x64\ECanTest\ECanTest\bin\x64\Debug\sorttbls.nlp
+Z:\③广成发货光盘中心\!GC-USBCAN V502 V4.0\⑤二次开发例程\C# 例子_x64\C# 2010例子_x64\ECanTest\ECanTest\bin\x64\Debug\big5.nlp
+Z:\③广成发货光盘中心\!GC-USBCAN V502 V4.0\⑤二次开发例程\C# 例子_x64\C# 2010例子_x64\ECanTest\ECanTest\bin\x64\Debug\bopomofo.nlp
+Z:\③广成发货光盘中心\!GC-USBCAN V502 V4.0\⑤二次开发例程\C# 例子_x64\C# 2010例子_x64\ECanTest\ECanTest\bin\x64\Debug\ksc.nlp
+Z:\③广成发货光盘中心\!GC-USBCAN V502 V4.0\⑤二次开发例程\C# 例子_x64\C# 2010例子_x64\ECanTest\ECanTest\bin\x64\Debug\prc.nlp
+Z:\③广成发货光盘中心\!GC-USBCAN V502 V4.0\⑤二次开发例程\C# 例子_x64\C# 2010例子_x64\ECanTest\ECanTest\bin\x64\Debug\prcp.nlp
+Z:\③广成发货光盘中心\!GC-USBCAN V502 V4.0\⑤二次开发例程\C# 例子_x64\C# 2010例子_x64\ECanTest\ECanTest\bin\x64\Debug\xjis.nlp
+Z:\③广成发货光盘中心\!GC-USBCAN V502 V4.0\⑤二次开发例程\C# 例子_x64\C# 2010例子_x64\ECanTest\ECanTest\bin\x64\Debug\normidna.nlp
+Z:\③广成发货光盘中心\!GC-USBCAN V502 V4.0\⑤二次开发例程\C# 例子_x64\C# 2010例子_x64\ECanTest\ECanTest\bin\x64\Debug\normnfc.nlp
+Z:\③广成发货光盘中心\!GC-USBCAN V502 V4.0\⑤二次开发例程\C# 例子_x64\C# 2010例子_x64\ECanTest\ECanTest\bin\x64\Debug\normnfd.nlp
+Z:\③广成发货光盘中心\!GC-USBCAN V502 V4.0\⑤二次开发例程\C# 例子_x64\C# 2010例子_x64\ECanTest\ECanTest\bin\x64\Debug\normnfkc.nlp
+Z:\③广成发货光盘中心\!GC-USBCAN V502 V4.0\⑤二次开发例程\C# 例子_x64\C# 2010例子_x64\ECanTest\ECanTest\bin\x64\Debug\normnfkd.nlp
+Z:\③广成发货光盘中心\!GC-USBCAN V502 V4.0\⑤二次开发例程\C# 例子_x64\C# 2010例子_x64\ECanTest\ECanTest\obj\x64\Debug\ECanTest.frmM.resources
+Z:\③广成发货光盘中心\!GC-USBCAN V502 V4.0\⑤二次开发例程\C# 例子_x64\C# 2010例子_x64\ECanTest\ECanTest\obj\x64\Debug\ECanTest.Properties.Resources.resources
+Z:\③广成发货光盘中心\!GC-USBCAN V502 V4.0\⑤二次开发例程\C# 例子_x64\C# 2010例子_x64\ECanTest\ECanTest\obj\x64\Debug\ECanTest.csproj.GenerateResource.cache
+Z:\③广成发货光盘中心\!GC-USBCAN V502 V4.0\⑤二次开发例程\C# 例子_x64\C# 2010例子_x64\ECanTest\ECanTest\obj\x64\Debug\ECanTest.csproj.CoreCompileInputs.cache
+Z:\③广成发货光盘中心\!GC-USBCAN V502 V4.0\⑤二次开发例程\C# 例子_x64\C# 2010例子_x64\ECanTest\ECanTest\obj\x64\Debug\ECanTest.csproj.CopyComplete
+Z:\③广成发货光盘中心\!GC-USBCAN V502 V4.0\⑤二次开发例程\C# 例子_x64\C# 2010例子_x64\ECanTest\ECanTest\obj\x64\Debug\ECanTest.exe
+Z:\③广成发货光盘中心\!GC-USBCAN V502 V4.0\⑤二次开发例程\C# 例子_x64\C# 2010例子_x64\ECanTest\ECanTest\obj\x64\Debug\ECanTest.pdb
+Z:\③广成发货光盘中心\!GC-USBCAN V502 V4.0\⑤二次开发例程\C# 例子_x64\C# 2010例子_x64\ECanTest\ECanTest\obj\x64\Debug\ECanTest.csprojAssemblyReference.cache

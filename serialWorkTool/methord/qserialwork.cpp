@@ -23,7 +23,7 @@ QSerialPort * QSerialWork::InitSerialPort()
     m_serialPort = new QSerialPort(this);
     connect(m_serialPort, &QSerialPort::readyRead/*waitForReadyRead*/, this, &QSerialWork::DataArrived,Qt::DirectConnection);
     connect(&_timer, &QTimer::timeout, this, &QSerialWork::timeUpdate);
-    connect(&_timerTest, &QTimer::timeout, this, &QSerialWork::slotWriteData);
+    //    connect(&_timerTest, &QTimer::timeout, this, &QSerialWork::slotWriteData);
 
     qDebug() << __FUNCTION__ << "Thread ID:" << QThread::currentThreadId();
     return m_serialPort;
@@ -49,7 +49,7 @@ void QSerialWork::OpenPort(QString portName,QSerialPort::BaudRate flag,QSerialPo
 
     if(m_isOpen)
     {
-        _timerTest.start(50);
+        //        _timerTest.start(50);
         emit State(QSERIALWORK_ERR_OPEN_SUCCESS);
         //        setState(QSERIALWORK_ERR_OPEN_SUCCESS);
     }else
@@ -69,14 +69,16 @@ int QSerialWork::getState() const
 void QSerialWork::ClosePort()
 {
     qDebug() << __FUNCTION__ << "Thread ID:" << QThread::currentThreadId();
-    _timerTest.stop();
+    //    _timerTest.stop();
     m_serialPort->close();
 }
 
 void QSerialWork::WriteData(const QByteArray& buf, qint64 len)
+
+
 {
     //    std::lock_guard<std::mutex> lgd(_mutex);
-    qDebug() << __FUNCTION__ << "Thread ID:" <<buf<< QThread::currentThreadId();
+    qDebug() << __FUNCTION__ << "Thread ID:" <<"[SEND:]"<< QString(buf.toHex().toUpper())<< QThread::currentThreadId();
     m_serialPort->write(buf, len);
 }
 

@@ -4,7 +4,7 @@
 #include <QWidget>
 #include "publicclass.h"
 #include <QTimer>
-#include "ControlCAN.h"
+#include "define.h"
 namespace Ui {
 class viewShowForm;
 }
@@ -17,7 +17,7 @@ public:
     explicit viewShowForm(QWidget *parent = nullptr);
     ~viewShowForm();
 
-
+    void setValue(uint32_t id, int32_t value);
 protected:
     void paintEvent(QPaintEvent *);
     void timerEvent(QTimerEvent *);
@@ -27,11 +27,11 @@ private:
     int m_k = 10;
     /*******************************/
 private slots:
-//    void on_checkBox_Rpm_stateChanged(int arg1);
+    //    void on_checkBox_Rpm_stateChanged(int arg1);
 
-//    void on_checkBox_Volt_stateChanged(int arg1);
+    //    void on_checkBox_Volt_stateChanged(int arg1);
 
-//    void on_checkBox_Current_stateChanged(int arg1);
+    //    void on_checkBox_Current_stateChanged(int arg1);
     void on_checkBox_allShow_clicked(bool checked);
 
     void Init();    //初始化
@@ -71,12 +71,12 @@ public slots:
 private:
     Ui::viewShowForm *ui;
     //----------//
-//    QMap<QString,QCPGraph*> graphMap;
-//    int64_t _timeStamp=0;
-//    QTimer _timer;
+    //    QMap<QString,QCPGraph*> graphMap;
+    //    int64_t _timeStamp=0;
+    //    QTimer _timer;
     ///////////////////////////////////
     qreal k = 0;              //笛卡尔心形函数参数
-//    QPen pen;
+    //    QPen pen;
     QVector<qreal> x,y;
     QVector<qreal> x1,y1;
 

@@ -1,0 +1,12 @@
+#ifndef BACKEND485_GLOBAL_H
+#define BACKEND485_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(BACKEND485_LIBRARY)
+#  define BACKEND485_EXPORT Q_DECL_EXPORT
+#else
+#  define BACKEND485_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // BACKEND485_GLOBAL_H

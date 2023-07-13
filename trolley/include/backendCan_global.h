@@ -1,0 +1,12 @@
+#ifndef BACKENDCAN_GLOBAL_H
+#define BACKENDCAN_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(BACKENDCAN_LIBRARY)
+#  define BACKENDCAN_EXPORT Q_DECL_EXPORT
+#else
+#  define BACKENDCAN_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // BACKENDCAN_GLOBAL_H

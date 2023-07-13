@@ -27,9 +27,9 @@ QSerialPort* func::init()
         //        initThread();
         connect(&_timerTest, &QTimer::timeout, this, &func::slotWriteData);
         connect(_serialPort, &QSerialPort::readyRead, this, &func::slotDataArrived);
-        _timerTest.start(50);
+        _timerTest.start(30);
         emit signalStatus(QSERIALWORK_ERR_OPEN_SUCCESS);
-//        _shareMemory.setKey(publicClass::getInstance()->readValueIni("COM/port"));//创建共享内存
+        //        _shareMemory.setKey(publicClass::getInstance()->readValueIni("COM/port"));//创建共享内存
         qDebug()<<"OPEN SUCCESS:"<<"[端口"<<publicClass::getInstance()->readValueIni("COM/port")<<"]";
     }else
     {
@@ -80,43 +80,49 @@ void func::slotDataArrived()
     _buffer.append(_com);
     _buffer.append(_serialPort->readAll());
     QString ret(_buffer.toHex().toUpper());
-//    slotWriteShareMemory(ret);
-    m_socket->write(_buffer);
-    qDebug() << __FUNCTION__ << "Thread ID:" << QThread::currentThreadId()<<ret;
+    //    slotWriteShareMemory(ret);
+    if(ret.simplified().isEmpty()){
+        QByteArray err = "error";
+        m_socket->write(err);
+    }else {
+        m_socket->write(_buffer);
+    }
+
+    qDebug() << "RECV BMQ:"<<ret;
     _buffer.clear();
 }
 void func::slotWriteData()
 {
-    qDebug() << __FUNCTION__ << "Thread ID:" ;
     QString STR1 = "1A";
     QByteArray byte = QByteArray::fromHex(STR1.toLatin1());
     _serialPort->write(byte,byte.size());
 
+
 }
 void func::slotWriteShareMemory(QString &data)
 {
-//    if(_shareMemory.isAttached())
-//    {
-//        _shareMemory.detach();
-//    }
+    //    if(_shareMemory.isAttached())
+    //    {
+    //        _shareMemory.detach();
+    //    }
 
-//    QBuffer buffer;
-//    QDataStream out(&buffer);
-//    buffer.open(QBuffer::ReadWrite);
-//    buffer.write(data.toLatin1());
-//    int size = buffer.size();
-//    if(!_shareMemory.create(size))
-//    {
-//        qDebug() << _shareMemory.errorString();
+    //    QBuffer buffer;
+    //    QDataStream out(&buffer);
+    //    buffer.open(QBuffer::ReadWrite);
+    //    buffer.write(data.toLatin1());
+    //    int size = buffer.size();
+    //    if(!_shareMemory.create(size))
+    //    {
+    //        qDebug() << _shareMemory.errorString();
 
-//        return ;
-//    }
+    //        return ;
+    //    }
 
-//    _shareMemory.lock();
-//    char *dest = reinterpret_cast<char *>(_shareMemory.data());
-//    const char *source = reinterpret_cast<const char *>(buffer.data().data());
-//    memcpy(dest, source, qMin(size, _shareMemory.size()));
-//    _shareMemory.unlock();
+    //    _shareMemory.lock();
+    //    char *dest = reinterpret_cast<char *>(_shareMemory.data());
+    //    const char *source = reinterpret_cast<const char *>(buffer.data().data());
+    //    memcpy(dest, source, qMin(size, _shareMemory.size()));
+    //    _shareMemory.unlock();
 }
 
 
@@ -125,7 +131,7 @@ void func::slot_rcv_data() //收到数据
 {
     QByteArray data = m_socket->readAll();
 
-    qDebug()<<"data:"<<data;
+//    qDebug()<<"data:"<<data;
 }
 
 void func::slot_connect_success()

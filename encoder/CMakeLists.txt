@@ -15,7 +15,7 @@ find_package(Qt5Core)
 find_package(Qt5 COMPONENTS SerialPort REQUIRED)
 find_package(Qt5Widgets)
 find_package(Qt5Network)
-add_executable(encoder
+add_executable(encoder WIN32
   main.cpp
   func.h
   func.cpp

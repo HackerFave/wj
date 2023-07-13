@@ -27,129 +27,133 @@ void viewShowForm::slotPlotViewUpdate(UINT id, BYTE *data)
 {
 
     if(id==0x581){
-        QString datastr = publicClass::getInstance()->Byte_16(data,8);
-        QString ids = datastr.split(" ").at(1) +" "+ datastr.split(" ").at(2);
-        QString valuestr = datastr.split(" ").at(4) +" "+ datastr.split(" ").at(5)+" "+ datastr.split(" ").at(6)+" "+ datastr.split(" ").at(7);
-        QByteArray array = datastr.toLatin1();
+        //        QString datastr = publicClass::getInstance()->Byte_16(data,8);
+        //        QString ids = datastr.split(" ").at(1) +" "+ datastr.split(" ").at(2);
+        //        QString valuestr = datastr.split(" ").at(4) +" "+ datastr.split(" ").at(5)+" "+ datastr.split(" ").at(6)+" "+ datastr.split(" ").at(7);
+        //        QByteArray array = datastr.toLatin1();
         int16_t index;
-        QByteArray byte = QByteArray::fromHex(ids.toLatin1());
-        memcpy(&index,byte.data(),byte.size());
+        //        QByteArray byte = QByteArray::fromHex(ids.toLatin1());
+        //        memcpy(&index,byte.data(),byte.size());
+        memmove(&index,&data[1],2);
+        int32_t value;
+        memmove(&value,&data[4],4);
+        qDebug()<<index<<QString::number(index,16).toUpper()<<"MMMMMMMMMMMMMMM"<<value;
         //    qDebug()<<"[recv:]"<<publicClass::getInstance()->Byte_16(data,8) ;
-        switch(index)
-        {
-        case 12302://模块温度
-        {
-            QByteArray valuebyte = QByteArray::fromHex(valuestr.toLatin1());
-            int32_t value;
-            memcpy(&value,valuebyte.data(),valuebyte.size());
-            ui->label_module_temperature->setText(QStringLiteral("模块温度:%1℃").arg(value));
-            break;
-        }
-        case 12293://电机电流
-        {
-            QByteArray valuebyte = QByteArray::fromHex(valuestr.toLatin1());
-            int16_t value;
-            memcpy(&value,valuebyte.data(),valuebyte.size());
-            ui->label_Current->setText(QStringLiteral("电机电流:%1A").arg(value*0.1));
-            break;
-        }
-        case 12301://线圈温度
-        {
-            QByteArray valuebyte = QByteArray::fromHex(valuestr.toLatin1());
-            int32_t value;
-            memcpy(&value,valuebyte.data(),valuebyte.size());
-            ui->label_coil_temperature->setText(QStringLiteral("线圈温度:%1℃").arg(value));
-            break;
-        }
-        case /*12297*/0X3009://母线电压
-        {
-            QByteArray valuebyte = QByteArray::fromHex(valuestr.toLatin1());
-            int32_t value;
-            memcpy(&value,valuebyte.data(),valuebyte.size());
-            ui->label_Volt->setText(QStringLiteral("母线电压:%1V").arg(value));
-            break;
-        }
-        case 12298://告警码
-        {
-            QByteArray valuebyte = QByteArray::fromHex(valuestr.toLatin1());
-            //            int32_t value;
-            //            memcpy(&value,valuebyte.data(),valuebyte.size());
-            ui->label_error->setText(QStringLiteral("告警码:%1").arg(/*value*/datastr));
-            //                graphMap["current"]->addData(GetX(),hex2Float(data));
+        //        switch(index)
+        //        {
+        //        case 12302://模块温度
+        //        {
+        //            QByteArray valuebyte = QByteArray::fromHex(valuestr.toLatin1());
+        //            int32_t value;
+        //            memcpy(&value,valuebyte.data(),valuebyte.size());
+        //            ui->label_module_temperature->setText(QStringLiteral("模块温度:%1℃").arg(value));
+        //            break;
+        //        }
+        //        case 12293://电机电流
+        //        {
+        //            QByteArray valuebyte = QByteArray::fromHex(valuestr.toLatin1());
+        //            int16_t value;
+        //            memcpy(&value,valuebyte.data(),valuebyte.size());
+        //            ui->label_Current->setText(QStringLiteral("电机电流:%1A").arg(value*0.1));
+        //            break;
+        //        }
+        //        case 12301://线圈温度
+        //        {
+        //            QByteArray valuebyte = QByteArray::fromHex(valuestr.toLatin1());
+        //            int32_t value;
+        //            memcpy(&value,valuebyte.data(),valuebyte.size());
+        //            ui->label_coil_temperature->setText(QStringLiteral("线圈温度:%1℃").arg(value));
+        //            break;
+        //        }
+        //        case /*12297*/0X3009://母线电压
+        //        {
+        //            QByteArray valuebyte = QByteArray::fromHex(valuestr.toLatin1());
+        //            int32_t value;
+        //            memcpy(&value,valuebyte.data(),valuebyte.size());
+        //            ui->label_Volt->setText(QStringLiteral("母线电压:%1V").arg(value));
+        //            break;
+        //        }
+        //        case 12298://告警码
+        //        {
+        //            QByteArray valuebyte = QByteArray::fromHex(valuestr.toLatin1());
+        //            //            int32_t value;
+        //            //            memcpy(&value,valuebyte.data(),valuebyte.size());
+        //            ui->label_error->setText(QStringLiteral("告警码:%1").arg(/*value*/datastr));
+        //            //                graphMap["current"]->addData(GetX(),hex2Float(data));
 
-            //        ui->plot1->replot();
-            break;
-        }
-        case 12288://转速
-        {
-            QByteArray valuebyte = QByteArray::fromHex(valuestr.toLatin1());
-            int16_t value;
-            memcpy(&value,valuebyte.data(),valuebyte.size());
-            ui->label_Rpm->setText(QStringLiteral("转速:%1rpm").arg(value));
-            //                graphMap["current"]->addData(GetX(),hex2Float(data));
+        //            //        ui->plot1->replot();
+        //            break;
+        //        }
+        //        case 12288://转速
+        //        {
+        //            QByteArray valuebyte = QByteArray::fromHex(valuestr.toLatin1());
+        //            int16_t value;
+        //            memcpy(&value,valuebyte.data(),valuebyte.size());
+        //            ui->label_Rpm->setText(QStringLiteral("转速:%1rpm").arg(value));
+        //            //                graphMap["current"]->addData(GetX(),hex2Float(data));
 
-            //        ui->plot1->replot();
-            break;
-        }
-        case 12296://第一位置编码器
-        {
-            QByteArray valuebyte = QByteArray::fromHex(valuestr.toLatin1());
-            int32_t value;
-            memcpy(&value,valuebyte.data(),valuebyte.size());
-            ui->label_bainmaqi1->setText(QStringLiteral("第一位置编码器:%1").arg(value));
-            //                graphMap["current"]->addData(GetX(),hex2Float(data));
+        //            //        ui->plot1->replot();
+        //            break;
+        //        }
+        //        case 12296://第一位置编码器
+        //        {
+        //            QByteArray valuebyte = QByteArray::fromHex(valuestr.toLatin1());
+        //            int32_t value;
+        //            memcpy(&value,valuebyte.data(),valuebyte.size());
+        //            ui->label_bainmaqi1->setText(QStringLiteral("第一位置编码器:%1").arg(value));
+        //            //                graphMap["current"]->addData(GetX(),hex2Float(data));
 
-            //        ui->plot1->replot();
-            break;
-        }
-        case 24676://编码器绝对位置
-        {
-            QByteArray valuebyte = QByteArray::fromHex(valuestr.toLatin1());
-            int32_t value;
-            memcpy(&value,valuebyte.data(),valuebyte.size());
-            ui->label_jueduiweizhi->setText(QStringLiteral("编码器绝对位置:%1").arg(value));
-            //                graphMap["current"]->addData(GetX(),hex2Float(data));
+        //            //        ui->plot1->replot();
+        //            break;
+        //        }
+        //        case 24676://编码器绝对位置
+        //        {
+        //            QByteArray valuebyte = QByteArray::fromHex(valuestr.toLatin1());
+        //            int32_t value;
+        //            memcpy(&value,valuebyte.data(),valuebyte.size());
+        //            ui->label_jueduiweizhi->setText(QStringLiteral("编码器绝对位置:%1").arg(value));
+        //            //                graphMap["current"]->addData(GetX(),hex2Float(data));
 
-            //        ui->plot1->replot();
-            break;
-        }
-        case 24698://目标位置
-        {
-            QByteArray valuebyte = QByteArray::fromHex(valuestr.toLatin1());
-            int32_t value;
-            memcpy(&value,valuebyte.data(),valuebyte.size());
-            ui->label_mubiaoweizhi->setText(QStringLiteral("目标位置:%1").arg(value));
-            //                graphMap["current"]->addData(GetX(),hex2Float(data));
+        //            //        ui->plot1->replot();
+        //            break;
+        //        }
+        //        case 24698://目标位置
+        //        {
+        //            QByteArray valuebyte = QByteArray::fromHex(valuestr.toLatin1());
+        //            int32_t value;
+        //            memcpy(&value,valuebyte.data(),valuebyte.size());
+        //            ui->label_mubiaoweizhi->setText(QStringLiteral("目标位置:%1").arg(value));
+        //            //                graphMap["current"]->addData(GetX(),hex2Float(data));
 
-            //        ui->plot1->replot();
-            break;
-        }
-        case 24675://当前电机位置
-        {
-            QByteArray valuebyte = QByteArray::fromHex(valuestr.toLatin1());
-            int32_t value;
-            memcpy(&value,valuebyte.data(),valuebyte.size());
-            ui->label_dianjiweizhi->setText(QStringLiteral("当前电机位置:%1").arg(value));
-            //                graphMap["current"]->addData(GetX(),hex2Float(data));
+        //            //        ui->plot1->replot();
+        //            break;
+        //        }
+        //        case 24675://当前电机位置
+        //        {
+        //            QByteArray valuebyte = QByteArray::fromHex(valuestr.toLatin1());
+        //            int32_t value;
+        //            memcpy(&value,valuebyte.data(),valuebyte.size());
+        //            ui->label_dianjiweizhi->setText(QStringLiteral("当前电机位置:%1").arg(value));
+        //            //                graphMap["current"]->addData(GetX(),hex2Float(data));
 
-            //        ui->plot1->replot();
-            break;
-        }
-        case 12303://第二位置编码器
-        {
-            QByteArray valuebyte = QByteArray::fromHex(valuestr.toLatin1());
-            int32_t value;
-            memcpy(&value,valuebyte.data(),valuebyte.size());
-            ui->label_bianmaqi2->setText(QStringLiteral("第二位置编码器:%1").arg(value));
-            //        publicClass::getInstance()->setValueIni("index/limit",value);
-            //                graphMap["current"]->addData(GetX(),hex2Float(data));
+        //            //        ui->plot1->replot();
+        //            break;
+        //        }
+        //        case 12303://第二位置编码器
+        //        {
+        //            QByteArray valuebyte = QByteArray::fromHex(valuestr.toLatin1());
+        //            int32_t value;
+        //            memcpy(&value,valuebyte.data(),valuebyte.size());
+        //            ui->label_bianmaqi2->setText(QStringLiteral("第二位置编码器:%1").arg(value));
+        //            //        publicClass::getInstance()->setValueIni("index/limit",value);
+        //            //                graphMap["current"]->addData(GetX(),hex2Float(data));
 
-            //        ui->plot1->replot();
-            break;
-        }
-        default:
-            break;
-        }
+        //            //        ui->plot1->replot();
+        //            break;
+        //        }
+        //        default:
+        //            break;
+        //        }
     }
 }
 void viewShowForm::on_checkBox_allShow_clicked(bool checked)
@@ -215,11 +219,12 @@ void viewShowForm::slotDraw()
 
 void viewShowForm::on_pushButton_reversal_clicked()
 {
+#if CANDEV_CX
     VCI_CAN_OBJ sendbuf;
     bool ok;
     QString id = ("601");
-//    QList<QString> sendMsg;
-//    sendMsg.clear();
+    //    QList<QString> sendMsg;
+    //    sendMsg.clear();
     //    sendMsg.append(QString("2F 60 60 00 03 00 00 00"));
     //    sendMsg.append(QString("2B 40 60 00 80 00 00 00"));
     //    sendMsg.append(QString("2B 40 60 00 06 00 00 00"));
@@ -234,37 +239,81 @@ void viewShowForm::on_pushButton_reversal_clicked()
 
     QString ssss2 =  publicClass::getInstance()->Byte_16((unsigned char *)byArr2.data(),4);
     QString sudu = QString("23 FF 60 00 %1").arg(ssss2);
-//    sendMsg.append(sudu);
+    //    sendMsg.append(sudu);
     QString RowStr;
-//    for(int i=0;i<1;i++){
-        sendbuf.ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
-        sendbuf.RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
+    //    for(int i=0;i<1;i++){
+    sendbuf.ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
+    sendbuf.RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
 
-        if((sendbuf.ExternFlag)==1)//帧格式，远程帧
-        {
-            sendbuf.ID =(id.toUInt(&ok,16)); //&0x1FFFFFFF;
-        }
-        else//标准帧格式
-        {
-            sendbuf.ID=(id.toUInt(&ok,16))&0x7FF;
-        }
+    if((sendbuf.ExternFlag)==1)//帧格式，远程帧
+    {
+        sendbuf.ID =(id.toUInt(&ok,16)); //&0x1FFFFFFF;
+    }
+    else//标准帧格式
+    {
+        sendbuf.ID=(id.toUInt(&ok,16))&0x7FF;
+    }
 
-        sendbuf.SendType=1;
-        sendbuf.TimeFlag=0;
-        sendbuf.TimeStamp=0;
-        qDebug()<<sendbuf.DataLen<<sudu<<"xxxxxxxxxxxxxxxxxxxxxxx";
-        publicClass::getInstance()->Str2CharSplitBlank(sudu,sendbuf.Data,&sendbuf.DataLen);
-        ULONG flag;
+    sendbuf.SendType=1;
+    sendbuf.TimeFlag=0;
+    sendbuf.TimeStamp=0;
+    qDebug()<<sendbuf.DataLen<<sudu<<"xxxxxxxxxxxxxxxxxxxxxxx";
+    publicClass::getInstance()->Str2CharSplitBlank(sudu,sendbuf.Data,&sendbuf.DataLen);
+    ULONG flag;
 
-        flag=VCI_Transmit(4,0,0,&sendbuf,1); //调用动态链接库发送函数
-        if(flag<1)  //发送不正常
-        {
+    flag=VCI_Transmit(4,0,0,&sendbuf,1); //调用动态链接库发送函数
+    if(flag<1)  //发送不正常
+    {
 
-        }
-        else {
-            qDebug()<<publicClass::getInstance()->Byte_16(sendbuf.Data,8)<<"xxxxxxxxxxxxxxxx";
-        }
-//    }
+    }
+    else {
+        qDebug()<<publicClass::getInstance()->Byte_16(sendbuf.Data,8)<<"xxxxxxxxxxxxxxxx";
+    }
+#endif
+#if CANDEV_GC
+    CAN_OBJ sendbuf;
+    bool ok;
+    QString id = ("601");
+
+    int32_t  ss2 = -ui->lineEdit_suduRpm->text().simplified().toInt()*10; //设置速度
+
+    unsigned char out2[4] ={};
+    publicClass::getInstance()->int32Arr2Bytes(&ss2,4,out2);
+    QByteArray byArr2((const char*)out2,4);
+
+    QString ssss2 =  publicClass::getInstance()->Byte_16((unsigned char *)byArr2.data(),4);
+    QString sudu = QString("23 FF 60 00 %1").arg(ssss2);
+    //    sendMsg.append(sudu);
+    QString RowStr;
+    //    for(int i=0;i<1;i++){
+    sendbuf.ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
+    sendbuf.RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
+
+    if((sendbuf.ExternFlag)==1)//帧格式，远程帧
+    {
+        sendbuf.ID =(id.toUInt(&ok,16)); //&0x1FFFFFFF;
+    }
+    else//标准帧格式
+    {
+        sendbuf.ID=(id.toUInt(&ok,16))&0x7FF;
+    }
+
+    sendbuf.SendType=1;
+    sendbuf.TimeFlag=0;
+    sendbuf.TimeStamp=0;
+    qDebug()<<sendbuf.DataLen<<sudu<<"xxxxxxxxxxxxxxxxxxxxxxx";
+    publicClass::getInstance()->Str2CharSplitBlank(sudu,sendbuf.Data,&sendbuf.DataLen);
+    ULONG flag;
+
+    flag=Transmit(3,0,0,&sendbuf,1); //调用动态链接库发送函数
+    if(flag<1)  //发送不正常
+    {
+
+    }
+    else {
+        qDebug()<<publicClass::getInstance()->Byte_16(sendbuf.Data,8)<<"xxxxxxxxxxxxxxxx";
+    }
+#endif
 }
 /*
  * @brief   :速度模式使能
@@ -273,6 +322,7 @@ void viewShowForm::on_pushButton_reversal_clicked()
  */
 void viewShowForm::on_pushButton_enable_clicked()
 {
+#if CANDEV_CX
     VCI_CAN_OBJ sendbuf[6];
     bool ok;
     QString id = "601";
@@ -313,10 +363,45 @@ void viewShowForm::on_pushButton_enable_clicked()
             qDebug()<<publicClass::getInstance()->Byte_16(sendbuf[i].Data,8)<<"xxxxxxxxxxxxxxxx";
         }
     }
+#endif
+
+#if CANDEV_GC
+    CAN_OBJ sendbuf[6];
+    QList<QString>   sendMsg;
+    sendMsg.clear();
+    sendMsg.append(QString("2F 60 60 00 03 00 00 00"));//速度模式
+    sendMsg.append(QString("2B 40 60 00 80 00 00 00"));
+    sendMsg.append(QString("2B 40 60 00 06 00 00 00"));
+    sendMsg.append(QString("2B 40 60 00 07 00 00 00"));
+    sendMsg.append(QString("2B 40 60 00 0f 00 00 00"));
+    //    sendMsg.append(QString("23 FF 60 00 18 FC FF FF"));
+
+    QString RowStr;
+    for(int i=0;i<5;i++){
+        sendbuf[i].DataLen=8 ;
+        sendbuf[i].ExternFlag=0 ;
+        sendbuf[i].RemoteFlag=0;
+        sendbuf[i].ID=0x601&0x7ff;
+        sendbuf[i].SendType=0;
+        sendbuf[i].TimeFlag=0;
+        sendbuf[i].TimeStamp=0;
+        publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
+        ULONG flag;
+        flag=Transmit(3,0,0,&sendbuf[i],1); //调用动态链接库发送函数
+        _sleep(5);
+        if(flag<1)  //发送不正常
+        {
+        }
+        else {
+            qDebug()<<publicClass::getInstance()->Byte_16(sendbuf[i].Data,8)<<"xxxxxxxxxxxxxxxx";
+        }
+    }
+#endif
 }
 
 void viewShowForm::on_pushButton_foreward_clicked()
 {
+#if CANDEV_CX
     VCI_CAN_OBJ sendbuf;
     bool ok;
     QString id = "601";
@@ -330,37 +415,75 @@ void viewShowForm::on_pushButton_foreward_clicked()
     QString ssss2 =  publicClass::getInstance()->Byte_16((unsigned char *)byArr2.data(),4);
     QString sudu = QString("23 FF 60 00 %1").arg(ssss2);
 
-        sendbuf.ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
-        sendbuf.RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
+    sendbuf.ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
+    sendbuf.RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
 
-        if((sendbuf.ExternFlag)==1)//帧格式，远程帧
-        {
-            sendbuf.ID =(id.toUInt(&ok,16)); //&0x1FFFFFFF;
-        }
-        else//标准帧格式
-        {
-            sendbuf.ID=(id.toUInt(&ok,16))&0x7FF;
-        }
+    if((sendbuf.ExternFlag)==1)//帧格式，远程帧
+    {
+        sendbuf.ID =(id.toUInt(&ok,16)); //&0x1FFFFFFF;
+    }
+    else//标准帧格式
+    {
+        sendbuf.ID=(id.toUInt(&ok,16))&0x7FF;
+    }
 
-        sendbuf.SendType=1;
-        sendbuf.TimeFlag=0;
-        sendbuf.TimeStamp=0;
-        publicClass::getInstance()->Str2CharSplitBlank(sudu,sendbuf.Data,&sendbuf.DataLen);
-        ULONG flag;
-        flag=VCI_Transmit(4,0,0,&sendbuf,1); //调用动态链接库发送函数
-        if(flag<1)  //发送不正常
-        {
-        }
-        else {
-        }
+    sendbuf.SendType=1;
+    sendbuf.TimeFlag=0;
+    sendbuf.TimeStamp=0;
+    publicClass::getInstance()->Str2CharSplitBlank(sudu,sendbuf.Data,&sendbuf.DataLen);
+    ULONG flag;
+    flag=VCI_Transmit(4,0,0,&sendbuf,1); //调用动态链接库发送函数
+    if(flag<1)  //发送不正常
+    {
+    }
+    else {
+    }
+#endif
+#if CANDEV_GC
 
+    CAN_OBJ sendbuf;
+    bool ok;
+    QString id = "601";
 
+    int32_t  ss2 = ui->lineEdit_suduRpm->text().simplified().toInt()*10; //设置速度
+
+    unsigned char out2[4] ={};
+    publicClass::getInstance()->int32Arr2Bytes(&ss2,4,out2);
+    QByteArray byArr2((const char*)out2,4);
+
+    QString ssss2 =  publicClass::getInstance()->Byte_16((unsigned char *)byArr2.data(),4);
+    QString sudu = QString("23 FF 60 00 %1").arg(ssss2);
+
+    sendbuf.ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
+    sendbuf.RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
+
+    if((sendbuf.ExternFlag)==1)//帧格式，远程帧
+    {
+        sendbuf.ID =(id.toUInt(&ok,16)); //&0x1FFFFFFF;
+    }
+    else//标准帧格式
+    {
+        sendbuf.ID=(id.toUInt(&ok,16))&0x7FF;
+    }
+
+    sendbuf.SendType=1;
+    sendbuf.TimeFlag=0;
+    sendbuf.TimeStamp=0;
+    publicClass::getInstance()->Str2CharSplitBlank(sudu,sendbuf.Data,&sendbuf.DataLen);
+    ULONG flag;
+    flag=Transmit(3,0,0,&sendbuf,1); //调用动态链接库发送函数
+    if(flag<1)  //发送不正常
+    {
+    }
+    else {
+    }
+#endif
 }
 
 void viewShowForm::on_pushButton_enable_weizhimoshi_clicked()
 {
     if(ui->comboBox_xiangduiweizhi->currentIndex()==0){
-        VCI_CAN_OBJ sendbuf[10];
+        CAN_OBJ sendbuf[10];
         bool ok;
         QString id = "601";
         QList<QString>   sendMsg;
@@ -447,9 +570,9 @@ void viewShowForm::on_pushButton_enable_weizhimoshi_clicked()
             sendbuf[i].TimeStamp=0;
             publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
             ULONG flag;
-            flag=VCI_Transmit(4,0,1,&sendbuf[i],1); //调用动态链接库发送函数
+            flag=Transmit(3,0,0,&sendbuf[i],1); //调用动态链接库发送函数
             //            emit  signalSendCanBuf(&sendbuf[i],/*sendbuf->DataLen*/sizeof (VCI_CAN_OBJ));
-            _sleep(10);
+            _sleep(5);
             if(flag<1)  //发送不正常
             {
 
@@ -460,7 +583,8 @@ void viewShowForm::on_pushButton_enable_weizhimoshi_clicked()
         }
     }
     else {
-        VCI_CAN_OBJ sendbuf[10];
+
+        CAN_OBJ sendbuf[10];
         bool ok;
         QString id = ("601");
         QList<QString>   sendMsg;
@@ -554,7 +678,7 @@ void viewShowForm::on_pushButton_enable_weizhimoshi_clicked()
             ULONG flag;
             //            qDebug()<<"m_DevType:"<<m_DevType<<"m_DevIndex:"<<m_DevIndex<<"m_CanIndex:"<<m_CanIndex
             //                   <<"sendMsg"<<sendMsg;
-            flag=VCI_Transmit(4,0,0,&sendbuf[i],1); //调用动态链接库发送函数
+            flag=Transmit(3,0,0,&sendbuf[i],1); //调用动态链接库发送函数
             //            emit  signalSendCanBuf(&sendbuf[i],/*sendbuf->DataLen*/sizeof (VCI_CAN_OBJ));
 
             _sleep(10);
@@ -575,6 +699,7 @@ void viewShowForm::on_pushButton_enable_weizhimoshi_clicked()
  */
 void viewShowForm::on_pushButton_setyuandian_clicked()
 {
+#if CANDEV_CX
     VCI_CAN_OBJ sendbuf[7];
     bool ok;
     QString id = ("601");
@@ -618,10 +743,57 @@ void viewShowForm::on_pushButton_setyuandian_clicked()
 
         }
     }
+#endif
+#if CANDEV_GC
+    CAN_OBJ sendbuf[7];
+    bool ok;
+    QString id = ("601");
+    QList<QString>   sendMsg;
+    sendMsg.clear();
+    sendMsg.append(QString("2F 98 60 00 23 00 00 00"));
+    sendMsg.append(QString("2F 60 60 00 06 00 00 00"));
+    sendMsg.append(QString("2B 40 60 00 80 00 00 00"));
+    sendMsg.append(QString("2B 40 60 00 06 00 00 00"));
+    sendMsg.append(QString("2B 40 60 00 07 00 00 00"));
+    sendMsg.append(QString("2B 40 60 00 0F 00 00 00"));
+    sendMsg.append(QString("2B 40 60 00 1F 00 00 00"));
+
+    //    sendMsg.append(QString("23 FF 60 00 E8 03 00 00"));
+    QString RowStr;
+    for(int i=0;i<7;i++){
+        sendbuf[i].ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
+        sendbuf[i].RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
+
+        if((sendbuf->ExternFlag)==1)//帧格式，远程帧
+        {
+            sendbuf[i].ID =(id.toUInt(&ok,16)); //&0x1FFFFFFF;
+        }
+        else//标准帧格式
+        {
+            sendbuf[i].ID=(id.toUInt(&ok,16))&0x7FF;
+        }
+
+        sendbuf[i].SendType=1;
+        sendbuf[i].TimeFlag=0;
+        sendbuf[i].TimeStamp=0;
+        publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
+        ULONG flag;
+        flag=Transmit(3,0,0,&sendbuf[i],1); //调用动态链接库发送函数
+        _sleep(10);
+        if(flag<1)  //发送不正常
+        {
+
+        }
+        else {
+
+        }
+    }
+#endif
 }
 
 void viewShowForm::on_pushButton_stopEnable_clicked()
 {
+#if CANDEV_CX
     VCI_CAN_OBJ sendbuf[1];
     bool ok;
     QString id = ("601");
@@ -657,12 +829,39 @@ void viewShowForm::on_pushButton_stopEnable_clicked()
     else {
 
     }
+#endif
+#if CANDEV_GC
+    CAN_OBJ sendbuf;
+    bool ok;
+    QList<QString>   sendMsg;
+    sendMsg.clear();
+    sendMsg.append(QString("2B 40 60 00 02 00 00 00"));
+    QString RowStr;
+    sendbuf.ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
+    sendbuf.RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
+    sendbuf.DataLen = 8;
+    sendbuf.ID=0x601&0x7ff;
+    sendbuf.SendType=1;
+    sendbuf.TimeFlag=0;
+    sendbuf.TimeStamp=0;
+    publicClass::getInstance()->Str2CharSplitBlank(sendMsg[0],sendbuf.Data,&sendbuf.DataLen);
+    ULONG flag;
+    flag=Transmit(3,0,0,&sendbuf,1); //调用动态链接库发送函数
+    //    emit  signalSendCanBuf(sendbuf,/*sendbuf->DataLen*/sizeof (VCI_CAN_OBJ));
+    if(flag<1)  //发送不正常
+    {
 
+    }
+    else {
+
+    }
+#endif
 
 }
 
 void viewShowForm::on_pushButton_init_clicked()
 {
+#if CANDEV_CX
     VCI_CAN_OBJ sendbuf[1];
     QString id = ("601");
     bool ok;
@@ -696,13 +895,49 @@ void viewShowForm::on_pushButton_init_clicked()
     else {
 
     }
+#endif
+#if CANDEV_GC
+    CAN_OBJ sendbuf[1];
+    QString id = ("01");
+    bool ok;
+    QString sendMsg="10 10";//发送数据
+    QString RowStr;
+    sendbuf->ExternFlag=0 ;//static_cast<BYTE>(ui->comboBox_format->currentIndex()); //帧格式 (扩展帧1 标准帧0 )
+    sendbuf->RemoteFlag=0;//static_cast<BYTE>(ui->comboBox_frame_type->currentIndex());  //帧类型 （数据帧0 远程帧1）
+
+    if((sendbuf->ExternFlag)==1)//帧格式，远程帧
+    {
+        sendbuf->ID =(id.toUInt(&ok,16)); //&0x1FFFFFFF;
+    }
+    else//标准帧格式
+    {
+        sendbuf->ID=(id.toUInt(&ok,16))&0x7FF;
+    }
+
+    sendbuf->SendType=1;
+    sendbuf->TimeFlag=0;
+    sendbuf->TimeStamp=0;
+    publicClass::getInstance()->Str2CharSplitBlank(sendMsg,sendbuf->Data,&sendbuf->DataLen);
+    ULONG flag;
+    //    qDebug()<<"m_DevType:"<<m_DevType<<"m_DevIndex:"<<m_DevIndex<<"m_CanIndex:"<<m_CanIndex
+    //           <<"sendMsg"<<sendMsg;
+    flag=Transmit(3,0,0,sendbuf,1); //调用动态链接库发送函数
+    //    emit  signalSendCanBuf(sendbuf,/*sendbuf->DataLen*/sizeof (VCI_CAN_OBJ));
+    if(flag<1)  //发送不正常
+    {
+
+    }
+    else {
+        qDebug()<<"success"<<"XXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+    }
+#endif
 }
 
 void viewShowForm::on_pushButton_zhuandong_clicked()
 {
 
     if(ui->comboBox_xiangduiweizhi->currentIndex()==0){ // 相对位置
-        VCI_CAN_OBJ sendbuf[3];
+        CAN_OBJ sendbuf[3];
         bool ok;
         QString id = "601";
         QList<QString>   sendMsg;
@@ -740,7 +975,7 @@ void viewShowForm::on_pushButton_zhuandong_clicked()
             publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
             ULONG flag;
 
-            flag=VCI_Transmit(4,0,0,&sendbuf[i],1); //调用动态链接库发送函数
+            flag=Transmit(3,0,0,&sendbuf[i],1); //调用动态链接库发送函数
             //            emit  signalSendCanBuf(&sendbuf[i],/*sendbuf->DataLen*/sizeof (VCI_CAN_OBJ));
             _sleep(10);
             if(flag<1)  //发送不正常
@@ -755,7 +990,7 @@ void viewShowForm::on_pushButton_zhuandong_clicked()
 
     }
     else{//绝对位置
-        VCI_CAN_OBJ sendbuf[3];
+        CAN_OBJ sendbuf[3];
         bool ok;
         QString id = "601";
         QList<QString>  sendMsg;
@@ -795,9 +1030,9 @@ void viewShowForm::on_pushButton_zhuandong_clicked()
             publicClass::getInstance()->Str2CharSplitBlank(sendMsg[i],sendbuf[i].Data,&sendbuf[i].DataLen);
             ULONG flag;
 
-            flag=VCI_Transmit(4,0,0,&sendbuf[i],1); //调用动态链接库发送函数
+            flag=Transmit(3,0,0,&sendbuf[i],1); //调用动态链接库发送函数
             //            emit  signalSendCanBuf(&sendbuf[i],/*sendbuf->DataLen*/sizeof (VCI_CAN_OBJ));
-            _sleep(10);
+            _sleep(5);
             if(flag<1)  //发送不正常
             {
                 //             emit signalError("error");
@@ -808,4 +1043,42 @@ void viewShowForm::on_pushButton_zhuandong_clicked()
             }
         }
     }
+}
+void viewShowForm::setValue( uint32_t id, int32_t value)
+{
+    switch (id) {
+    case 12296://第一位置编码器
+    {
+        ui->label_bainmaqi1->setText(QStringLiteral("第一位置编码器:%1").arg(value));
+        break;
+    }
+    case 24676://编码器绝对位置
+    {
+        ui->label_jueduiweizhi->setText(QStringLiteral("编码器绝对位置:%1").arg(value));
+        break;
+    }
+    case 24698://目标位置
+    {
+        ui->label_mubiaoweizhi->setText(QStringLiteral("目标位置:%1").arg(value));
+        break;
+    }
+    case 24675://当前电机位置
+    {
+        ui->label_dianjiweizhi->setText(QStringLiteral("当前电机位置:%1").arg(value));
+        break;
+    }
+    case 12303://第二位置编码器
+    {
+        ui->label_bianmaqi2->setText(QStringLiteral("第二位置编码器:%1").arg(value));
+        break;
+    }
+    case 0X3000://RPM
+    {
+        ui->label_Rpm->setText(QStringLiteral("转速:%1").arg(value));
+        break;
+    }
+    default:
+        break;
+    }
+
 }

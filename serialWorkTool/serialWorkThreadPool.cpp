@@ -247,7 +247,7 @@ Q_INVOKABLE void serialWorkThreadPool_YK_602::startWork()
     //    sendMsgList.push_back("2B 40 60 00 0F 00 00 00");
     sendMsgList.push_back(QString("2F 60 60 00 01 00 00 00"));
     for(int i = 0;i<sendMsgList.size();i++){
-        publicClass::getInstance()->sendCanBuf(id,sendMsgList.at(i),1);
+        publicClass::getInstance()->sendCanBuf(id,sendMsgList.at(i),0);
          _sleep(TIMEOUT);
     }
 
@@ -286,7 +286,7 @@ void serialWorkThreadPool_YK_602::run()
         //        sendMsg.append(QString("40 79 60 00 00 00 00 00"));//直流链路电路电压
         //        sendMsg.append(QString("40 7c 60 00 00 00 00 00"));//原点偏移
         for(int i = 0;i<sendMsg.size();i++){
-            publicClass::getInstance()->sendCanBuf(id,sendMsg.at(i),1);
+            publicClass::getInstance()->sendCanBuf(id,sendMsg.at(i),0);
         }
          _sleep(TIMEOUT);
 
@@ -533,9 +533,9 @@ void serialWorkThreadPool_TT_601::slotWorkData(QByteArray data)
 }
 void serialWorkThreadPool_TT_601::run()
 {
-//    while (_isStart) {
-//        QString id = "601";
-//        QStringList sendMsg;
+    while (_isStart) {
+        QString id = "601";
+        QStringList sendMsg;
 //        sendMsg.clear();
 //        //        sendMsg.append(QString("43 0D 30 00 00 00 00 00"));//线圈温度
 //        //        sendMsg.append(QString("43 0E 30 00 00 00 00 00"));//模块温度
@@ -544,18 +544,18 @@ void serialWorkThreadPool_TT_601::run()
 //        //        sendMsg.append(QString("40 0A 30 00 00 00 00 00"));//告警码
 //        sendMsg.append(QString("43 00 30 00 00 00 00 00"));//转速
 
-//        //        sendMsg.append(QString("43 64 60 00 00 00 00 00"));//编码器绝对位置
-//        //        sendMsg.append(QString("43 0F 30 00 00 00 00 00"));//第二位置编码器
-//        //        sendMsg.append(QString("43 63 60 00 00 00 00 00"));//当前电机位置
+                sendMsg.append(QString("43 64 60 00 00 00 00 00"));//编码器绝对位置
+                sendMsg.append(QString("43 0F 30 00 00 00 00 00"));//第二位置编码器
+                sendMsg.append(QString("43 63 60 00 00 00 00 00"));//当前电机位置
 //        //        sendMsg.append(QString("43 7A 60 00 00 00 00 00"));//目标位置
 //        //        sendMsg.append(QString("43 08 30 00 00 00 00 00"));//第一位置编码器
 //        //        sendMsg.append(QString("43 00 30 00 00 00 00 00"));//告警码
 
-//        for(int i=0;i<sendMsg.size();i++){
-//            publicClass::getInstance()->sendCanBuf(id,sendMsg[i],0);
-//        }
-//         _sleep(TIMEOUT);
-//    }
+        for(int i=0;i<sendMsg.size();i++){
+            publicClass::getInstance()->sendCanBuf(id,sendMsg[i],0);
+        }
+         _sleep(TIMEOUT);
+    }
 
 
 }

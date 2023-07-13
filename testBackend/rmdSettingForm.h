@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <Windows.h>
 #include "publicclass.h"
-#include "ControlCAN.h"
+#include "define.h"
 #include <QTimer>
 namespace Ui {
 class rmdSettingForm;
@@ -17,11 +17,15 @@ class rmdSettingForm : public QWidget
 public:
     explicit rmdSettingForm(QWidget *parent = nullptr);
     ~rmdSettingForm();
+    void setValue_141(int32_t valueencoder,int32_t valuespeed);
+    void setValue_145(int32_t valueencoder,int32_t valuespeed);
 public slots:
-    void slotRecvRmdData(UINT id, BYTE *data) ;
+    void slotRecvRmdData_141(UINT id, BYTE *data) ;
+    void slotRecvRmdData_145(UINT id, BYTE *data) ;
     void slotDataTest_A2(QString,int32_t,int32_t);
     //    void slotDataTest_A8(int32_t duo,int32_t dan);
     void slotWorkDataBMQA8(QString COM,int32_t duo,int32_t dan);
+
 private slots:
     void on_pushButton_write_ram_clicked();
 

@@ -319,6 +319,9 @@
       </item>
       <item row="5" column="3">
        <widget class="QPushButton" name="pushButton_juedui">
+        <property name="styleSheet">
+         <string notr="true">color: rgb(85, 170, 255);</string>
+        </property>
         <property name="text">
          <string>绝对位置模式</string>
         </property>
@@ -339,6 +342,13 @@
        </widget>
       </item>
      </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="pushButton">
+     <property name="text">
+      <string>绝对使能</string>
+     </property>
     </widget>
    </item>
    <item>

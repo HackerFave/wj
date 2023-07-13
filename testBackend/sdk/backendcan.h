@@ -5,7 +5,7 @@
 #include <QtCore/qglobal.h>
 #include <iostream>
 #include <stdlib.h>
-#include "methord/funcCan.h"
+#include "funcCan.h"
 using namespace std;
 #if defined(BACKENDCAN_LIBRARY)
 #  define BACKENDCAN_EXPORT Q_DECL_EXPORT

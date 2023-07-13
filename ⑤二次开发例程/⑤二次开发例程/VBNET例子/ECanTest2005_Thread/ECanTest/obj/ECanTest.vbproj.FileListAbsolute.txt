@@ -1,0 +1,49 @@
+E:\work\USBCAN\ECan\Sample\WinXP\VBNET例子\ECanTest\ECanTest\bin\Debug\ECanTest.exe
+E:\work\USBCAN\ECan\Sample\WinXP\VBNET例子\ECanTest\ECanTest\bin\Debug\ECanTest.pdb
+E:\work\USBCAN\ECan\Sample\WinXP\VBNET例子\ECanTest\ECanTest\bin\Debug\ECanTest.xml
+E:\work\USBCAN\ECan\Sample\WinXP\VBNET例子\ECanTest\ECanTest\obj\Debug\ResolveAssemblyReference.cache
+E:\work\USBCAN\ECan\Sample\WinXP\VBNET例子\ECanTest\ECanTest\obj\Debug\ECanTest.Form1.resources
+E:\work\USBCAN\ECan\Sample\WinXP\VBNET例子\ECanTest\ECanTest\obj\Debug\ECanTest.Resources.resources
+E:\work\USBCAN\ECan\Sample\WinXP\VBNET例子\ECanTest\ECanTest\obj\Debug\ECanTest.vbproj.GenerateResource.Cache
+E:\work\USBCAN\ECan\Sample\WinXP\VBNET例子\ECanTest\ECanTest\obj\Debug\ECanTest.exe
+E:\work\USBCAN\ECan\Sample\WinXP\VBNET例子\ECanTest\ECanTest\obj\Debug\ECanTest.xml
+E:\work\USBCAN\ECan\Sample\WinXP\VBNET例子\ECanTest\ECanTest\obj\Debug\ECanTest.pdb
+E:\work\USBCAN\ECan\Sample\WinXP\VBNET例子\ECanTest2005\ECanTest\obj\Debug\ECanTest.exe
+E:\work\USBCAN\ECan\Sample\WinXP\VBNET例子\ECanTest2005\ECanTest\obj\Debug\ECanTest.xml
+E:\work\USBCAN\ECan\Sample\WinXP\VBNET例子\ECanTest2005\ECanTest\obj\Debug\ECanTest.pdb
+E:\work\USBCAN\ECan\Sample\WinXP\VBNET例子\ECanTest2005_Thread\ECanTest\obj\Debug\ECanTest.exe
+E:\work\USBCAN\ECan\Sample\WinXP\VBNET例子\ECanTest2005_Thread\ECanTest\obj\Debug\ECanTest.xml
+E:\work\USBCAN\ECan\Sample\WinXP\VBNET例子\ECanTest2005_Thread\ECanTest\obj\Debug\ECanTest.pdb
+E:\work\USBCAN\ECan\Sample\WinXP\VBNET例子\ECanTest2005_Thread\ECanTest\bin\Debug\ECanTest.exe
+E:\work\USBCAN\ECan\Sample\WinXP\VBNET例子\ECanTest2005_Thread\ECanTest\bin\Debug\ECanTest.pdb
+E:\work\USBCAN\ECan\Sample\WinXP\VBNET例子\ECanTest2005_Thread\ECanTest\bin\Debug\ECanTest.xml
+E:\work\USBCAN\ECan\Sample\WinXP\VBNET例子\ECanTest2005_Thread\ECanTest\obj\Debug\ResolveAssemblyReference.cache
+E:\work\USBCAN\ECan\Sample\WinXP\VBNET例子\ECanTest2005_Thread\ECanTest\obj\Debug\ECanTest.frmM.resources
+E:\work\USBCAN\ECan\Sample\WinXP\VBNET例子\ECanTest2005_Thread\ECanTest\obj\Debug\ECanTest.Resources.resources
+E:\work\USBCAN\ECan\Sample\WinXP\VBNET例子\ECanTest2005_Thread\ECanTest\obj\Debug\ECanTest.vbproj.GenerateResource.Cache
+E:\myWork\USBCAN\ECan\Sample\WinXP\VBNET例子\ECanTest2005_Thread\ECanTest\obj\Debug\ECanTest.exe
+E:\myWork\USBCAN\ECan\Sample\WinXP\VBNET例子\ECanTest2005_Thread\ECanTest\obj\Debug\ECanTest.xml
+E:\myWork\USBCAN\ECan\Sample\WinXP\VBNET例子\ECanTest2005_Thread\ECanTest\obj\Debug\ECanTest.pdb
+E:\nWork\usbcan\soft\ECanVci及例程\exmple\VBNET例子\ECanTest2005_Thread\ECanTest\obj\Debug\ECanTest.exe
+E:\nWork\usbcan\soft\ECanVci及例程\exmple\VBNET例子\ECanTest2005_Thread\ECanTest\obj\Debug\ECanTest.xml
+E:\nWork\usbcan\soft\ECanVci及例程\exmple\VBNET例子\ECanTest2005_Thread\ECanTest\obj\Debug\ECanTest.pdb
+E:\nWork\usbcan\soft\ECanVci及例程\exmple\VBNET例子\ECanTest2005_Thread\ECanTest\bin\Debug\ECanTest.exe
+E:\nWork\usbcan\soft\ECanVci及例程\exmple\VBNET例子\ECanTest2005_Thread\ECanTest\bin\Debug\ECanTest.pdb
+E:\nWork\usbcan\soft\ECanVci及例程\exmple\VBNET例子\ECanTest2005_Thread\ECanTest\bin\Debug\ECanTest.xml
+E:\nWork\usbcan\soft\ECanVci及例程\exmple\VBNET例子\ECanTest2005_Thread\ECanTest\obj\Debug\ResolveAssemblyReference.cache
+E:\nWork\usbcan\soft\ECanVci及例程\exmple\VBNET例子\ECanTest2005_Thread\ECanTest\obj\Debug\ECanTest.frmM.resources
+E:\nWork\usbcan\soft\ECanVci及例程\exmple\VBNET例子\ECanTest2005_Thread\ECanTest\obj\Debug\ECanTest.Resources.resources
+E:\nWork\usbcan\soft\ECanVci及例程\exmple\VBNET例子\ECanTest2005_Thread\ECanTest\obj\Debug\ECanTest.vbproj.GenerateResource.Cache
+Z:\③广成发货光盘中心\GC-USBCAN V502 V1.20\二次开发例程\VBNET例子\ECanTest2005_Thread\ECanTest\obj\Debug\ECanTest.exe
+Z:\③广成发货光盘中心\GC-USBCAN V502 V1.20\二次开发例程\VBNET例子\ECanTest2005_Thread\ECanTest\obj\Debug\ECanTest.xml
+Z:\③广成发货光盘中心\GC-USBCAN V502 V1.20\二次开发例程\VBNET例子\ECanTest2005_Thread\ECanTest\obj\Debug\ECanTest.pdb
+Z:\③广成发货光盘中心\GC-USBCAN V502 V1.20\二次开发例程\VBNET例子\ECanTest2005_Thread\ECanTest\bin\x86\Debug\ECanTest.exe
+Z:\③广成发货光盘中心\GC-USBCAN V502 V1.20\二次开发例程\VBNET例子\ECanTest2005_Thread\ECanTest\bin\x86\Debug\ECanTest.pdb
+Z:\③广成发货光盘中心\GC-USBCAN V502 V1.20\二次开发例程\VBNET例子\ECanTest2005_Thread\ECanTest\bin\x86\Debug\ECanTest.xml
+Z:\③广成发货光盘中心\GC-USBCAN V502 V1.20\二次开发例程\VBNET例子\ECanTest2005_Thread\ECanTest\obj\x86\Debug\ResolveAssemblyReference.cache
+Z:\③广成发货光盘中心\GC-USBCAN V502 V1.20\二次开发例程\VBNET例子\ECanTest2005_Thread\ECanTest\obj\x86\Debug\ECanTest.frmM.resources
+Z:\③广成发货光盘中心\GC-USBCAN V502 V1.20\二次开发例程\VBNET例子\ECanTest2005_Thread\ECanTest\obj\x86\Debug\ECanTest.Resources.resources
+Z:\③广成发货光盘中心\GC-USBCAN V502 V1.20\二次开发例程\VBNET例子\ECanTest2005_Thread\ECanTest\obj\x86\Debug\ECanTest.vbproj.GenerateResource.Cache
+Z:\③广成发货光盘中心\GC-USBCAN V502 V1.20\二次开发例程\VBNET例子\ECanTest2005_Thread\ECanTest\obj\x86\Debug\ECanTest.exe
+Z:\③广成发货光盘中心\GC-USBCAN V502 V1.20\二次开发例程\VBNET例子\ECanTest2005_Thread\ECanTest\obj\x86\Debug\ECanTest.xml
+Z:\③广成发货光盘中心\GC-USBCAN V502 V1.20\二次开发例程\VBNET例子\ECanTest2005_Thread\ECanTest\obj\x86\Debug\ECanTest.pdb

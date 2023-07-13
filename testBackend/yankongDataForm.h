@@ -2,10 +2,13 @@
 #define YANKONGDATAFORM_H
 
 #include <QWidget>
-#include "ControlCAN.h"
+#include "define.h"
 #include <queue>
 #include <QQueue>
 #include <QButtonGroup>
+#include <mutex>
+#include "chassis.h"
+#include "func.h"
 namespace Ui {
 class yankongDataForm;
 }
@@ -17,6 +20,7 @@ class yankongDataForm : public QWidget
 public:
     explicit yankongDataForm(QWidget *parent = nullptr);
     ~yankongDataForm();
+    void setValue(int32_t value);
 public slots:
     void slotRecvData(UINT id, BYTE *data);
 private slots:
@@ -42,6 +46,8 @@ private:
     Ui::yankongDataForm *ui;
     QQueue<QString> _data485;
     QButtonGroup _groupBtn;
+    std::mutex _mutex;
+    func *p_func = nullptr;
 };
 
 #endif // YANKONGDATAFORM_H
